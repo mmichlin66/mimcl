@@ -1,0 +1,52 @@
+{
+	"name": "mimcl",
+	"version": "0.1.0",
+	"description": "MiM Component Library",
+	"homepage": "https://mmichlin66.github.io/mimbl/mimblAbout.html",
+	"repository": "github:mmichlin66/mimbl",
+	"main": "./dist/mimclTypes.d.ts",
+	"module": "./dist/mimclTypes.d.ts",
+	"types": "./dist/mimclTypes.d.ts",
+	"scripts": {
+		"buildDev": "buildDev.bat",
+		"buildProd": "buildProd.bat",
+		"doc": "doc.bat"
+	},
+	"author": {
+		"name": "Michael Michlin",
+		"email": "mmulya@hotmail.com",
+		"url": "https://mmichlin66.github.io"
+	},
+	"keywords": [
+		"Component",
+		"Web UI"
+	],
+	"license": "MIT",
+	"devDependencies": {
+		"awesome-typescript-loader": "^5.2.1",
+		"css-loader": "^2.1.1",
+		"ifdef-loader": "^2.1.1",
+		"ignore-loader": "^0.1.2",
+		"mini-css-extract-plugin": "^0.5.0",
+		"react": "^16.8.6",
+		"source-map-loader": "^0.2.4",
+		"ts-loader": "^5.4.5",
+		"typescript": "^3.4.5",
+		"webpack": "^4.35.3",
+		"webpack-cli": "^3.3.6"
+	},
+	"files": [
+		"README.md",
+		"dist/mimcl.js",
+		"dist/mimclTypes.d.ts",
+		"dist/router/Router.d.ts",
+		"dist/popup/Popup.d.ts",
+		"dist/popup/Dialog.d.ts",
+		"dist/popup/MsgBox.d.ts",
+		"dist/tree/TreeApi.d.ts"
+	],
+	"dependencies": {
+		"mimbl": "0.1.0",
+		"mimurl": "0.1.0"
+	}
+}

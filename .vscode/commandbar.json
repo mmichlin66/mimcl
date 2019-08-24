@@ -1,0 +1,35 @@
+{
+    "skipTerminateQuickPick": true,
+    "skipSwitchToOutput": false,
+    "skipErrorMessage": true,
+	"commands":
+	[
+        {
+            "text": "mimcl Dev",
+            "tooltip": "build debug mimcl",
+            "color": "white",
+            "commandType": "script",
+            "command": "buildDev",
+            "alignment": "left",
+            "priority": 1
+        },
+        {
+            "text": "mimcl Prod",
+            "tooltip": "build release mimcl",
+            "color": "yellow",
+            "commandType": "script",
+            "command": "buildProd",
+            "alignment": "left",
+            "priority": 1
+        },
+        {
+            "text": "mimcl Doc",
+            "tooltip": "build mimcl API reference documentation",
+            "color": "pink",
+            "commandType": "script",
+            "command": "doc",
+            "alignment": "left",
+            "priority": 1
+        }
+    ]
+}
