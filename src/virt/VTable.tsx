@@ -2,34 +2,55 @@
 import {ScrollAxis, ScrollAxisAction} from "./ScrollAxis"
 
 
+
+/**
+ * The VTAbleCellData interface represents information about a single cell that is provided
+ * by a caller when requesed by VTable.
+ */
 export interface VTableCellData
 {
+	/** Content of the cell */
 	content: any;
+
+	/** Number of rows this cell should span. The default value is 1. */
 	rowSpan?: number;
+
+	/** Number of columns this cell should span. The default value is 1. */
 	colSpan?: number;
+
+	/** Style that should be applied to the `<td>` element containing the cell. */
 	style?: mim.StylePropType;
+
+	/** Class that should be applied to the `<td>` element containing the cell. */
 	class?: string;
 }
 
 
 export interface VTableProps
 {
+	/** Number of rows in the entire dataset */
 	totalRowCount: number;
+
+	/** Number of columns in the entire dataset */
 	totalColCount: number;
+
+	/**
+	 * Callback through which VTable requests cell data. 
+	 */
 	getCellCallback: (row: number, col: number) => any;
-	avgRowHeight?: number;
-	avgColWidth?: number;
 }
 
 
 /**
  * "Virtualized" table that renders only a subset of a dataset and changes this subset
- * as the user scrolls back and forth. VTable uses 3 main DOM elements:
- *	- frame - the "outer" <div> element which displays the scrollbars when necessary
- *	- wall - the "inner" <div> element which has the size of the entire possible table. It is
- *		needed to make scrolling more-or-less accurate.
- *	- table - the <table> element that contains only rows and columns that fit the frame plus
- *		a certain number for "overscan".
+ * as the user scrolls back and forth.
+ * 
+ * VTable uses the following 3 DOM elements:
+ *  - frame - the "outer" `<div>` element which displays the scrollbars when necessary
+ *  - wall - the "inner" `<div>` element which has the size of the entire possible table. It is
+ *    needed to make scrolling more-or-less accurate.
+ *  - table - the `<table>` element that contains only rows and columns that fit the frame plus
+ *    a certain number for "overscan".
  * 
  * VTable calculates average row height and column width by dividing the size of the table
  * by the number of rows/columns. These average values are recalculated every time rows and
@@ -42,32 +63,19 @@ export interface VTableProps
  * maximum values. During scrolling, if the actual overscan number becomes less than the minimum,
  * new cells are added and if it becomes more then the maximum cells are deleted so that the
  * actual overscan number is equal to the average value.
- * 
- * VTable calculates (based on the average sizes) the number of rows and columns that would fit
- * into the frame and uses that number to calculate the minimum, normal and maximum overscan
- * numbers.
- *	- The minimum overscan number is half the wall size but not less than 5 rows.
- *	- The maximum overscan number is two wall sizes but not less than 15 rows.
- *	- The optimal overscan number is in the middle of the minimum and maximum.
  */
 export class VTable extends mim.Component<VTableProps>
 {
-	// private minRowOverscan = 5;
-	// private optRowOverscan = 10;
-	// private maxRowOverscan = 20;
-	// private minColOverscan = 5;
-	// private optColOverscan = 10;
-	// private maxColOverscan = 20;
-
-	private minRowOverscan = 2;
-	private optRowOverscan = 4;
-	private maxRowOverscan = 8;
-	private minColOverscan = 2;
-	private optColOverscan = 4;
-	private maxColOverscan = 8;
+	// Overscan variables with default values
+	private minRowOverscan = 3;
+	private optRowOverscan = 6;
+	private maxRowOverscan = 10;
+	private minColOverscan = 3;
+	private optColOverscan = 6;
+	private maxColOverscan = 10;
 
 	// Current dataset represented by row components.
-	rows: VRow[];
+	private rows: VRow[];
 
 	// Index of the first row in the current dataset or 0 if the dataset is empty
 	private firstRow: number;
@@ -274,7 +282,7 @@ export class VTable extends mim.Component<VTableProps>
 
 
 	/**
-	 * Adds/removes rows as indicated by the latest ScrollAxisAction dealing with the vertical
+	 * Adds/removes rows as indicated by the given ScrollAxisAction dealing with the vertical
 	 * scrolling.
 	 */
 	private updateRows( axisAction: ScrollAxisAction): void
@@ -352,7 +360,7 @@ export class VTable extends mim.Component<VTableProps>
 
 
 	/**
-	 * Adds/removes columns as indicated by the latest ScrollAxisAction dealing with the
+	 * Adds/removes columns as indicated by the given ScrollAxisAction dealing with the
 	 * horizontal scrolling.
 	 */
 	private updateCols( axisAction: ScrollAxisAction): void
@@ -436,32 +444,6 @@ export class VTable extends mim.Component<VTableProps>
 	{
 		this.site.scheduleCall( this.measureAndUpdate, true);
 	}
-
-
-
-	// private onScroll = ( e: Event): void =>
-	// {
-	// 	if (!this.isScrollThrottling)
-	// 	{
-	// 		this.isScrollThrottling = true;
-	// 		requestAnimationFrame( this.processScroll);
-	// 	}
-	// }
-
-
-
-	// /**
-	//  * Processes new scrolling position.
-	//  */
-	// private processScroll = (): void =>
-	// {
-	// 	this.isScrollThrottling = false;
-	// 	this.site.scheduleCall( this.measureAndUpdate, true);
-	// }
-
-
-
-	private isScrollThrottling = false;
 }
 
 

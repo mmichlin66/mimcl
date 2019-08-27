@@ -122,8 +122,8 @@ export class ScrollAxis
 		else
 			newLast = optOverscanLast;
 
-		if (newLast <= newFirst)
-			console.error( `Wrong ScrollAxis calculation: newLast '${newLast}' is greater than newFirst '${newFirst}'`)
+		if (newFirst > newLast)
+			console.error( `Wrong ScrollAxis calculation: newFirst '${newFirst}' is greater than newLast '${newLast}'`)
 
 		// set what we already know into the return object
 		retAction.newFirst = newFirst;

@@ -139,19 +139,28 @@ export class MsgBox extends Dialog
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// The MsgBoxButton enumeration specifies values of predefined buttons and button combinations
-// for message box.
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * The MsgBoxButton enumeration specifies values of predefined buttons and button combinations for
+ * message boxes.
+ */
 export enum MsgBoxButtons
 {
+	/** Message box will display no buttons */
 	None = 0,
+
+	/** Message box will have a single Close button */
 	Close,
+
+	/** Message box will have a single OK button */
 	OK,
+
+	/** Message box will have OK and Cancel buttons */
 	OkCancel,
+
+	/** Message box will have Yes and No buttons */
 	YesNo,
+
+	/** Message box will have Yes, No and Cancel buttons */
 	YesNoCancel,
 }
 
