@@ -1,6 +1,6 @@
 {
 	"name": "mimcl",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "MiM Component Library",
 	"homepage": "https://mmichlin66.github.io/mimbl/mimblAbout.html",
 	"repository": "github:mmichlin66/mimbl",
@@ -46,7 +46,7 @@
 		"dist/tree/TreeApi.d.ts"
 	],
 	"dependencies": {
-		"mimbl": "0.1.0",
-		"mimurl": "0.1.0"
+		"mimbl": "^0.1.3",
+		"mimurl": "^0.1.2"
 	}
 }

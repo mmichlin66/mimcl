@@ -68,10 +68,10 @@ export class VTable extends mim.Component<VTableProps>
 {
 	// Overscan variables with default values
 	private minRowOverscan = 3;
-	private optRowOverscan = 6;
+	private optRowOverscan = 5;
 	private maxRowOverscan = 10;
 	private minColOverscan = 3;
-	private optColOverscan = 6;
+	private optColOverscan = 5;
 	private maxColOverscan = 10;
 
 	// Current dataset represented by row components.
@@ -224,13 +224,13 @@ export class VTable extends mim.Component<VTableProps>
 
 		if (this.latestScrollTop != this.frame.scrollTop)
 		{
-			console.log( `Measuring height: scroll top = ${this.frame.scrollTop}, rows: ${this.rowCount}, ` +
-							`wall height = ${wallRect.height}, table height = ${tableRect.height}`);
+			// console.log( `Measuring height: scroll top = ${this.frame.scrollTop}, rows: ${this.rowCount}, ` +
+			// 				`wall height = ${wallRect.height}, table height = ${tableRect.height}`);
 
 			let vAxisAction = this.vAxis.measure( this.props.totalRowCount, this.firstRow, this.rowCount,
 				this.avgRowHeight, frameRect.height, wallRect.height, tableRect.height, this.frame.scrollTop);
 
-			console.log( `Estimated: wall height = ${vAxisAction.newWallSize}, row height = ${vAxisAction.newAvgItemSize}`);
+			// console.log( `Estimated: wall height = ${vAxisAction.newWallSize}, row height = ${vAxisAction.newAvgItemSize}`);
 
 			// remember the new average row height and the latest vertical scrolling position
 			this.avgRowHeight = vAxisAction.newAvgItemSize;
@@ -252,13 +252,13 @@ export class VTable extends mim.Component<VTableProps>
 
 		if (this.latestScrollLeft != this.frame.scrollLeft)
 		{
-			console.log( `Measuring width: scroll left = ${this.frame.scrollLeft}, cols: ${this.colCount}, ` +
-							`wall width = ${wallRect.width}, table width = ${tableRect.width}`);
+			// console.log( `Measuring width: scroll left = ${this.frame.scrollLeft}, cols: ${this.colCount}, ` +
+			// 				`wall width = ${wallRect.width}, table width = ${tableRect.width}`);
 
 			let hAxisAction = this.hAxis.measure( this.props.totalColCount, this.firstCol, this.colCount,
 				this.avgColWidth, frameRect.width, wallRect.width, tableRect.width, this.frame.scrollLeft);
 
-			console.log( `Estimated: wall width = ${hAxisAction.newWallSize}, col width = ${hAxisAction.newAvgItemSize}`);
+			// console.log( `Estimated: wall width = ${hAxisAction.newWallSize}, col width = ${hAxisAction.newAvgItemSize}`);
 
 			// remember the new average column width and the latest horizontal scrolling position
 			this.avgColWidth = hAxisAction.newAvgItemSize;
@@ -287,7 +287,7 @@ export class VTable extends mim.Component<VTableProps>
 	 */
 	private updateRows( axisAction: ScrollAxisAction): void
 	{
-		console.log( `Updating rows from ${this.firstRow} - ${this.lastRow} to ${axisAction.newFirst} - ${axisAction.newLast}`);
+		// console.log( `Updating rows from ${this.firstRow} - ${this.lastRow} to ${axisAction.newFirst} - ${axisAction.newLast}`);
 
 		if (axisAction.neeedToRemoveAllItems)
 		{
@@ -365,7 +365,7 @@ export class VTable extends mim.Component<VTableProps>
 	 */
 	private updateCols( axisAction: ScrollAxisAction): void
 	{
-		console.log( `Updating columns from ${this.firstCol} - ${this.lastCol} to ${axisAction.newFirst} - ${axisAction.newLast}`);
+		// console.log( `Updating columns from ${this.firstCol} - ${this.lastCol} to ${axisAction.newFirst} - ${axisAction.newLast}`);
 
 		if (axisAction.neeedToRemoveAllItems)
 		{
@@ -424,7 +424,7 @@ export class VTable extends mim.Component<VTableProps>
 				for( let i = this.firstRow; i <= this.lastRow; i++)
 				{
 					let vrow = this.rows[i - this.firstRow];
-					for( let j = this.firstCol; j >= axisAction.newFirst; j--)
+					for( let j = this.firstCol - 1; j >= axisAction.newFirst; j--)
 						vrow.insertCell( this.props.getCellCallback( i, j));
 		
 					vrow.requestUpdate();
@@ -443,6 +443,8 @@ export class VTable extends mim.Component<VTableProps>
 	private onScroll = ( e: Event): void =>
 	{
 		this.site.scheduleCall( this.measureAndUpdate, true);
+
+		// setTimeout( this.measureAndUpdate, 0);
 	}
 }
 

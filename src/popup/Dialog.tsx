@@ -101,11 +101,11 @@ export class Dialog extends Popup
 		});
 
 		let content: any =
-			<mim.Placeholder>
+			<mim.Fragment>
 				{this.captionAreaProxy}
 				{this.mainAreaProxy}
 				{this.buttonAreaProxy}
-			</mim.Placeholder>;
+			</mim.Fragment>;
 
 		return { content };
 	}
