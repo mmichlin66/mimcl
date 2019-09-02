@@ -1,2 +1,2 @@
-# mimcl
+# Mimcl
 Mimbl-based components
