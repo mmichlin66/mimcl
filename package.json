@@ -1,9 +1,9 @@
 {
 	"name": "mimcl",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "MiM Component Library",
-	"homepage": "https://mmichlin66.github.io/mimbl/mimblAbout.html",
-	"repository": "github:mmichlin66/mimbl",
+	"homepage": "https://mmichlin66.github.io/mimbl/mimclAbout.html",
+	"repository": "github:mmichlin66/mimcl",
 	"main": "./dist/mimclTypes.d.ts",
 	"module": "./dist/mimclTypes.d.ts",
 	"types": "./dist/mimclTypes.d.ts",
@@ -43,7 +43,8 @@
 		"dist/popup/Popup.d.ts",
 		"dist/popup/Dialog.d.ts",
 		"dist/popup/MsgBox.d.ts",
-		"dist/tree/TreeApi.d.ts"
+		"dist/tree/TreeApi.d.ts",
+		"dist/virt/VTable.d.ts"
 	],
 	"dependencies": {
 		"mimbl": "^0.1.3",

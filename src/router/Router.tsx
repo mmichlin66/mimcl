@@ -323,7 +323,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 		for( let route of routes)
 		{
 			let matchResult = mimurl.match( url, route.urlPattern);
-			if (matchResult)
+			if (matchResult && matchResult.success)
 				return [route, matchResult.fields];
 			else if (route.subRoutes)
 			{
