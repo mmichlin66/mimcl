@@ -6,7 +6,6 @@
 	[
         {
             "text": "mimcl Dev",
-            "tooltip": "build debug mimcl",
             "color": "white",
             "commandType": "script",
             "command": "buildDev",
@@ -15,7 +14,6 @@
         },
         {
             "text": "mimcl Prod",
-            "tooltip": "build release mimcl",
             "color": "yellow",
             "commandType": "script",
             "command": "buildProd",
@@ -24,7 +22,6 @@
         },
         {
             "text": "mimcl Doc",
-            "tooltip": "build mimcl API reference documentation",
             "color": "pink",
             "commandType": "script",
             "command": "doc",
