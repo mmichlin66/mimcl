@@ -12,15 +12,16 @@ import { DragSourcePropType, DragTargetPropType } from "./DragDropApi";
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 class DragSourceCustomElmPropHandler implements mim.ICustomAttributeHandler<DragSourcePropType>
 {
-	public initialize( elmVN: mim.IElmVN, propName: string, propVal: DragSourcePropType): void
+	constructor( elmVN: mim.IElmVN, propVal: DragSourcePropType)
 	{
 		this.elmVN = elmVN;
+		this.currVal = propVal;
 		this.add( propVal);
 	}
 
 
 
-	public terminate(): void
+	public terminate( isRemoval: boolean): void
 	{
 		this.remove();
 		this.elmVN = undefined;
@@ -28,18 +29,19 @@ class DragSourceCustomElmPropHandler implements mim.ICustomAttributeHandler<Drag
 
 
 
-	public update( oldPropVal: DragSourcePropType, newPropVal: DragSourcePropType): boolean
+	public update( newPropVal: DragSourcePropType): boolean
 	{
-		if (oldPropVal === newPropVal)
+		if (this.currVal === newPropVal)
 			return false;
 		else
 		{
-			if (oldPropVal)
+			if (this.currVal)
 				this.remove();
 
 			if (newPropVal)
 				this.add( newPropVal as DragSourcePropType);
 
+			this.currVal = newPropVal;
 			return true;
 		}
 	}
@@ -72,6 +74,9 @@ class DragSourceCustomElmPropHandler implements mim.ICustomAttributeHandler<Drag
 	// Eement node on which the property is defined.
 	private elmVN: mim.IElmVN;
 
+	// current attribute value
+	currVal: DragSourcePropType;
+
 	// Object that handles drag source opertions.
 	private dragSourceHandler: DragSourceHandler;
 }
@@ -85,15 +90,16 @@ class DragSourceCustomElmPropHandler implements mim.ICustomAttributeHandler<Drag
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 class DragTargetCustomElmPropHandler implements mim.ICustomAttributeHandler<DragTargetPropType>
 {
-	public initialize( elmVN: mim.IElmVN, propName: string, propVal: DragTargetPropType): void
+	constructor( elmVN: mim.IElmVN, propVal: DragTargetPropType)
 	{
 		this.elmVN = elmVN;
+		this.currVal = propVal;
 		this.add( propVal);
 	}
 
 
 
-	public terminate(): void
+	public terminate( isRemoval: boolean): void
 	{
 		this.remove();
 		this.elmVN = undefined;
@@ -101,18 +107,19 @@ class DragTargetCustomElmPropHandler implements mim.ICustomAttributeHandler<Drag
 
 
 
-	public update( oldPropVal: DragTargetPropType, newPropVal: DragTargetPropType): boolean
+	public update( newPropVal: DragTargetPropType): boolean
 	{
-		if (oldPropVal === newPropVal)
+		if (this.currVal === newPropVal)
 			return false;
 		else
 		{
-			if (oldPropVal)
+			if (this.currVal)
 				this.remove();
 
 			if (newPropVal)
 				this.add( newPropVal as DragTargetPropType);
 
+			this.currVal = newPropVal;
 			return true;
 		}
 	}
@@ -142,26 +149,11 @@ class DragTargetCustomElmPropHandler implements mim.ICustomAttributeHandler<Drag
 	// Eement node on which the property is defined.
 	private elmVN: mim.IElmVN;
 
+	// current attribute value
+	currVal: DragTargetPropType;
+
 	// Object that handles drag target opertions.
 	private dragTargetHandler: DragTargetHandler;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// The DragDropCustomElmPropFactory class is a factory for the dragSource and dragTarget custom
-// properties.
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////
-class DragDropCustomElmPropFactory implements mim.ICustomAttributeFactory<DragSourcePropType | DragTargetPropType>
-{
-	public createHandler( propName: string): mim.ICustomAttributeHandler<DragSourcePropType | DragTargetPropType>
-	{
-		return propName === "dragSource"
-			? new DragSourceCustomElmPropHandler()
-			: new DragTargetCustomElmPropHandler;
-	}
 }
 
 
@@ -169,6 +161,6 @@ class DragDropCustomElmPropFactory implements mim.ICustomAttributeFactory<DragSo
 // Register custom property factory for dragSource and dragTarget properties
 export function registerDragDropCustomAttributes()
 {
-	mim.registerCustomAttribute( "dragSource", new DragDropCustomElmPropFactory());
-	mim.registerCustomAttribute( "dragTarget", new DragDropCustomElmPropFactory());
+	mim.registerCustomAttribute( "dragSource", DragSourceCustomElmPropHandler);
+	mim.registerCustomAttribute( "dragTarget", DragTargetCustomElmPropHandler);
 }
