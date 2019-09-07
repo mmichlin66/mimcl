@@ -175,16 +175,12 @@ export class VTable extends mim.Component<VTableProps>
 
 
 
-	public componentDidMount(): void
-	{
-		// schedule the measuring functionality, which will determing whether we need to add/remove cells.
-		this.site.scheduleCall( this.measureAndUpdate, true);
-}
-
-
-
 	public render(): any
 	{
+		// during each rendering, we schedule the measuring functionality, which will determing whether we
+		// need to add/remove cells. The measuring function will run in the next tick after the render.
+		this.callMe( this.measureAndUpdate, true);
+
 		let frameStyle = { width:"100%", height: "100%", overflow:"auto" };
 		let wallStyle = {
 			width: `${this.wallWidth}px`,
