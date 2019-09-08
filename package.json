@@ -4,8 +4,8 @@
 	"description": "MiM Component Library",
 	"homepage": "https://mmichlin66.github.io/mimbl/mimclAbout.html",
 	"repository": "github:mmichlin66/mimcl",
-	"main": "./dist/mimclTypes.d.ts",
-	"module": "./dist/mimclTypes.d.ts",
+	"main": "./dist/mimcl.jts",
+	"module": "./dist/mimcl.js",
 	"types": "./dist/mimclTypes.d.ts",
 	"scripts": {
 		"buildDev": "buildDev.bat",
@@ -38,6 +38,7 @@
 	"files": [
 		"README.md",
 		"dist/mimcl.js",
+		"dist/mimcl.js.map",
 		"dist/mimclTypes.d.ts",
 		"dist/router/Router.d.ts",
 		"dist/popup/Popup.d.ts",
