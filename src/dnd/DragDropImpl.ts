@@ -50,7 +50,7 @@ class DragSourceCustomElmPropHandler implements mim.ICustomAttributeHandler<Drag
 
 	private add( propVal: DragSourcePropType): void
 	{
-		let elm = this.elmVN.Elm as HTMLElement;
+		let elm = this.elmVN.elm as HTMLElement;
 		this.dragSourceHandler = "ownerSVGElement" in elm
 					? new DragSourceEmulator( elm, propVal)
 					: new DragSourceHandler( elm, propVal);
@@ -128,7 +128,7 @@ class DragTargetCustomElmPropHandler implements mim.ICustomAttributeHandler<Drag
 
 	private add( propVal: DragTargetPropType): void
 	{
-		let elm = this.elmVN.Elm as HTMLElement;
+		let elm = this.elmVN.elm as HTMLElement;
 		this.dragTargetHandler = new DragTargetHandler( elm, propVal);
 		this.dragTargetHandler.init();
 	}
