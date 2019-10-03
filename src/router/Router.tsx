@@ -394,19 +394,19 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 
 
 
-	public componentWillMount()
+	public willMount()
 	{
-		this.site.publishService( "StdErrorHandling", this);
+		this.vn.publishService( "StdErrorHandling", this);
 
 		// publish ourselves as a router service
-		this.site.publishService( "Router", this);
+		this.vn.publishService( "Router", this);
 
 		// if instructed so, subscribe to a router service implemented by any of components
 		// up the chain
 		if (this.chainsToHigherRouter)
 		{
 			this.higherRouterService = new mim.Ref<IRouterService>();
-			this.site.subscribeService( "Router", this.higherRouterService, undefined, false);
+			this.vn.subscribeService( "Router", this.higherRouterService, undefined, false);
 		}
 
 		// find the first route to display
@@ -445,7 +445,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 
 
 
-	public componentWillUnmount()
+	public willUnmount()
 	{
 		if (this.controlsBrowser)
 		{
@@ -453,12 +453,12 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 		}
 		if (this.chainsToHigherRouter)
 		{
-			this.site.unsubscribeService( "Router");
+			this.vn.unsubscribeService( "Router");
 			this.higherRouterService = undefined;
 		}
 
-		this.site.unpublishService( "Router");
-		this.site.unpublishService( "StdErrorHandling");
+		this.vn.unpublishService( "Router");
+		this.vn.unpublishService( "StdErrorHandling");
 	}
 
 
@@ -625,7 +625,7 @@ export class Link extends mim.Component<LinkProps>
 	{
 		e.preventDefault();
 
-		let service: IRouterService = this.site.getService( "Router");
+		let service: IRouterService = this.vn.getService( "Router");
 		if (!service)
 			return;
 

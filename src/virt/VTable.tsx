@@ -146,7 +146,7 @@ export class VTable extends mim.Component<VTableProps>
 
 
 
-	public componentWillMount(): void
+	public willMount(): void
 	{
 		this.rows = [];
 
@@ -438,7 +438,7 @@ export class VTable extends mim.Component<VTableProps>
 
 	private onScroll = ( e: Event): void =>
 	{
-		this.site.scheduleCall( this.measureAndUpdate, true);
+		this.vn.scheduleCall( this.measureAndUpdate, true);
 
 		// setTimeout( this.measureAndUpdate, 0);
 	}
