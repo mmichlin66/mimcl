@@ -1,6 +1,5 @@
 import * as mimurl from "mimurl"
 import * as mim from "mimbl"
-// import {IHtmlAElementProps} from "../dist/core/HtmlTypes"
 
 
 
@@ -598,8 +597,8 @@ export interface LinkProps extends mim.IHtmlAElementProps
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// The Link class is a JSX component that allows creating links handled by a Router object. It is
-// implemented as a JSX component because its intended use is very similar to the <a> DOM
+// The Link class is a component that allows creating links handled by a Router object. It is
+// implemented as a managed component because its intended use is very similar to the <a> DOM
 // element.
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -621,7 +620,7 @@ export class Link extends mim.Component<LinkProps>
 
 
 
-	private onClick = ( e: MouseEvent): void =>
+	private onClick( e: MouseEvent): void
 	{
 		e.preventDefault();
 
@@ -634,10 +633,6 @@ export class Link extends mim.Component<LinkProps>
 		else
 			service.navigateByURL( this.props.routeURL, this.props.makeHistoryEntry);
 	};
-
-
-
-	private routerService = new mim.Ref<IRouterService>();
 }
 
 

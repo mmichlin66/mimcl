@@ -95,32 +95,8 @@ export class ScrollAxis
 		let optOverscanLast = Math.min( fitLast + this.optOverscan, totalLast);
 		let maxOverscanLast = Math.min( fitLast + this.maxOverscan, totalLast);
 
-		// these will be indices that we will actually need after comparing the new range
-		// with the old one
-		let newFirst: number;
-		let newLast: number;
-
-		if (minOverscanFirst < oldFirst)
-			newFirst = optOverscanFirst;
-		else if (minOverscanFirst > oldFirst && minOverscanFirst < oldLast)
-			newFirst = Math.max( maxOverscanFirst, oldFirst);
-		else if (maxOverscanFirst > oldLast)
-			newFirst = optOverscanFirst;
-		else if (oldLast - maxOverscanFirst > optOverscanFirst - oldLast)
-			newFirst = maxOverscanFirst;
-		else
-			newFirst = optOverscanFirst;
-
-		if (minOverscanLast > oldLast)
-			newLast = optOverscanLast;
-		else if (minOverscanLast < oldLast && minOverscanLast > oldFirst)
-			newLast = Math.min( maxOverscanLast, oldLast);
-		else if (maxOverscanLast < oldFirst)
-			newLast = optOverscanLast;
-		else if (maxOverscanLast - oldFirst > oldFirst - optOverscanLast)
-			newLast = maxOverscanLast;
-		else
-			newLast = optOverscanLast;
+		let newFirst = oldFirst > minOverscanFirst || oldFirst < maxOverscanFirst ? optOverscanFirst : oldFirst;
+		let newLast = oldLast < minOverscanLast || oldLast > maxOverscanLast ? optOverscanLast : oldLast;
 
 		if (newFirst > newLast)
 			console.error( `Wrong ScrollAxis calculation: newFirst '${newFirst}' is greater than newLast '${newLast}'`)
@@ -148,26 +124,14 @@ export class ScrollAxis
 		else
 		{
 			if (newFirst < oldFirst)
-			{
-				// need to add some items at the beginning
 				retAction.countToAddAtStart = oldFirst - newFirst;
-			}
 			else if (newFirst > oldFirst)
-			{
-				// need to remove some items at the beginning
 				retAction.countToRemoveAtStart = newFirst - oldFirst;
-			}
 
 			if (newLast < oldLast)
-			{
-				// need to remove some items at the end
 				retAction.countToRemoveAtEnd = oldLast - newLast;
-			}
 			else if (newLast > oldLast)
-			{
-				// need to add some items at the end
 				retAction.countToAddAtEnd = newLast - oldLast;
-			}
 		}
 
 		return retAction;

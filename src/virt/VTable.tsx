@@ -34,6 +34,12 @@ export interface VTableProps
 	/** Number of columns in the entire dataset */
 	totalColCount: number;
 
+	/** Minimal, optimal and maximum number of overscan rows */
+	rowOverscan?: [number, number, number];
+
+	/** Minimal, optimal and maximum number of overscan columns */
+	colOverscan?: [number, number, number];
+
 	/**
 	 * Callback through which VTable requests cell data. 
 	 */
@@ -67,12 +73,12 @@ export interface VTableProps
 export class VTable extends mim.Component<VTableProps>
 {
 	// Overscan variables with default values
-	private minRowOverscan = 3;
-	private optRowOverscan = 5;
-	private maxRowOverscan = 10;
-	private minColOverscan = 3;
-	private optColOverscan = 5;
-	private maxColOverscan = 10;
+	private minRowOverscan: number;
+	private optRowOverscan: number;
+	private maxRowOverscan: number;
+	private minColOverscan: number;
+	private optColOverscan: number;
+	private maxColOverscan: number;
 
 	// Current dataset represented by row components.
 	private rows: VRow[];
@@ -142,6 +148,14 @@ export class VTable extends mim.Component<VTableProps>
 		// changed as soon as we render and start measuring our elements
 		this.wallHeight = this.props.totalRowCount * 25;
 		this.wallWidth = this.props.totalColCount * 80;
+
+		this.minRowOverscan = this.props.rowOverscan ? this.props.rowOverscan[0] : 3;
+		this.optRowOverscan = this.props.rowOverscan ? this.props.rowOverscan[1] : 6;
+		this.maxRowOverscan = this.props.rowOverscan ? this.props.rowOverscan[2] : 12;
+
+		this.minColOverscan = this.props.colOverscan ? this.props.colOverscan[0] : 3;
+		this.optColOverscan = this.props.colOverscan ? this.props.colOverscan[1] : 6;
+		this.maxColOverscan = this.props.colOverscan ? this.props.colOverscan[2] : 12;
 	}
 
 
@@ -177,14 +191,15 @@ export class VTable extends mim.Component<VTableProps>
 
 	public render(): any
 	{
-		// during each rendering, we schedule the measuring functionality, which will determing whether we
-		// need to add/remove cells. The measuring function will run in the next tick after the render.
+		// during each rendering, we schedule the measuring functionality, which will determing
+		// whether we need to add/remove cells. The measuring function will run in the next tick
+		// after the render and will schedule update in the same tick if necessary.
 		this.callMe( this.measureAndUpdate, true);
 
 		let frameStyle = { width:"100%", height: "100%", overflow:"auto" };
 		let wallStyle = {
-			width: `${this.wallWidth}px`,
-			height: `${this.wallHeight}px`,
+			// width: `${this.wallWidth}px`,
+			// height: `${this.wallHeight}px`,
 			overflow:"none",
 			position: "relative"
 		};
@@ -194,8 +209,8 @@ export class VTable extends mim.Component<VTableProps>
 			border: "1px solid black"
 		};
 
-		return <div ref={this.frameRef} style={frameStyle} scroll={this.onScroll}>
-			<div ref={this.wallRef} style={wallStyle}>
+		return <div id="frame" ref={this.frameRef} style={frameStyle} scroll={this.onScroll}>
+			<div id="wall" ref={this.wallRef} style={wallStyle}>
 				<table ref={this.tableRef} style={tableStyle}>
 					{this.rows}
 				</table>
@@ -436,11 +451,9 @@ export class VTable extends mim.Component<VTableProps>
 
 
 
-	private onScroll = ( e: Event): void =>
+	private onScroll( e: Event): void
 	{
 		this.vn.scheduleCall( this.measureAndUpdate, true);
-
-		// setTimeout( this.measureAndUpdate, 0);
 	}
 }
 
