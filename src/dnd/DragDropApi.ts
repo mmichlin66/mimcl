@@ -211,7 +211,7 @@ export type DragTargetPropType = IDragTarget | ISimpleDragTarget;
 
 
 
-declare module "mimbl/dist/core/mim"
+declare module "mimbl/lib/api/mim"
 {
 	interface IElementProps<TRef,TChildren>
 	{

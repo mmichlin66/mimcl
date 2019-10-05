@@ -1,12 +1,12 @@
 {
 	"name": "mimcl",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"description": "MiM Component Library",
 	"homepage": "https://mmichlin66.github.io/mimbl/mimclAbout.html",
 	"repository": "github:mmichlin66/mimcl",
-	"main": "./dist/mimcl.jts",
-	"module": "./dist/mimcl.js",
-	"types": "./dist/mimclTypes.d.ts",
+	"main": "./lib/mimcl.jts",
+	"module": "./lib/mimcl.js",
+	"types": "./lib/mimclTypes.d.ts",
 	"scripts": {
 		"buildDev": "buildDev.bat",
 		"buildProd": "buildProd.bat",
@@ -37,18 +37,18 @@
 	},
 	"files": [
 		"README.md",
-		"dist/mimcl.js",
-		"dist/mimcl.js.map",
-		"dist/mimclTypes.d.ts",
-		"dist/router/Router.d.ts",
-		"dist/popup/Popup.d.ts",
-		"dist/popup/Dialog.d.ts",
-		"dist/popup/MsgBox.d.ts",
-		"dist/tree/TreeApi.d.ts",
-		"dist/virt/VTable.d.ts"
+		"lib/mimcl.js",
+		"lib/mimcl.js.map",
+		"lib/mimclTypes.d.ts",
+		"lib/router/Router.d.ts",
+		"lib/popup/Popup.d.ts",
+		"lib/popup/Dialog.d.ts",
+		"lib/popup/MsgBox.d.ts",
+		"lib/tree/TreeApi.d.ts",
+		"lib/virt/VTable.d.ts"
 	],
 	"dependencies": {
-		"mimbl": "^0.1.11",
+		"mimbl": "^0.1.12",
 		"mimurl": "^0.1.2"
 	}
 }

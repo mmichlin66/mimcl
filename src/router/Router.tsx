@@ -3,7 +3,7 @@ import * as mim from "mimbl"
 
 
 
-declare module "mimbl/dist/core/mim"
+declare module "mimbl/lib/api/mim"
 {
     export interface IServiceDefinitions
 	{

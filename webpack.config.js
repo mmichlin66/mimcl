@@ -26,7 +26,7 @@ module.exports =
     output:
     {
         filename: outputFilename,
-        path: __dirname + "/dist",
+        path: __dirname + "/lib",
 		library: "mimcl",
 		libraryTarget: 'umd',
 		globalObject: 'this'

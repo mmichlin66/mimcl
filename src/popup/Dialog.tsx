@@ -68,7 +68,7 @@ export class Dialog extends Popup
 	{
 		this.captionAreaProxy = new mim.FuncProxy( () =>
 		{
-			let captionAreaSlice: mim.Slice = mim.Slices.MergeSlices( Dialog.DefaultCaptionAreaSlice, this.getCaptionAreaSlice());
+			let captionAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultCaptionAreaSlice, this.getCaptionAreaSlice());
 			return <div id="dlgCaption" mousedown={this.onStartMove} style={captionAreaSlice.style}
 							class={captionAreaSlice.className} {...captionAreaSlice.props}>
 				{captionAreaSlice.content}
@@ -77,7 +77,7 @@ export class Dialog extends Popup
 
 		this.mainAreaProxy = new mim.FuncProxy( () =>
 		{
-			let mainAreaSlice: mim.Slice = mim.Slices.MergeSlices( Dialog.DefaultMainAreaSlice, this.getMainAreaSlice());
+			let mainAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultMainAreaSlice, this.getMainAreaSlice());
 			return <div id="dlgMainContent" style={mainAreaSlice.style} class={mainAreaSlice.className} {...mainAreaSlice.props}>
 				{mainAreaSlice.content}
 			</div>
@@ -85,12 +85,12 @@ export class Dialog extends Popup
 
 		this.buttonAreaProxy = new mim.FuncProxy( () =>
 		{
-			let buttonAreaSlice: mim.Slice = mim.Slices.MergeSlices( Dialog.DefaultButtonAreaSlice, this.getButtonAreaSlice());
+			let buttonAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultButtonAreaSlice, this.getButtonAreaSlice());
 			return <div id="dlgButtons" style={buttonAreaSlice.style} class={buttonAreaSlice.className} {...buttonAreaSlice.props}>
 				{buttonAreaSlice.content}
 				{this.buttonInfos.map( (info) =>
 					{
-						let btnSlice: mim.Slice = mim.Slices.MergeSlices( Dialog.DefaultButtonSlice, info.slice);
+						let btnSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultButtonSlice, info.slice);
 						return <button key={info.key} click={info.callback && (() => info.callback(info.key))}
 								style={btnSlice.style} class={btnSlice.className} {...btnSlice.props}>
 							{btnSlice.content}

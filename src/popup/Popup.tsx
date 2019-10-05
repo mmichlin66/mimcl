@@ -189,7 +189,7 @@ export class Popup extends mim.Component
 			style.marginBottom = "0";
 		}
 
-		this.currDlgSlice = mim.Slices.MergeSlices( Popup.DefaultDlgSlice, this.getDlgSlice(), {style});
+		this.currDlgSlice = mim.mergeSlices( Popup.DefaultDlgSlice, this.getDlgSlice(), {style});
 
 		// create a <div> element and append it to the end of <body>. Then render our component's
 		// content under it.
