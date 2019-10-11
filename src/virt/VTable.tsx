@@ -43,7 +43,7 @@ export interface VTableProps
 	/**
 	 * Callback through which VTable requests cell data. 
 	 */
-	getCellCallback: (row: number, col: number) => any;
+	getCellCallback?: (row: number, col: number) => any;
 }
 
 
@@ -67,11 +67,16 @@ export interface VTableProps
  * VTable uses minimum, optimal and maximum overscan number of rows and columns on all sides of
  * the frame and makes sure that the actual number of rows/columns is within these minimum and
  * maximum values. During scrolling, if the actual overscan number becomes less than the minimum,
- * new cells are added and if it becomes more then the maximum cells are deleted so that the
- * actual overscan number is equal to the average value.
+ * new cells are added and if it becomes more then the maximum cells are deleted.
  */
 export class VTable extends mim.Component<VTableProps>
 {
+	// Number of rows in the entire dataset
+	totalRowCount: number;
+
+	// Number of columns in the entire dataset
+	totalColCount: number;
+
 	// Overscan variables with default values
 	private minRowOverscan: number;
 	private optRowOverscan: number;
@@ -131,6 +136,10 @@ export class VTable extends mim.Component<VTableProps>
 	private vAxis: ScrollAxis;
 	private hAxis: ScrollAxis;
 
+	// FuncProxy wrapper around the renderRows method, which is updated as a separate component
+	// whenever rows or columns are added or removed.
+	private renderRowsProxy: mim.FuncProxy;
+
 
 
 	constructor( props: VTableProps)
@@ -156,6 +165,8 @@ export class VTable extends mim.Component<VTableProps>
 		this.minColOverscan = this.props.colOverscan ? this.props.colOverscan[0] : 3;
 		this.optColOverscan = this.props.colOverscan ? this.props.colOverscan[1] : 6;
 		this.maxColOverscan = this.props.colOverscan ? this.props.colOverscan[2] : 12;
+
+		this.renderRowsProxy = new mim.FuncProxy( this.renderRows);
 	}
 
 
@@ -171,7 +182,7 @@ export class VTable extends mim.Component<VTableProps>
 		{
 			let vrow = new VRow();
 			for( let j = 0; j < colCount; j++)
-				vrow.addCell( this.props.getCellCallback( i, j));
+				vrow.addCell( this.getCellData( i, j));
 
 			// add the new row at the start
 			this.rows.push( vrow);
@@ -212,10 +223,31 @@ export class VTable extends mim.Component<VTableProps>
 		return <div id="frame" ref={this.frameRef} style={frameStyle} scroll={this.onScroll}>
 			<div id="wall" ref={this.wallRef} style={wallStyle}>
 				<table ref={this.tableRef} style={tableStyle}>
-					{this.rows}
+					{this.renderRowsProxy}
 				</table>
 			</div>
 		</div>
+	}
+
+
+
+	/**
+	 * Requests data for the given cell. This method can be overridden by derived classes
+	 */
+	protected getCellData(row: number, col: number)
+	{
+		return this.props.getCellCallback ? this.props.getCellCallback( row, col) : undefined;
+	}
+
+
+
+	/**
+	 * Renders the rows. This method is wrapped with the FuncProxy component, so that when rows
+	 * or columns should be added/deleted only this part of the VTable coponent is re-rendered.
+	 */
+	private renderRows = (): any =>
+	{
+		return this.rows;
 	}
 
 
@@ -312,7 +344,7 @@ export class VTable extends mim.Component<VTableProps>
 			{
 				let vrow = new VRow();
 				for( let j = this.firstCol; j <= this.lastCol; j++)
-					vrow.addCell( this.props.getCellCallback( i, j));
+					vrow.addCell( this.getCellData( i, j));
 	
 				// add the new row at the end
 				this.rows.push( vrow);
@@ -348,7 +380,7 @@ export class VTable extends mim.Component<VTableProps>
 				{
 					let vrow = new VRow();
 					for( let j = this.firstCol; j <= this.lastCol; j++)
-						vrow.addCell( this.props.getCellCallback( i, j));
+						vrow.addCell( this.getCellData( i, j));
 		
 					// add the new row at the start
 					this.rows.push( vrow);
@@ -365,7 +397,7 @@ export class VTable extends mim.Component<VTableProps>
 				{
 					let vrow = new VRow();
 					for( let j = this.firstCol; j <= this.lastCol; j++)
-						vrow.addCell( this.props.getCellCallback( i, j));
+						vrow.addCell( this.getCellData( i, j));
 		
 					// add the new row at the start
 					this.rows.splice( 0, 0, vrow);
@@ -380,7 +412,7 @@ export class VTable extends mim.Component<VTableProps>
 		this.firstRow = axisAction.newFirst;
 		this.lastRow = axisAction.newLast;
 
-		this.updateMe();
+		this.renderRowsProxy.update();
 	}
 
 
@@ -400,9 +432,7 @@ export class VTable extends mim.Component<VTableProps>
 				let vrow = this.rows[i - this.firstRow];
 				vrow.removeAllCells();
 				for( let j = axisAction.newFirst; j <= axisAction.newLast; j++)
-					vrow.addCell( this.props.getCellCallback( i, j));
-
-				vrow.requestUpdate();
+					vrow.addCell( this.getCellData( i, j));
 			}
 
 			/// #if DEBUG
@@ -415,10 +445,7 @@ export class VTable extends mim.Component<VTableProps>
 			if (axisAction.countToRemoveAtEnd > 0)
 			{
 				for( let vrow of this.rows)
-				{
 					vrow.removeCellsAtEnd( axisAction.countToRemoveAtEnd);
-					vrow.requestUpdate();
-				}
 
 				/// #if DEBUG
 					console.log( `Removed ${axisAction.countToRemoveAtEnd} cols from right`);
@@ -428,10 +455,7 @@ export class VTable extends mim.Component<VTableProps>
 			if (axisAction.countToRemoveAtStart > 0)
 			{
 				for( let vrow of this.rows)
-				{
 					vrow.removeCellsAtStart( axisAction.countToRemoveAtStart);
-					vrow.requestUpdate();
-				}
 
 				/// #if DEBUG
 					console.log( `Removed ${axisAction.countToRemoveAtStart} cols from left`);
@@ -444,9 +468,7 @@ export class VTable extends mim.Component<VTableProps>
 				{
 					let vrow = this.rows[i - this.firstRow];
 					for( let j = this.lastCol + 1; j <= axisAction.newLast; j++)
-						vrow.addCell( this.props.getCellCallback( i, j));
-		
-					vrow.requestUpdate();
+						vrow.addCell( this.getCellData( i, j));
 				}
 
 				/// #if DEBUG
@@ -460,9 +482,7 @@ export class VTable extends mim.Component<VTableProps>
 				{
 					let vrow = this.rows[i - this.firstRow];
 					for( let j = this.firstCol - 1; j >= axisAction.newFirst; j--)
-						vrow.insertCell( this.props.getCellCallback( i, j));
-		
-					vrow.requestUpdate();
+						vrow.insertCell( this.getCellData( i, j));
 				}
 
 				/// #if DEBUG
@@ -499,30 +519,30 @@ class VRow extends mim.Component
 	public addCell( data: any): void
 	{
 		this.cells.push( new VCell( data));
+		this.updateMe();
 	}
 
 	public insertCell( data: any): void
 	{
 		this.cells.splice( 0, 0, new VCell( data));
+		this.updateMe();
 	}
 
 	public removeAllCells(): void
 	{
 		this.cells = [];
+		this.updateMe();
 	}
 
 	public removeCellsAtStart( count: number): void
 	{
 		this.cells.splice( 0, count);
+		this.updateMe();
 	}
 
 	public removeCellsAtEnd( count: number): void
 	{
 		this.cells.splice( this.cells.length - count, count);
-	}
-
-	public requestUpdate(): void
-	{
 		this.updateMe();
 	}
 
