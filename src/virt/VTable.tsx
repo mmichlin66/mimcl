@@ -303,7 +303,10 @@ export class VTable extends mim.Component<VTableProps>
 		if (axisAction.neeedToRemoveAllItems)
 		{
 			this.rows = [];
-			console.log( `Removed all ${this.rowCount} existing rows`);
+
+			/// #if DEBUG
+				console.log( `Removed all ${this.rowCount} existing rows`);
+			/// #endif
 
 			for( let i = axisAction.newFirst; i <= axisAction.newLast; i++)
 			{
@@ -315,20 +318,28 @@ export class VTable extends mim.Component<VTableProps>
 				this.rows.push( vrow);
 			}
 
-			console.log( `Add ${axisAction.newLast - axisAction.newFirst + 1} rows`);
+			/// #if DEBUG
+				console.log( `Add ${axisAction.newLast - axisAction.newFirst + 1} rows`);
+			/// #endif
 		}
 		else
 		{
 			if (axisAction.countToRemoveAtEnd > 0)
 			{
 				this.rows.splice( this.rowCount - axisAction.countToRemoveAtEnd, axisAction.countToRemoveAtEnd);
-				console.log( `Removed ${axisAction.countToRemoveAtEnd} rows from bottom`);
+
+				/// #if DEBUG
+					console.log( `Removed ${axisAction.countToRemoveAtEnd} rows from bottom`);
+				/// #endif
 			}
 
 			if (axisAction.countToRemoveAtStart > 0)
 			{
 				this.rows.splice( 0, axisAction.countToRemoveAtStart);
-				console.log( `Removed ${axisAction.countToRemoveAtStart} rows from top`);
+
+				/// #if DEBUG
+					console.log( `Removed ${axisAction.countToRemoveAtStart} rows from top`);
+				/// #endif
 			}
 
 			if (axisAction.countToAddAtEnd > 0)
@@ -343,7 +354,9 @@ export class VTable extends mim.Component<VTableProps>
 					this.rows.push( vrow);
 				}
 
-				console.log( `Add ${axisAction.countToAddAtEnd} rows to bottom`);
+				/// #if DEBUG
+					console.log( `Add ${axisAction.countToAddAtEnd} rows to bottom`);
+				/// #endif
 			}
 
 			if (axisAction.countToAddAtStart > 0)
@@ -358,7 +371,9 @@ export class VTable extends mim.Component<VTableProps>
 					this.rows.splice( 0, 0, vrow);
 				}
 
-				console.log( `Add ${axisAction.countToAddAtStart} rows to top`);
+				/// #if DEBUG
+					console.log( `Add ${axisAction.countToAddAtStart} rows to top`);
+				/// #endif
 			}
 		}
 
@@ -390,8 +405,10 @@ export class VTable extends mim.Component<VTableProps>
 				vrow.requestUpdate();
 			}
 
-			console.log( `Removed all ${this.colCount} existing cols`);
-			console.log( `Add ${axisAction.newLast - axisAction.newFirst + 1} cols`);
+			/// #if DEBUG
+				console.log( `Removed all ${this.colCount} existing cols`);
+				console.log( `Add ${axisAction.newLast - axisAction.newFirst + 1} cols`);
+			/// #endif
 		}
 		else
 		{
@@ -403,7 +420,9 @@ export class VTable extends mim.Component<VTableProps>
 					vrow.requestUpdate();
 				}
 
-				console.log( `Removed ${axisAction.countToRemoveAtEnd} cols from right`);
+				/// #if DEBUG
+					console.log( `Removed ${axisAction.countToRemoveAtEnd} cols from right`);
+				/// #endif
 			}
 
 			if (axisAction.countToRemoveAtStart > 0)
@@ -413,7 +432,10 @@ export class VTable extends mim.Component<VTableProps>
 					vrow.removeCellsAtStart( axisAction.countToRemoveAtStart);
 					vrow.requestUpdate();
 				}
-				console.log( `Removed ${axisAction.countToRemoveAtStart} cols from left`);
+
+				/// #if DEBUG
+					console.log( `Removed ${axisAction.countToRemoveAtStart} cols from left`);
+				/// #endif
 			}
 
 			if (axisAction.countToAddAtEnd > 0)
@@ -427,7 +449,9 @@ export class VTable extends mim.Component<VTableProps>
 					vrow.requestUpdate();
 				}
 
-				console.log( `Add ${axisAction.countToAddAtEnd} cols to right`);
+				/// #if DEBUG
+					console.log( `Add ${axisAction.countToAddAtEnd} cols to right`);
+				/// #endif
 			}
 
 			if (axisAction.countToAddAtStart > 0)
@@ -441,7 +465,9 @@ export class VTable extends mim.Component<VTableProps>
 					vrow.requestUpdate();
 				}
 
-				console.log( `Add ${axisAction.countToAddAtStart} cols to left`);
+				/// #if DEBUG
+					console.log( `Add ${axisAction.countToAddAtStart} cols to left`);
+				/// #endif
 			}
 		}
 
