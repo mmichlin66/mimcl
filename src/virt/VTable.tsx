@@ -18,14 +18,20 @@ export interface VTableCellData
 	/** Number of columns this cell should span. The default value is 1. */
 	colSpan?: number;
 
-	/** Style that should be applied to the `<td>` element containing the cell. */
+	/** Style that should be applied to the `<td>` or `<th>` element containing the cell. */
 	style?: mim.StylePropType;
 
-	/** Class that should be applied to the `<td>` element containing the cell. */
+	/** Class that should be applied to the `<td>` or `<th>` element containing the cell. */
 	class?: string;
 }
 
 
+
+/**
+ * The VTableProps class defines the structure of the object that should be passed to the VTable
+ * constructor. The properties of the object define the properties that can be specified for VTable
+ * in JSX when it is used as a managed coponent.
+ */
 export interface VTableProps
 {
 	/** Number of rows in the entire dataset */
@@ -40,11 +46,34 @@ export interface VTableProps
 	/** Minimal, optimal and maximum number of overscan columns */
 	colOverscan?: [number, number, number];
 
-	/**
-	 * Callback through which VTable requests cell data. 
-	 */
+	/** Callback through which VTable requests cell data. */
 	getCellCallback?: (row: number, col: number) => any;
+
+	/** Number of header rows. Default value is 0. */
+	colHeaderCellCount?: number;
+
+	/** Callback through which VTable requests data for column header cells. */
+	getColHeaderCellCallback?: (row: number, col: number) => any;
+
+	/** Number of footer rows. Default value is 0. */
+	colFooterCellCount?: number;
+
+	/** Callback through which VTable requests data for column footer cells. */
+	getColFooterCellCallback?: (row: number, col: number) => any;
+
+	/** Number of cells in the row header. Default value is 0. */
+	rowHeaderCellCount?: number;
+
+	/** Callback through which VTable requests data for row header cells. */
+	getRowHeaderCellCallback?: (row: number, col: number) => any;
+
+	/** Number of cells in the row footer. Default value is 0. */
+	rowFooterCellCount?: number;
+
+	/** Callback through which VTable requests data for row footer cells. */
+	getRowFooterCellCallback?: (row: number, col: number) => any;
 }
+
 
 
 /**
@@ -69,79 +98,8 @@ export interface VTableProps
  * maximum values. During scrolling, if the actual overscan number becomes less than the minimum,
  * new cells are added and if it becomes more then the maximum cells are deleted.
  */
-export class VTable extends mim.Component<VTableProps>
+export class VTable extends mim.ComponentWithLocalStyles<VTableProps>
 {
-	// Number of rows in the entire dataset
-	totalRowCount: number;
-
-	// Number of columns in the entire dataset
-	totalColCount: number;
-
-	// Overscan variables with default values
-	private minRowOverscan: number;
-	private optRowOverscan: number;
-	private maxRowOverscan: number;
-	private minColOverscan: number;
-	private optColOverscan: number;
-	private maxColOverscan: number;
-
-	// Current dataset represented by row components.
-	private rows: VRow[];
-
-	// Index of the first row in the current dataset or 0 if the dataset is empty
-	private firstRow: number;
-
-	// Index of the last row in the dataset or -1 if the dataset is empty
-	private lastRow: number;
-
-	// Index of the first column in the current dataset or 0 if the dataset is empty
-	private firstCol: number;
-
-	// Index of the last column in the current dataset or -1 if the dataset is empty
-	private lastCol: number;
-
-	// Counts of rows and columns
-	private get rowCount(): number { return this.lastRow - this.firstRow + 1 }
-	private get colCount(): number { return this.lastCol - this.firstCol + 1 }
-
-	public get Rows(): string { return `${this.firstRow} - ${this.lastRow}`; }
-	public get Cols(): string { return `${this.firstCol} - ${this.lastCol}`; }
-
-	// Size of the entire table based on average row height and column width. This becomes the
-	// size of the wall.
-	private wallHeight: number;
-	private wallWidth: number;
-
-	// Latest calculated average row height and column width
-	private avgRowHeight: number;
-	private avgColWidth: number;
-
-	// Latest scrolling positions
-	private latestScrollTop: number;
-	private latestScrollLeft: number;
-
-	// Reference to the frame that has the scollbars
-	private frame: HTMLDivElement;
-	private frameRef = (r: HTMLDivElement) => this.frame = r;
-
-	// Reference to the wall that is big enough to hold entire dataset
-	private wall: HTMLDivElement;
-	private wallRef = (r: HTMLDivElement) => this.wall = r;
-
-	// Reference to the table that displays the partial dataset
-	private table: HTMLTableElement;
-	private tableRef = (r: HTMLTableElement) => this.table = r;
-
-	// Objects that deal with vertical and horizontal scrolling
-	private vAxis: ScrollAxis;
-	private hAxis: ScrollAxis;
-
-	// FuncProxy wrapper around the renderRows method, which is updated as a separate component
-	// whenever rows or columns are added or removed.
-	private renderRowsProxy: mim.FuncProxy;
-
-
-
 	constructor( props: VTableProps)
 	{
 		super( props);
@@ -166,7 +124,9 @@ export class VTable extends mim.Component<VTableProps>
 		this.optColOverscan = this.props.colOverscan ? this.props.colOverscan[1] : 6;
 		this.maxColOverscan = this.props.colOverscan ? this.props.colOverscan[2] : 12;
 
-		this.renderRowsProxy = new mim.FuncProxy( this.renderRows);
+		this.renderRowsProxy = new mim.FuncProxy( () => this.rows);
+
+		this.prepareLocalStyles();
 	}
 
 
@@ -200,6 +160,37 @@ export class VTable extends mim.Component<VTableProps>
 
 
 
+	private prepareLocalStyles()
+	{
+		this.frameID = this.decorateName( "frame");
+		this.createStyleRule( "frame", "#frame(*)",
+			{
+				width:"100%",
+				height: "100%",
+				overflow:"auto",
+			}
+		);
+
+		this.wallID = this.decorateName( "wall");
+		this.createStyleRule( "wall", "#wall(*)",
+			{
+				position: "relative",
+				overflow:"none",
+			}
+		);
+
+		this.tableID = this.decorateName( "table");
+		this.createStyleRule( "table", "#table(*)",
+			{
+				position: "absolute",
+				borderCollapse: "collapse",
+				border: "1px solid black",
+			}
+		);
+	}
+
+
+
 	public render(): any
 	{
 		// during each rendering, we schedule the measuring functionality, which will determing
@@ -207,23 +198,10 @@ export class VTable extends mim.Component<VTableProps>
 		// after the render and will schedule update in the same tick if necessary.
 		this.callMeBeforeUpdate( this.measureAndUpdate);
 
-		let frameStyle = { width:"100%", height: "100%", overflow:"auto" };
-		let wallStyle = {
-			// width: `${this.wallWidth}px`,
-			// height: `${this.wallHeight}px`,
-			overflow:"none",
-			position: "relative"
-		};
-		let tableStyle = {
-			position: "absolute",
-			borderCollapse: "collapse",
-			border: "1px solid black"
-		};
-
-		return <div id="frame" ref={this.frameRef} style={frameStyle} scroll={this.onScroll}>
-			<div id="wall" ref={this.wallRef} style={wallStyle}>
-				<table ref={this.tableRef} style={tableStyle}>
-					{this.renderRowsProxy}
+		return <div id={this.frameID} ref={this.frameRef} scroll={this.onScroll}>
+			<div id={this.wallID} ref={this.wallRef}>
+				<table id={this.tableID} ref={this.tableRef}>
+					<tbody>{this.renderRowsProxy}</tbody>
 				</table>
 			</div>
 		</div>
@@ -242,12 +220,45 @@ export class VTable extends mim.Component<VTableProps>
 
 
 	/**
-	 * Renders the rows. This method is wrapped with the FuncProxy component, so that when rows
-	 * or columns should be added/deleted only this part of the VTable coponent is re-rendered.
+	 * Requests data for the given cell, which is part of the column header. This method can be
+	 * overridden by derived classes.
 	 */
-	private renderRows = (): any =>
+	protected getColHeaderCellData(row: number, col: number)
 	{
-		return this.rows;
+		return this.props.getColHeaderCellCallback ? this.props.getColHeaderCellCallback( row, col) : undefined;
+	}
+
+
+
+	/**
+	 * Requests data for the given cell, which is part of the column footer. This method can be
+	 * overridden by derived classes.
+	 */
+	protected getColFooterCellData(row: number, col: number)
+	{
+		return this.props.getColFooterCellCallback ? this.props.getColFooterCellCallback( row, col) : undefined;
+	}
+
+
+
+	/**
+	 * Requests data for the given cell, which is part of the row header. This method can be
+	 * overridden by derived classes.
+	 */
+	protected getRowHeaderCellData(row: number, col: number)
+	{
+		return this.props.getRowHeaderCellCallback ? this.props.getRowHeaderCellCallback( row, col) : undefined;
+	}
+
+
+
+	/**
+	 * Requests data for the given cell, which is part of the row footer. This method can be
+	 * overridden by derived classes.
+	 */
+	protected getRowFooterCellData(row: number, col: number)
+	{
+		return this.props.getRowFooterCellCallback ? this.props.getRowFooterCellCallback( row, col) : undefined;
 	}
 
 
@@ -501,6 +512,76 @@ export class VTable extends mim.Component<VTableProps>
 	{
 		this.callMeBeforeUpdate( this.measureAndUpdate);
 	}
+
+
+
+	// Overscan variables with default values
+	private minRowOverscan: number;
+	private optRowOverscan: number;
+	private maxRowOverscan: number;
+	private minColOverscan: number;
+	private optColOverscan: number;
+	private maxColOverscan: number;
+
+	// Current dataset represented by row components.
+	private rows: VRow[];
+
+	// Index of the first row in the current dataset or 0 if the dataset is empty
+	private firstRow: number;
+
+	// Index of the last row in the dataset or -1 if the dataset is empty
+	private lastRow: number;
+
+	// Index of the first column in the current dataset or 0 if the dataset is empty
+	private firstCol: number;
+
+	// Index of the last column in the current dataset or -1 if the dataset is empty
+	private lastCol: number;
+
+	// Counts of rows and columns
+	private get rowCount(): number { return this.lastRow - this.firstRow + 1 }
+	private get colCount(): number { return this.lastCol - this.firstCol + 1 }
+
+	public get Rows(): string { return `${this.firstRow} - ${this.lastRow}`; }
+	public get Cols(): string { return `${this.firstCol} - ${this.lastCol}`; }
+
+	// Size of the entire table based on average row height and column width. This becomes the
+	// size of the wall.
+	private wallHeight: number;
+	private wallWidth: number;
+
+	// Latest calculated average row height and column width
+	private avgRowHeight: number;
+	private avgColWidth: number;
+
+	// Latest scrolling positions
+	private latestScrollTop: number;
+	private latestScrollLeft: number;
+
+	// Reference to the frame that has the scollbars
+	private frame: HTMLDivElement;
+	private frameRef = (r: HTMLDivElement) => this.frame = r;
+
+	// Reference to the wall that is big enough to hold entire dataset
+	private wall: HTMLDivElement;
+	private wallRef = (r: HTMLDivElement) => this.wall = r;
+
+	// Reference to the table that displays the partial dataset
+	private table: HTMLTableElement;
+	private tableRef = (r: HTMLTableElement) => this.table = r;
+
+	// Objects that deal with vertical and horizontal scrolling
+	private vAxis: ScrollAxis;
+	private hAxis: ScrollAxis;
+
+	// FuncProxy wrapper around the renderRows method, which is updated as a separate component
+	// whenever rows or columns are added or removed.
+	private renderRowsProxy: mim.FuncProxy;
+
+	// IDs of virtual table parts
+	private frameID: string;
+	private wallID: string;
+	private tableID: string;
 }
 
 
@@ -561,7 +642,9 @@ class VCell extends mim.Component
 	constructor( data: any)
 	{
 		super();
-		if (typeof data === "object" && "content" in data)
+		if (data === undefined)
+			this.data = undefined;
+		else if (typeof data === "object" && data.content)
 			this.data = data;
 		else
 			this.data = { content: data };
@@ -569,11 +652,16 @@ class VCell extends mim.Component
 
 	public render(): any
 	{
-		return <td class={this.data.class} style={this.data.style}
-					rowspan={this.data.rowSpan ? this.data.rowSpan : undefined}
-					colspan={this.data.colSpan ? this.data.colSpan : undefined}>
-			{this.data.content}
-		</td>
+		if (this.data === undefined)
+			return undefined;
+		else
+		{
+			return <td class={this.data.class} style={this.data.style}
+						rowspan={this.data.rowSpan ? this.data.rowSpan : undefined}
+						colspan={this.data.colSpan ? this.data.colSpan : undefined}>
+				{this.data.content}
+			</td>
+		}
 	}
 }
 
