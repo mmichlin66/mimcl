@@ -428,7 +428,7 @@ export class VTable extends mim.ComponentWithLocalStyles<VTableProps>
 		this.firstRow = axisAction.newFirst;
 		this.lastRow = axisAction.newLast;
 
-		mim.FuncProxy.update( this.renderRows);
+		this.updateMe( this.renderRows);
 	}
 
 

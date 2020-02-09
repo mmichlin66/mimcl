@@ -46,7 +46,7 @@ export class Dialog extends Popup
 		else
 			this.buttonInfos.splice( index - 1, 0, info);
 
-		mim.FuncProxy.update(this.renderButtonArea);
+		this.updateMe( this.renderButtonArea);
 	}
 
 
@@ -56,7 +56,7 @@ export class Dialog extends Popup
 	{
 		this.buttonInfos.splice( index, 1);
 
-		mim.FuncProxy.update(this.renderButtonArea);
+		this.updateMe( this.renderButtonArea);
 	}
 
 
