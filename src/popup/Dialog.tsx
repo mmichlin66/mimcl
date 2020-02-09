@@ -46,8 +46,7 @@ export class Dialog extends Popup
 		else
 			this.buttonInfos.splice( index - 1, 0, info);
 
-		if (this.buttonAreaProxy)
-			this.buttonAreaProxy.update();
+		mim.FuncProxy.update(this.renderButtonArea);
 	}
 
 
@@ -57,54 +56,53 @@ export class Dialog extends Popup
 	{
 		this.buttonInfos.splice( index, 1);
 
-		if (this.buttonAreaProxy)
-			this.buttonAreaProxy.update();
+		mim.FuncProxy.update(this.renderButtonArea);
 	}
 
 
 
+	private renderCaptionArea()
+	{
+		let captionAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultCaptionAreaSlice, this.getCaptionAreaSlice());
+		return <div id="dlgCaption" mousedown={this.onStartMove} style={captionAreaSlice.style}
+						class={captionAreaSlice.className} {...captionAreaSlice.props}>
+			{captionAreaSlice.content}
+		</div>
+	}
+
+	private renderMainArea()
+	{
+		let mainAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultMainAreaSlice, this.getMainAreaSlice());
+		return <div id="dlgMainContent" style={mainAreaSlice.style} class={mainAreaSlice.className} {...mainAreaSlice.props}>
+			{mainAreaSlice.content}
+		</div>
+	}
+
+	private renderButtonArea()
+	{
+		let buttonAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultButtonAreaSlice, this.getButtonAreaSlice());
+		return <div id="dlgButtons" style={buttonAreaSlice.style} class={buttonAreaSlice.className} {...buttonAreaSlice.props}>
+			{buttonAreaSlice.content}
+			{this.buttonInfos.map( (info) =>
+				{
+					let btnSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultButtonSlice, info.slice);
+					return <button key={info.key} click={info.callback && (() => info.callback(info.key))}
+							style={btnSlice.style} class={btnSlice.className} {...btnSlice.props}>
+						{btnSlice.content}
+					</button>
+				})
+			}
+		</div>
+	}
+
 	// Provides parameters for the <dialog> element.
 	protected getDlgSlice(): mim.Slice
 	{
-		this.captionAreaProxy = new mim.FuncProxy( () =>
-		{
-			let captionAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultCaptionAreaSlice, this.getCaptionAreaSlice());
-			return <div id="dlgCaption" mousedown={this.onStartMove} style={captionAreaSlice.style}
-							class={captionAreaSlice.className} {...captionAreaSlice.props}>
-				{captionAreaSlice.content}
-			</div>
-		});
-
-		this.mainAreaProxy = new mim.FuncProxy( () =>
-		{
-			let mainAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultMainAreaSlice, this.getMainAreaSlice());
-			return <div id="dlgMainContent" style={mainAreaSlice.style} class={mainAreaSlice.className} {...mainAreaSlice.props}>
-				{mainAreaSlice.content}
-			</div>
-		});
-
-		this.buttonAreaProxy = new mim.FuncProxy( () =>
-		{
-			let buttonAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultButtonAreaSlice, this.getButtonAreaSlice());
-			return <div id="dlgButtons" style={buttonAreaSlice.style} class={buttonAreaSlice.className} {...buttonAreaSlice.props}>
-				{buttonAreaSlice.content}
-				{this.buttonInfos.map( (info) =>
-					{
-						let btnSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultButtonSlice, info.slice);
-						return <button key={info.key} click={info.callback && (() => info.callback(info.key))}
-								style={btnSlice.style} class={btnSlice.className} {...btnSlice.props}>
-							{btnSlice.content}
-						</button>
-					})
-				}
-			</div>
-		});
-
 		let content: any =
 			<mim.Fragment>
-				{this.captionAreaProxy}
-				{this.mainAreaProxy}
-				{this.buttonAreaProxy}
+				{this.renderCaptionArea}
+				{this.renderMainArea}
+				{this.renderButtonArea}
 			</mim.Fragment>;
 
 		return { content };

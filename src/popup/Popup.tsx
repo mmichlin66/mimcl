@@ -143,6 +143,38 @@ export class Popup extends mim.Component
 
 	public render(): any
 	{
+		if (!this.currDlgSlice)
+		{
+			// define positioning styles. If x and/or y are undefined, we center the dialog horizontally
+			// and/or vertically
+			let style: mim.StylePropType = { position: "fixed" }
+			if (this.initialX === undefined)
+			{
+				style.left = "0px";
+				style.right = "0px";
+			}
+			else
+			{
+				style.left = this.initialX + "px";
+				style.marginLeft = "0";
+				style.marginRight = "0";
+			}
+
+			if (this.initialY === undefined)
+			{
+				style.top = "0px";
+				style.bottom = "0px";
+			}
+			else
+			{
+				style.top = this.initialY + "px";
+				style.marginTop = "0";
+				style.marginBottom = "0";
+			}
+
+			this.currDlgSlice = mim.mergeSlices( Popup.DefaultDlgSlice, this.getDlgSlice(), {style});
+		}
+
 		return <dialog ref={ref => this.dlg = ref} style={this.currDlgSlice.style}
 						class={this.currDlgSlice.className} {...this.currDlgSlice.props}>
 			{this.currDlgSlice.content}
@@ -162,34 +194,8 @@ export class Popup extends mim.Component
 	// Creates and renders the popup.
 	private create( x: number, y: number): void
 	{
-		// define positioning styles. If x and/or y are undefined, we center the dialog horizontally
-		// and/or vertically
-		let style: mim.StylePropType = { position: "fixed" }
-		if (x === undefined)
-		{
-			style.left = "0px";
-			style.right = "0px";
-		}
-		else
-		{
-			style.left = x + "px";
-			style.marginLeft = "0";
-			style.marginRight = "0";
-		}
-
-		if (y === undefined)
-		{
-			style.top = "0px";
-			style.bottom = "0px";
-		}
-		else
-		{
-			style.top = y + "px";
-			style.marginTop = "0";
-			style.marginBottom = "0";
-		}
-
-		this.currDlgSlice = mim.mergeSlices( Popup.DefaultDlgSlice, this.getDlgSlice(), {style});
+		this.initialX = x;
+		this.initialY = y;
 
 		// create a <div> element and append it to the end of <body>. Then render our component's
 		// content under it.
@@ -248,6 +254,12 @@ export class Popup extends mim.Component
 	// Element under which the dialog is rendered. This element is created and appended to the
 	// <body> when dialog is created and is removed when the dialog is closed.
 	private anchorDiv: HTMLElement;
+
+	// Initial X coordinate of the dialog
+	private initialX: number;
+
+	// Initial Y coordinate of the dialog
+	private initialY: number;
 
 	//// Reference to the <dialog> element added to the end of the <body> when dialog is created.
 	//private dlgRef = new mim.Ref<HTMLDialogElement>( ref => this.dlg = ref);

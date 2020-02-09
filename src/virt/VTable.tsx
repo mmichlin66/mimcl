@@ -124,8 +124,6 @@ export class VTable extends mim.ComponentWithLocalStyles<VTableProps>
 		this.optColOverscan = this.props.colOverscan ? this.props.colOverscan[1] : 6;
 		this.maxColOverscan = this.props.colOverscan ? this.props.colOverscan[2] : 12;
 
-		this.renderRowsProxy = new mim.FuncProxy( () => this.rows);
-
 		this.prepareLocalStyles();
 	}
 
@@ -201,10 +199,17 @@ export class VTable extends mim.ComponentWithLocalStyles<VTableProps>
 		return <div id={this.frameID} ref={this.frameRef} scroll={this.onScroll}>
 			<div id={this.wallID} ref={this.wallRef}>
 				<table id={this.tableID} ref={this.tableRef}>
-					<tbody>{this.renderRowsProxy}</tbody>
+					<tbody>{this.renderRows}</tbody>
 				</table>
 			</div>
 		</div>
+	}
+
+
+
+	public renderRows(): any
+	{
+		return this.rows;
 	}
 
 
@@ -423,7 +428,7 @@ export class VTable extends mim.ComponentWithLocalStyles<VTableProps>
 		this.firstRow = axisAction.newFirst;
 		this.lastRow = axisAction.newLast;
 
-		this.renderRowsProxy.update();
+		mim.FuncProxy.update( this.renderRows);
 	}
 
 
@@ -573,10 +578,6 @@ export class VTable extends mim.ComponentWithLocalStyles<VTableProps>
 	// Objects that deal with vertical and horizontal scrolling
 	private vAxis: ScrollAxis;
 	private hAxis: ScrollAxis;
-
-	// FuncProxy wrapper around the renderRows method, which is updated as a separate component
-	// whenever rows or columns are added or removed.
-	private renderRowsProxy: mim.FuncProxy;
 
 	// IDs of virtual table parts
 	private frameID: string;
