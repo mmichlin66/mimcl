@@ -272,7 +272,7 @@ export class VTable extends mim.ComponentWithLocalStyles<VTableProps>
 	 * Measures the size occupied by the current data set relative to the size of the container
 	 * and determines whether we need to add/remove cells. If we do, we schedule re-rendering.
 	 */
-	private measureAndUpdate = (): void =>
+	private measureAndUpdate(): void
 	{
 		if (this.rowCount === 0 || this.colCount === 0)
 			return;
