@@ -1,4 +1,5 @@
 import * as mim from "mimbl"
+import {Color_StyleType} from "mimcss"
 import {Dialog, DialogButton} from "./Dialog"
 
 
@@ -37,7 +38,7 @@ export class MsgBox extends Dialog
 	// Provides parameters for the caption.
 	protected getCaptionAreaSlice(): mim.Slice
 	{
-		return { content: this.title, style: { backgroundColor: "DodgerBlue" } };
+		return { content: this.title, style: { backgroundColor: "dodgerblue" } };
 	}
 
 
@@ -48,7 +49,7 @@ export class MsgBox extends Dialog
 		let { cls, color } = this.getIconClassAndColor();
 		let content: any =
 			<div style={{display:"flex", alignItems:"start"}}>
-				{cls && <i class={"fa fa-3x " + cls} style={{color:color}}/>}
+				{cls && <i class={"fa fa-3x " + cls} style={{ color: color}}/>}
 				<div style={{marginLeft:"10px", minWidth:"15em", maxWidth:"40em", minHeight: "2em",
 								maxHeight:"20em", overflow:"auto"}}>
 					{this.message}
@@ -94,7 +95,7 @@ export class MsgBox extends Dialog
 
 
 	// Adds buttons according to the parameter specified in the constructor.
-	private getIconClassAndColor(): { cls: string, color: string }
+	private getIconClassAndColor(): { cls: string, color: Color_StyleType }
 	{
 		switch( this.icon)
 		{
@@ -103,7 +104,7 @@ export class MsgBox extends Dialog
 			case MsgBoxIcon.Error: return { cls: "fa-minus-circle", color: "red" };
 			case MsgBoxIcon.Question: return { cls: "fa-question-circle", color: "green" };
 
-			default: return { cls: "", color: "" };
+			default: return { cls: "", color: "blue" };
 		}
 	}
 

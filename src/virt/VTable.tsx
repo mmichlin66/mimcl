@@ -1,4 +1,5 @@
 ﻿import * as mim from "mimbl"
+import {Styleset} from "mimcss"
 import {ScrollAxis, ScrollAxisAction} from "./ScrollAxis"
 
 
@@ -19,7 +20,7 @@ export interface VTableCellData
 	colSpan?: number;
 
 	/** Style that should be applied to the `<td>` or `<th>` element containing the cell. */
-	style?: mim.StylePropType;
+	style?: Styleset;
 
 	/** Class that should be applied to the `<td>` or `<th>` element containing the cell. */
 	class?: string;
@@ -163,7 +164,7 @@ export class VTable extends mim.ComponentWithLocalStyles<VTableProps>
 		this.frameID = this.decorateName( "frame");
 		this.createStyleRule( "frame", "#frame(*)",
 			{
-				width:"100%",
+				width: "100%",
 				height: "100%",
 				overflow:"auto",
 			}
@@ -182,7 +183,7 @@ export class VTable extends mim.ComponentWithLocalStyles<VTableProps>
 			{
 				position: "absolute",
 				borderCollapse: "collapse",
-				border: "1px solid black",
+				border: [1, "solid", "black"],
 			}
 		);
 	}

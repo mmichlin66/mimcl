@@ -1,4 +1,5 @@
 import * as mim from "mimbl"
+import {Styleset} from "mimcss"
 
 
 
@@ -21,7 +22,7 @@ export class Popup extends mim.Component
 
 		// create default parameters if this is the first time a Popup is created
 		if (!Popup.DefaultDlgSlice)
-			Popup.DefaultDlgSlice = { style: { borderStyle: "solid", borderWidth: "1px", padding: "0"} };
+			Popup.DefaultDlgSlice = { style: { borderStyle: "solid", borderWidth: 1, padding: "0"} };
 	}
 
 
@@ -109,8 +110,10 @@ export class Popup extends mim.Component
 		// set the new coordinate and also remember them in our Slice so that they can be specified
 		// as properties if the component is rerendered
 		this.dlg.style.margin = this.currDlgSlice.style.margin = "0";
-		this.dlg.style.top = this.currDlgSlice.style.top = rect.top + "px";
-		this.dlg.style.left = this.currDlgSlice.style.left = rect.left + "px";
+		this.currDlgSlice.style.top = rect.top;
+		this.currDlgSlice.style.left = rect.left;
+		this.dlg.style.top = this.currDlgSlice.style.top + "px";
+		this.dlg.style.left = this.currDlgSlice.style.left + "px";
 
 		window.addEventListener( "mousemove", this.onMove);
 		window.addEventListener( "mouseup", this.onStopMove);
@@ -135,8 +138,10 @@ export class Popup extends mim.Component
 
 		// set the new coordinate and also remember them in our Slice so that they can be specified
 		// as properties if the component is rerendered
-		this.dlg.style.left = this.currDlgSlice.style.left = newX + "px";
-		this.dlg.style.top = this.currDlgSlice.style.top = newY + "px";
+		this.currDlgSlice.style.left = newX;
+		this.currDlgSlice.style.top = newY;
+		this.dlg.style.left = this.currDlgSlice.style.left + "px";
+		this.dlg.style.top = this.currDlgSlice.style.top + "px";
 	};
 
 
@@ -147,27 +152,27 @@ export class Popup extends mim.Component
 		{
 			// define positioning styles. If x and/or y are undefined, we center the dialog horizontally
 			// and/or vertically
-			let style: mim.StylePropType = { position: "fixed" }
+			let style: Styleset = { position: "fixed" }
 			if (this.initialX === undefined)
 			{
-				style.left = "0px";
-				style.right = "0px";
+				style.left = 0;
+				style.right = 0;
 			}
 			else
 			{
-				style.left = this.initialX + "px";
+				style.left = this.initialX;
 				style.marginLeft = "0";
 				style.marginRight = "0";
 			}
 
 			if (this.initialY === undefined)
 			{
-				style.top = "0px";
-				style.bottom = "0px";
+				style.top = 0;
+				style.bottom = 0;
 			}
 			else
 			{
-				style.top = this.initialY + "px";
+				style.top = this.initialY;
 				style.marginTop = "0";
 				style.marginBottom = "0";
 			}

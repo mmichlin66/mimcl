@@ -1,3 +1,7 @@
+import {Color_StyleType} from "mimcss" 
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // The ITree interface represents a tree control.
@@ -27,8 +31,8 @@ export interface ITreeNodeParams
 {
 	content: any;
 	icon?: TreeNodeIconParams;
-	textColor?: string;
-	bgColor?: string;
+	textColor?: Color_StyleType;
+	bgColor?: Color_StyleType;
 	italic?: boolean;
 	bold?: boolean;
 	customClass?: string;

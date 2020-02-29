@@ -1,7 +1,8 @@
-import * as mim from "mimbl";
-import {ITree, ITreeNode, ITreeNodeContainer, ITreeNodeParams, TreeNodeIconParams} from "./TreeApi";
-import {TreeNodeContainer} from "./TreeNodeContainer";
-import {Tree} from "./Tree";
+import * as mim from "mimbl"
+import {Styleset, Color_StyleType} from "mimcss"
+import {ITree, ITreeNode, ITreeNodeContainer, ITreeNodeParams, TreeNodeIconParams} from "./TreeApi"
+import {TreeNodeContainer} from "./TreeNodeContainer"
+import {Tree} from "./Tree"
 
 
 
@@ -61,11 +62,11 @@ export class TreeNode extends mim.Component implements ITreeNode
 	public get icon(): TreeNodeIconParams { return this.m_icon; }
 	public set icon( val: TreeNodeIconParams) { this.m_icon = val; this.updateMe(); }
 
-	public get textColor(): string { return this.m_textColor; }
-	public set textColor( val: string) { this.m_textColor = val; this.updateMe(); }
+	public get textColor(): Color_StyleType { return this.m_textColor; }
+	public set textColor( val: Color_StyleType) { this.m_textColor = val; this.updateMe(); }
 
-	public get bgColor(): string { return this.m_bgColor; }
-	public set bgColor( val: string) { this.m_bgColor = val; this.updateMe(); }
+	public get bgColor(): Color_StyleType { return this.m_bgColor; }
+	public set bgColor( val: Color_StyleType) { this.m_bgColor = val; this.updateMe(); }
 
 	public get italic(): boolean { return this.m_italic; }
 	public set italic( val: boolean) { this.m_italic = val; this.updateMe(); }
@@ -255,7 +256,7 @@ export class TreeNode extends mim.Component implements ITreeNode
 		if (this.m_customClass)
 			contentClass += " " + this.m_customClass;
 
-		let contentStyle: mim.StylePropType = {};
+		let contentStyle: Styleset = {};
 		if (this.m_textColor)
 			contentStyle.color = this.m_textColor;
 		if (this.m_bgColor)
@@ -344,8 +345,8 @@ export class TreeNode extends mim.Component implements ITreeNode
 	// Node parameters
 	private m_content: string;
 	private m_icon: TreeNodeIconParams;
-	private m_textColor: string;
-	private m_bgColor: string;
+	private m_textColor: Color_StyleType;
+	private m_bgColor: Color_StyleType;
 	private m_italic: boolean;
 	private m_bold: boolean;
 	private m_customClass: string;

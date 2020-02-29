@@ -1,5 +1,8 @@
 @echo off
 
+xcopy ..\mimcss\package.json node_modules\mimcss\ /i /y /d >nul
+xcopy ..\mimcss\lib\*.* node_modules\mimcss\lib\ /s /i /y /d >nul
+
 xcopy ..\mimbl\package.json node_modules\mimbl\ /i /y /d >nul
 xcopy ..\mimbl\lib\*.* node_modules\mimbl\lib\ /s /i /y /d >nul
 

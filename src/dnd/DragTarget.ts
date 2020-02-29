@@ -1,4 +1,5 @@
 ﻿import * as mim from "mimbl"
+import {Styleset} from "mimcss"
 import {DragDropEffect, DragAllowedEffects, DragTargetPropType, IDragTarget, ISimpleDragTarget, IDragTargetEvent} from "./DragDropApi";
 import {DragAndDropData} from "./DataTransfer";
 
@@ -399,7 +400,7 @@ export class DragTargetHandler
 
 	// Set of styles saved before applying feedback styles during dragenter event. We will use
 	// these styles to restore the element to the original state during the dragleave event.
-	private savedStyle: mim.StylePropType;
+	private savedStyle: Styleset;
 }
 
 

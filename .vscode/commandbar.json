@@ -7,24 +7,24 @@
         {
             "text": "mimcl Dev",
             "color": "white",
-            "commandType": "script",
-            "command": "buildDev",
+            "commandType": "exec",
+            "command": "buildDev.bat",
             "alignment": "left",
             "priority": 1
         },
         {
             "text": "mimcl Prod",
             "color": "yellow",
-            "commandType": "script",
-            "command": "buildProd",
+            "commandType": "exec",
+            "command": "buildProd.bat",
             "alignment": "left",
             "priority": 1
         },
         {
             "text": "mimcl Doc",
             "color": "pink",
-            "commandType": "script",
-            "command": "doc",
+            "commandType": "exec",
+            "command": "doc.bat",
             "alignment": "left",
             "priority": 1
         }

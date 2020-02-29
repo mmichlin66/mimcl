@@ -1,5 +1,5 @@
 ﻿import * as mim from "mimbl"
-
+import {Styleset} from "mimcss"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -194,7 +194,7 @@ export interface ISimpleDragTarget
 	dataTypes: string[];
 
 	// Style to apply for drag feedback.
-	feedback?: mim.StylePropType;
+	feedback?: Styleset;
 
 	// Callback that is invoked when the data containing one or more appropriate types is dropped.
 	// The data is delivered as an object where property names are data types and values are
