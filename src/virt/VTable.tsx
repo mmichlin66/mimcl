@@ -174,7 +174,7 @@ export class VTable extends mim.ComponentWithLocalStyles<VTableProps>
 		this.createStyleRule( "wall", "#wall(*)",
 			{
 				position: "relative",
-				overflow:"none",
+				overflow: "hidden",
 			}
 		);
 
