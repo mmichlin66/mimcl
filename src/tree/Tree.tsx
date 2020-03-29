@@ -290,8 +290,8 @@ export class Tree extends mim.ComponentWithLocalStyles implements ITree
 		this.cssRuleNodeIcon = this.createStyleRule( "tree-node-icon", ".tree-node-icon(*)",
 			{
 				fontSize: "10px",
-				width: tsh.em(1),
-				height: tsh.em(1),
+				width: "1em",
+				height: "1em",
 			}
 		);
 
