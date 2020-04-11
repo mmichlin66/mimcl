@@ -1,5 +1,4 @@
 import * as mim from "mimbl"
-import {tsh} from "mimcss"
 import {ITree, ITreeNode, ITreeNodeContainer, ITreeNodeParams} from "./TreeApi"
 import {TreeNodeContainer} from "./TreeNodeContainer"
 import {TreeNode} from "./TreeNode"
