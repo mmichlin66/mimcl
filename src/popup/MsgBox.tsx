@@ -1,5 +1,5 @@
 import * as mim from "mimbl"
-import {Color_StyleType} from "mimcss"
+import {CssColor} from "mimcss"
 import {Dialog, DialogButton} from "./Dialog"
 
 
@@ -95,7 +95,7 @@ export class MsgBox extends Dialog
 
 
 	// Adds buttons according to the parameter specified in the constructor.
-	private getIconClassAndColor(): { cls: string, color: Color_StyleType }
+	private getIconClassAndColor(): { cls: string, color: CssColor }
 	{
 		switch( this.icon)
 		{

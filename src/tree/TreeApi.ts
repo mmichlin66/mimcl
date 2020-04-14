@@ -1,4 +1,4 @@
-import {Color_StyleType} from "mimcss" 
+import {CssColor} from "mimcss" 
 
 
 
@@ -31,8 +31,8 @@ export interface ITreeNodeParams
 {
 	content: any;
 	icon?: TreeNodeIconParams;
-	textColor?: Color_StyleType;
-	bgColor?: Color_StyleType;
+	textColor?: CssColor;
+	bgColor?: CssColor;
 	italic?: boolean;
 	bold?: boolean;
 	customClass?: string;
