@@ -5,18 +5,10 @@
 	"commands":
 	[
         {
-            "text": "mimcl Dev",
+            "text": "mimcl build",
             "color": "white",
-            "commandType": "exec",
-            "command": "buildDev.bat",
-            "alignment": "left",
-            "priority": 1
-        },
-        {
-            "text": "mimcl Prod",
-            "color": "yellow",
-            "commandType": "exec",
-            "command": "buildProd.bat",
+            "commandType": "script",
+            "command": "build",
             "alignment": "left",
             "priority": 1
         },

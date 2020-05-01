@@ -1,6 +1,6 @@
 {
 	"name": "mimcl",
-	"version": "0.2.6",
+	"version": "0.2.7",
 	"description": "MiM Component Library",
 	"homepage": "https://mmichlin66.github.io/mimbl/mimclAbout.html",
 	"repository": "github:mmichlin66/mimcl",
@@ -8,8 +8,7 @@
 	"module": "./lib/mimcl.js",
 	"types": "./lib/mimclTypes.d.ts",
 	"scripts": {
-		"buildDev": "webpack --display-error-details",
-		"buildProd": "webpack -p --display-error-details"
+		"build": "tsc -b && webpack"
 	},
 	"author": {
 		"name": "Michael Michlin",
@@ -22,14 +21,8 @@
 	],
 	"license": "MIT",
 	"devDependencies": {
-		"awesome-typescript-loader": "^5.2.1",
-		"css-loader": "^2.1.1",
 		"ifdef-loader": "^2.1.5",
-		"ignore-loader": "^0.1.2",
-		"mini-css-extract-plugin": "^0.5.0",
-		"react": "^16.13.1",
 		"source-map-loader": "^0.2.4",
-		"ts-loader": "^5.4.5",
 		"typescript": "^3.8.3",
 		"webpack": "^4.42.1",
 		"webpack-cli": "^3.3.11"
@@ -47,8 +40,8 @@
 		"lib/virt/VTable.d.ts"
 	],
 	"dependencies": {
-		"mimbl": "^0.2.6",
-		"mimcss": "^0.4.3",
-		"mimurl": "^0.1.2"
+		"mimbl": "^0.2.7",
+		"mimcss": "^0.5.2",
+		"mimurl": "^0.1.3"
 	}
 }
