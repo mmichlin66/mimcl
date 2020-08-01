@@ -4,7 +4,7 @@
 	"description": "MiM Component Library",
 	"homepage": "https://mmichlin66.github.io/mimbl/mimclAbout.html",
 	"repository": "github:mmichlin66/mimcl",
-	"main": "./lib/mimcl.jts",
+	"main": "./lib/mimcl.ts",
 	"module": "./lib/mimcl.js",
 	"types": "./lib/mimclTypes.d.ts",
 	"scripts": {
@@ -23,9 +23,9 @@
 	"devDependencies": {
 		"ifdef-loader": "^2.1.5",
 		"source-map-loader": "^0.2.4",
-		"typescript": "^3.9.2",
-		"webpack": "^4.43.0",
-		"webpack-cli": "^3.3.11"
+		"typescript": "^3.9.7",
+		"webpack": "^4.44.0",
+		"webpack-cli": "^3.3.12"
 	},
 	"files": [
 		"README.md",
