@@ -30,7 +30,7 @@
 	"files": [
 		"README.md",
 		"lib/mimcl.js",
-		"lib/mimcl.js.map",
+		"lib/mimcl.dev.js",
 		"lib/mimclTypes.d.ts",
 		"lib/router/Router.d.ts",
 		"lib/popup/Popup.d.ts",

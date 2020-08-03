@@ -44,7 +44,7 @@ function config( outFileName, mode, devtool, ifdefLoaderOptions)
 module.exports =
 [
     config( "mimcl.dev.js", "development", "#inline-source-map", dev_ifdefLoaderOptions),
-    config( "mimcl.js", "production", "source-map", prod_ifdefLoaderOptions),
+    config( "mimcl.js", "production", undefined, prod_ifdefLoaderOptions),
 ];
 
 
