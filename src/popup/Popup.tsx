@@ -206,7 +206,7 @@ export class Popup extends mim.Component
 		// content under it.
 		this.anchorDiv = document.createElement( "div");
 		document.body.appendChild( this.anchorDiv);
-		mim.mountSync( this, this.anchorDiv);
+		mim.mount( this, this.anchorDiv);
 
 		window.addEventListener( "keydown", this.onKeyDown);
 	}
@@ -218,7 +218,7 @@ export class Popup extends mim.Component
 	{
 		window.removeEventListener( "keydown", this.onKeyDown);
 
-		mim.unmountSync( this.anchorDiv);
+		mim.unmount( this.anchorDiv);
 		this.anchorDiv.remove();
 	}
 
