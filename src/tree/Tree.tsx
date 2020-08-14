@@ -2,6 +2,7 @@ import * as mim from "mimbl"
 import {ITree, ITreeNode, ITreeNodeContainer, ITreeNodeParams} from "./TreeApi"
 import {TreeNodeContainer} from "./TreeNodeContainer"
 import {TreeNode} from "./TreeNode"
+import {ComponentWithLocalStyles, IMCssStyleRule} from "../util/LocalStyles";
 
 
 
@@ -10,7 +11,7 @@ import {TreeNode} from "./TreeNode"
 // The Tree class is a general purpose tree control.
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-export class Tree extends mim.ComponentWithLocalStyles implements ITree
+export class Tree extends ComponentWithLocalStyles implements ITree
 {
 	constructor()
 	{
@@ -317,13 +318,13 @@ export class Tree extends mim.ComponentWithLocalStyles implements ITree
 	public elmRef: mim.Ref<HTMLDivElement>;
 
 	// CSS rules used by the Tree and TreeNode controls
-	private cssRuleTree: mim.IMCssStyleRule;
-	private cssRuleNode: mim.IMCssStyleRule;
-	private cssRuleNodeContent: mim.IMCssStyleRule;
-	private cssRuleNodeContentHover: mim.IMCssStyleRule;
-	private cssRuleNodeContentSelected: mim.IMCssStyleRule;
-	private cssRuleNodeIcon: mim.IMCssStyleRule;
-	private cssRuleSubNodes: mim.IMCssStyleRule;
+	private cssRuleTree: IMCssStyleRule;
+	private cssRuleNode: IMCssStyleRule;
+	private cssRuleNodeContent: IMCssStyleRule;
+	private cssRuleNodeContentHover: IMCssStyleRule;
+	private cssRuleNodeContentSelected: IMCssStyleRule;
+	private cssRuleNodeIcon: IMCssStyleRule;
+	private cssRuleSubNodes: IMCssStyleRule;
 
 	// CSS local class names
 	public cssClassTree: string;

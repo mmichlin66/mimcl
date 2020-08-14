@@ -1,6 +1,7 @@
 ﻿import * as mim from "mimbl"
 import {Styleset} from "mimcss"
 import {ScrollAxis, ScrollAxisAction} from "./ScrollAxis"
+import {ComponentWithLocalStyles} from "../util/LocalStyles";
 
 
 
@@ -99,7 +100,7 @@ export interface VTableProps
  * maximum values. During scrolling, if the actual overscan number becomes less than the minimum,
  * new cells are added and if it becomes more then the maximum cells are deleted.
  */
-export class VTable extends mim.ComponentWithLocalStyles<VTableProps>
+export class VTable extends ComponentWithLocalStyles<VTableProps>
 {
 	constructor( props: VTableProps)
 	{

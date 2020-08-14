@@ -172,7 +172,7 @@ export class DragTargetHandler
 				{
 					// although style property exists in both HTMLElement and SVGElement, it is defined on a
 					// separate type - ElementCSSInlineStyle
-					let elmStyle: CSSStyleDeclaration = (this.elm as any as ElementCSSInlineStyle).style;
+					let elmStyle = (this.elm as any as ElementCSSInlineStyle).style;
 
 					// save current values of style properties specified in feedback and set the style from
 					// the feedback
