@@ -1,5 +1,6 @@
 import * as mim from "mimbl"
 import {Popup} from "./Popup"
+import {Slice, mergeSlices} from "../util/LocalStyles";
 
 
 
@@ -12,7 +13,7 @@ export class Dialog extends Popup
 {
 	// The constructor accepts Slice for the three dialog areas: caption, main content and buttons.
 	// They can be left undefined if a derived class overrides the appropriate render methods.
-	constructor( captionAreaSlice?: mim.Slice, mainAreaSlice?: mim.Slice, buttonAreaSlice?: mim.Slice, dlgSlice?: mim.Slice)
+	constructor( captionAreaSlice?: Slice, mainAreaSlice?: Slice, buttonAreaSlice?: Slice, dlgSlice?: Slice)
 	{
 		super(dlgSlice);
 
@@ -36,7 +37,7 @@ export class Dialog extends Popup
 	// Adds button with the given characteristics. The key parameter indicates the value that is
 	// passed to the callback when the button is clicked. The optional index parameter specifies
 	// the index at which the button should be added.
-	public addButton( slice: mim.Slice, key?: any, callback?: (key: any) => void, index?: number): void
+	public addButton( slice: Slice, key?: any, callback?: (key: any) => void, index?: number): void
 	{
 		let info: DlgBtnInfo = { slice, key, callback, ref: new mim.Ref<HTMLButtonElement>() };
 		if (index === undefined)
@@ -63,7 +64,7 @@ export class Dialog extends Popup
 
 	private renderCaptionArea()
 	{
-		let captionAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultCaptionAreaSlice, this.getCaptionAreaSlice());
+		let captionAreaSlice: Slice = mergeSlices( Dialog.DefaultCaptionAreaSlice, this.getCaptionAreaSlice());
 		return <div id="dlgCaption" mousedown={this.onStartMove} style={captionAreaSlice.style}
 						class={captionAreaSlice.className} {...captionAreaSlice.props}>
 			{captionAreaSlice.content}
@@ -72,7 +73,7 @@ export class Dialog extends Popup
 
 	private renderMainArea()
 	{
-		let mainAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultMainAreaSlice, this.getMainAreaSlice());
+		let mainAreaSlice: Slice = mergeSlices( Dialog.DefaultMainAreaSlice, this.getMainAreaSlice());
 		return <div id="dlgMainContent" style={mainAreaSlice.style} class={mainAreaSlice.className} {...mainAreaSlice.props}>
 			{mainAreaSlice.content}
 		</div>
@@ -80,12 +81,12 @@ export class Dialog extends Popup
 
 	private renderButtonArea()
 	{
-		let buttonAreaSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultButtonAreaSlice, this.getButtonAreaSlice());
+		let buttonAreaSlice: Slice = mergeSlices( Dialog.DefaultButtonAreaSlice, this.getButtonAreaSlice());
 		return <div id="dlgButtons" style={buttonAreaSlice.style} class={buttonAreaSlice.className} {...buttonAreaSlice.props}>
 			{buttonAreaSlice.content}
 			{this.buttonInfos.map( (info) =>
 				{
-					let btnSlice: mim.Slice = mim.mergeSlices( Dialog.DefaultButtonSlice, info.slice);
+					let btnSlice: Slice = mergeSlices( Dialog.DefaultButtonSlice, info.slice);
 					return <button key={info.key} click={info.callback && (() => info.callback(info.key))}
 							style={btnSlice.style} class={btnSlice.className} {...btnSlice.props}>
 						{btnSlice.content}
@@ -96,7 +97,7 @@ export class Dialog extends Popup
 	}
 
 	// Provides parameters for the <dialog> element.
-	protected getDlgSlice(): mim.Slice
+	protected getDlgSlice(): Slice
 	{
 		let content: any =
 			<mim.Fragment>
@@ -111,7 +112,7 @@ export class Dialog extends Popup
 
 
 	// Provides parameters for the caption.
-	protected getCaptionAreaSlice(): mim.Slice
+	protected getCaptionAreaSlice(): Slice
 	{
 		return this.captionAreaSlice;
 	}
@@ -119,7 +120,7 @@ export class Dialog extends Popup
 
 
 	// Provides parameters for the main content area.
-	protected getMainAreaSlice(): mim.Slice
+	protected getMainAreaSlice(): Slice
 	{
 		return this.mainAreaSlice;
 	}
@@ -127,7 +128,7 @@ export class Dialog extends Popup
 
 
 	// Provides parameters for the button area.
-	protected getButtonAreaSlice(): mim.Slice
+	protected getButtonAreaSlice(): Slice
 	{
 		return this.buttonAreaSlice;
 	}
@@ -143,19 +144,19 @@ export class Dialog extends Popup
 
 
 	// Parameters for caption area
-	private captionAreaSlice: mim.Slice;
-	public get CaptionAreaSlice(): mim.Slice { return this.captionAreaSlice; }
-	public set CaptionAreaSlice( val: mim.Slice) { this.captionAreaSlice = val; }
+	private captionAreaSlice: Slice;
+	public get CaptionAreaSlice(): Slice { return this.captionAreaSlice; }
+	public set CaptionAreaSlice( val: Slice) { this.captionAreaSlice = val; }
 
 	// Parameters for main area
-	private mainAreaSlice: mim.Slice;
-	public get MainAreaSlice(): mim.Slice { return this.mainAreaSlice; }
-	public set MainAreaSlice( val: mim.Slice) { this.mainAreaSlice = val; }
+	private mainAreaSlice: Slice;
+	public get MainAreaSlice(): Slice { return this.mainAreaSlice; }
+	public set MainAreaSlice( val: Slice) { this.mainAreaSlice = val; }
 
 	// Parameters for buttons area
-	private buttonAreaSlice: mim.Slice;
-	public get ButtonAreaSlice(): mim.Slice { return this.buttonAreaSlice; }
-	public set ButtonAreaSlice( val: mim.Slice) { this.buttonAreaSlice = val; }
+	private buttonAreaSlice: Slice;
+	public get ButtonAreaSlice(): Slice { return this.buttonAreaSlice; }
+	public set ButtonAreaSlice( val: Slice) { this.buttonAreaSlice = val; }
 
 	// Array of buttons added to the dialog
 	private buttonInfos: DlgBtnInfo[] = [];
@@ -170,16 +171,16 @@ export class Dialog extends Popup
 	private buttonAreaProxy: mim.FuncProxy;
 
 	// Default parameters for caption area
-	public static DefaultCaptionAreaSlice: mim.Slice;
+	public static DefaultCaptionAreaSlice: Slice;
 
 	// Default parameters for main area
-	public static DefaultMainAreaSlice: mim.Slice;
+	public static DefaultMainAreaSlice: Slice;
 
 	// Default parameters for buttons area
-	public static DefaultButtonAreaSlice: mim.Slice;
+	public static DefaultButtonAreaSlice: Slice;
 
 	// Default parameters for a button element
-	public static DefaultButtonSlice: mim.Slice;
+	public static DefaultButtonSlice: Slice;
 
 }
 
@@ -192,7 +193,7 @@ export class Dialog extends Popup
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 type DlgBtnInfo =
 {
-	slice: mim.Slice,
+	slice: Slice,
 	key: any,
 	callback: (key: any) => void,
 	ref: mim.Ref<HTMLButtonElement>,

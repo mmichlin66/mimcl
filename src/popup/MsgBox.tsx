@@ -1,6 +1,7 @@
 import * as mim from "mimbl"
 import {CssColor} from "mimcss"
 import {Dialog, DialogButton} from "./Dialog"
+import {Slice} from "../util/LocalStyles";
 
 
 
@@ -36,7 +37,7 @@ export class MsgBox extends Dialog
 
 
 	// Provides parameters for the caption.
-	protected getCaptionAreaSlice(): mim.Slice
+	protected getCaptionAreaSlice(): Slice
 	{
 		return { content: this.title, style: { backgroundColor: "dodgerblue" } };
 	}
@@ -44,7 +45,7 @@ export class MsgBox extends Dialog
 
 
 	// Provides parameters for the main content area.
-	protected getMainAreaSlice(): mim.Slice
+	protected getMainAreaSlice(): Slice
 	{
 		let { cls, color } = this.getIconClassAndColor();
 		let content: any =

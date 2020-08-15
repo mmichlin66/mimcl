@@ -6,7 +6,7 @@ const prod_ifdefLoaderOptions = { DEBUG: false };
 function config( outFileName, mode, devtool, ifdefLoaderOptions)
 {
     return {
-        entry: "./lib/mimclTypes.js",
+        entry: "./lib/index.js",
 
         output:
         {

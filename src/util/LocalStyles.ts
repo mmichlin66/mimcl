@@ -13,6 +13,24 @@ declare module "mimbl/lib/api/mim"
 
 
 
+/**
+ * The Slice type defines an object structure describing
+ * parameters for rendering an element. They include: Class, Style, Properties, Content. This
+ * structure is intended to be passed either in the constructor or via the protected methods of
+ * derived classes, so that they can control parameters of elements rendered by the upper classes.
+ * The main purpose of this structure is to combine parameters defining an element into a single
+ * object to minimize the number of properties callers of classes should deal with.
+ */
+export type Slice =
+{
+	className?: string;
+	style?: Styleset;
+	props?: object
+	content?: any;
+};
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // The ILocalStyleService interface represents a service that is published by components that
@@ -333,6 +351,184 @@ class MCssStyleRule extends MCssRuleBase<CSSStyleRule> implements IMCssStyleRule
 	{
 		this.cssomRule.style.removeProperty( this.replace( propName));
 	}
+}
+
+
+
+// Combines arbitrary number of class properties merging later into the earlier ones. This method
+// returns a string or undefined - if all classNames were undefined.
+function mergeClasses( ...classNames: (string | string[])[]): string
+{
+	let resClassName: string;
+
+	for( let className of classNames)
+	{
+		if (!className)
+			continue;
+
+		// parse the class if it is specified as a string
+		let classNameAsString: string = typeof className === "string"
+				? className as string
+				: (className as string[]).join( " ");
+
+		if (resClassName === undefined)
+			resClassName = "";
+		else
+			resClassName += " ";
+
+		resClassName += classNameAsString;
+	}
+
+	return resClassName;
+}
+
+
+
+// Combines arbitrary number of style objects merging later into the earlier ones. This method
+// always returns an object - even if empty
+function mergeStyles( ...styles: Styleset[]): Styleset
+{
+	// create an empty object for accumulating style properties
+	let resStyle: Styleset = {};
+	mergeStylesTo( resStyle, ...styles);
+	return resStyle;
+}
+
+
+
+// Combines arbitrary number of style objects merging later into the first one.
+function mergeStylesTo( resStyle: Styleset, ...styles: (Styleset | string)[] ): void
+{
+	for( let style of styles)
+	{
+		if (!style)
+			continue;
+
+		// parse the style if it is specified as a string
+		let styleObj: Styleset = typeof style === "object"
+				? style as Styleset
+				: parseStyleString( style as string);
+
+		// copy all properties defined in teh current style object to our resultant object			
+		for( let propName in styleObj)
+			resStyle[propName] = styleObj[propName];
+	}
+}
+
+
+
+// Parses the given style string into the Style object.
+function parseStyleString( s: string): Styleset
+{
+	if (!s)
+		return {};
+
+	let retStyle: Styleset = {};
+
+	let elms: string[] = s.split(";");
+	for( let elm of elms)
+	{
+		let pair: string[] = elm.split( ":");
+		if (!pair || pair.length === 0 || pair.length > 2)
+			continue;
+
+		retStyle[dashToCamel( pair[0].trim())] = pair[1].trim();
+	}
+
+	return retStyle;
+}
+
+
+
+// Combines arbitrary number of Slice objects merging classes, styles, properties and content
+export function mergeSlices( ...slices: Slice[]): Slice
+{
+	let resSlice: Slice = {};
+	mergeSlicesTo( resSlice, ...slices);
+	return resSlice;
+}
+
+
+
+// Combines arbitrary number of Slice objects merging classes, styles, properties and content
+// into the given resultant slice.
+function mergeSlicesTo( resSlice: Slice, ...slices: Slice[]): void
+{
+	if (resSlice === undefined || resSlice === null)
+		return;
+
+	for( let slice of slices)
+	{
+		if (!slice)
+			continue;
+
+		if (slice.style)
+		{
+			if (resSlice.style === undefined)
+				resSlice.style = {};
+
+			mergeStylesTo( resSlice.style, slice.style);
+		}
+
+		if (slice.className)
+		{
+			if (resSlice.className === undefined)
+				resSlice.className = "";
+
+			resSlice.className = mergeClasses( resSlice.className as string, slice.className);
+		}
+
+		if (slice.props)
+		{
+			if (resSlice.props === undefined)
+				resSlice.props = {};
+
+			for( let propName in slice.props)
+				resSlice[propName] = slice[propName];
+		}
+
+		if (slice.content)
+		{
+			if (resSlice.content === undefined)
+				resSlice.content = slice.content;
+			else
+			{
+				if (!Array.isArray( resSlice.content))
+				{
+					let oldContent: any = resSlice.content;
+					resSlice.content = [];
+					resSlice.content.push( oldContent);
+				}
+
+				resSlice.content.push( slice.content);
+			}
+		}
+	}
+}
+
+
+
+/**
+ * Converts names with dashes into names in camelCase, where every character after a dash is
+ * capitalized and dashes are removed.
+ */
+function dashToCamel( dash: string): string
+{
+	if (!dash)
+		return dash;
+
+	return dash.replace( /-([a-zA-Z])/g, (x, $1) => $1.toUpperCase());
+}
+
+
+
+/**
+ * Converts camelCase to dash-case
+ * @param camel
+ */
+function camelToDash( camel: string): string
+{
+  return camel.replace( /([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase();
 }
 
 

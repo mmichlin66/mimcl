@@ -1,5 +1,6 @@
 import * as mim from "mimbl"
 import {Styleset} from "mimcss"
+import {Slice, mergeSlices} from "../util/LocalStyles";
 
 
 
@@ -15,7 +16,7 @@ export class Popup extends mim.Component
 	// The constructor accepts the object describing the styles and content that should be
 	// displayed within the popup. It can be left undefined if a derived class overrides the
 	// getDlgSlice method.
-	constructor( dlgSlice?: mim.Slice)
+	constructor( dlgSlice?: Slice)
 	{
 		super();
 		this.dlgSlice = dlgSlice ? dlgSlice : {};
@@ -177,7 +178,7 @@ export class Popup extends mim.Component
 				style.marginBottom = "0";
 			}
 
-			this.currDlgSlice = mim.mergeSlices( Popup.DefaultDlgSlice, this.getDlgSlice(), {style});
+			this.currDlgSlice = mergeSlices( Popup.DefaultDlgSlice, this.getDlgSlice(), {style});
 		}
 
 		return <dialog ref={ref => this.dlg = ref} style={this.currDlgSlice.style}
@@ -189,7 +190,7 @@ export class Popup extends mim.Component
 
 
 	// Returns parameters for the <dialog> element provided either externally or by derived classes.
-	protected getDlgSlice(): mim.Slice
+	protected getDlgSlice(): Slice
 	{
 		return this.dlgSlice;
 	}
@@ -249,12 +250,12 @@ export class Popup extends mim.Component
 
 
 	// Parameters for the <dialog> element provided either externaly or by derived classes.
-	private dlgSlice: mim.Slice;
+	private dlgSlice: Slice;
 	public get DlgSlice(): any { return this.DlgSlice; }
 
 	// Current parameters for the <dialog> element that combine our defaults plus those provided
 	// either externaly or by derived classes plus those reflecting the dialog positioning.
-	private currDlgSlice: mim.Slice;
+	private currDlgSlice: Slice;
 
 	// Element under which the dialog is rendered. This element is created and appended to the
 	// <body> when dialog is created and is removed when the dialog is closed.
@@ -286,7 +287,7 @@ export class Popup extends mim.Component
 	private dragPointOffsetY: number;
 
 	// Default parameters for <dialog> element
-	public static DefaultDlgSlice: mim.Slice;
+	public static DefaultDlgSlice: Slice;
 
 }
 
