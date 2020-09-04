@@ -1,4 +1,5 @@
 import * as mim from "mimbl"
+import * as css from "mimcss"
 import {ITree, ITreeNode, ITreeNodeContainer, ITreeNodeParams} from "./TreeApi"
 import {TreeNodeContainer} from "./TreeNodeContainer"
 import {TreeNode} from "./TreeNode"
@@ -247,7 +248,7 @@ export class Tree extends ComponentWithLocalStyles implements ITree
 				cursor: "default",
 				border: [1, "solid", "dodgerblue"],
 				fontFamily: "Verdana, Geneva, Tahoma, sans-serif",
-				fontSize: "12px",
+				fontSize: 12,
 				boxSizing: "border-box",
 				maxHeight: "100%",
 				overflow: "auto",
@@ -265,8 +266,8 @@ export class Tree extends ComponentWithLocalStyles implements ITree
 		this.cssClassNodeContent = this.decorateName( "tree-node-content");
 		this.cssRuleNodeContent = this.createStyleRule( "tree-node-content", ".tree-node-content(*)",
 			{
-				marginLeft: "2px",
-				padding: "1px",
+				marginLeft: 2,
+				padding: 1,
 			}
 		);
 
@@ -279,7 +280,7 @@ export class Tree extends ComponentWithLocalStyles implements ITree
 		this.cssClassNodeContentSelected = this.decorateName( "tree-node-content-selected");
 		this.cssRuleNodeContentSelected = this.createStyleRule( "tree-node-content-selected", ".tree-node-content-selected(*)",
 			{
-				marginLeft: "2px",
+				marginLeft: 2,
 				border: [1, "dotted"],
 				backgroundColor: "dodgerblue",
 				color: "white",
@@ -289,16 +290,16 @@ export class Tree extends ComponentWithLocalStyles implements ITree
 		this.cssClassNodeIcon = this.decorateName( "tree-node-icon");
 		this.cssRuleNodeIcon = this.createStyleRule( "tree-node-icon", ".tree-node-icon(*)",
 			{
-				fontSize: "10px",
-				width: "1em",
-				height: "1em",
+				fontSize: 10,
+				width: css.em(1),
+				height: css.em(1),
 			}
 		);
 
 		this.cssClassSubnodes = this.decorateName( "tree-subnodes");
 		this.cssRuleSubNodes = this.createStyleRule( "tree-subnodes", ".tree-subnodes(*)",
 			{
-				marginLeft: "16px",
+				marginLeft: 16,
 			}
 		);
 	}
