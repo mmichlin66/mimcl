@@ -37,8 +37,8 @@
 		"lib/virt/VTable.d.ts"
 	],
 	"dependencies": {
-		"mimbl": "^0.5.2",
-		"mimcss": "^0.8.1",
+		"mimbl": "^0.5.3",
+		"mimcss": "^0.8.3",
 		"mimurl": "^0.1.5"
 	}
 }
