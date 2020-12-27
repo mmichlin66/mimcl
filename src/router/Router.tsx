@@ -195,7 +195,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 	/**
 	 * Removes a route at the given index in the list and returns the Route object. If index is
 	 * out of range an exception will be thrown.
-	 * 
+	 *
 	 * @param index
 	 * @return Route [[Route]] object that was removed.
 	 */
@@ -266,7 +266,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 
 	/**
 	 * Navigates to a route with the given ID.
-	 * 
+	 *
 	 * @param id ID of the route
 	 * @param params Parameters to be passed to the route's function
 	 * @param makeHistoryEntry Flag indicating whether the Router should create a new entry in the
@@ -339,7 +339,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 
 	/**
 	 * Navigates to the given route passing the given parameters.
-	 * 
+	 *
 	 * @param id ID of the route
 	 * @param params Parameters to be passed to the route's function
 	 * @param makeHistoryEntry Flag indicating whether the Router should create a new entry in the
@@ -385,9 +385,9 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 
 
 	// Informs that the given error was raised by one of the descendant coponents.
-	public reportError( err: any, path: string[]): void
+	public reportError( err: any): void
 	{
-		this.handleError( err, path);
+		this.handleError( err);
 		this.updateMe();
 	}
 
@@ -466,18 +466,17 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 	{
 		return this.virtRender( this.currRouteContent);
 	}
-	
 
 
-	public handleError( err: any, nodePath: string[]): void
+
+	public handleError( err: any): void
 	{
 		//this.error = err;
 		//this.errorPath = nodePath;
-		this.currRouteContent = 
+		this.currRouteContent =
 			<div id="rootError" style={{backgroundColor:"pink", display:"flex",
 										flexDirection:"column", alignItems: "start"}}>
 				{err}
-				{nodePath && nodePath.map( (name) => <span>{name}</span>)}
 			</div>;
 	}
 
@@ -486,7 +485,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 	 * "Virtual" function that can be overridden by derived classes. Responsible for returning
 	 * content to be displayed by the Router component. The default implementation either calls
 	 * the outerContentFunc if defined or just returns the content passed as a parameter.
-	 * 
+	 *
 	 * @param currRouteContent
 	 * @return Content to be displayed by the Router component.
 	 */
