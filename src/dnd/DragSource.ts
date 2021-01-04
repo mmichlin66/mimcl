@@ -134,7 +134,7 @@ export class DragSourceHandler
 			if (this.simpleDragSource.allowedEffects !== undefined)
 				e.dataTransfer.effectAllowed = this.simpleDragSource.allowedEffects;
 			else
-				e.dataTransfer.effectAllowed = DragAllowedEffects.All;
+				e.dataTransfer.effectAllowed = "all";
 		}
 		else if (this.behavior === DragSourceBehavior.Regular)
 		{
@@ -153,7 +153,7 @@ export class DragSourceHandler
 		else
 		{
 			this.dragSourceEvent.setData( DNDTYPE_ELEMENT, this.elm);
-			e.dataTransfer.effectAllowed = DragAllowedEffects.All;
+			e.dataTransfer.effectAllowed = "all";
 
 			if (this.behavior === DragSourceBehavior.ElmText)
 				this.dragSourceEvent.setData( "text/plain", this.elm.textContent);
@@ -274,7 +274,7 @@ export class DragSourceEmulator extends DragSourceHandler
 
 		e.preventDefault();
 
-		// rememeber coordinates of the mouse down event
+		// remember coordinates of the mouse down event
 		this.mouseDownX = e.clientX;
 		this.mouseDownY = e.clientY;
 
@@ -307,11 +307,11 @@ export class DragSourceEmulator extends DragSourceHandler
 			let cy = e.clientY - this.mouseDownY;
 			if (cx >= -2 && cx <= 2 && cy >= -2 && cy <= 2)
 				return;
-	
+
 			this.initiateDragOperation( e);
 		}
 	};
-	
+
 
 
 	// Finish drag operation if the target accepts it.
@@ -391,7 +391,7 @@ export class DragSourceEmulator extends DragSourceHandler
 		// perform a drag step
 		this.handleDragStep( e);
 	};
-	
+
 
 
 	// Handle one step of drag and drop operation, which occurs when the mouse moves
@@ -486,7 +486,7 @@ export class DragSourceEmulator extends DragSourceHandler
 		// or dragover event if Ctrl, Alt or Shift buttons are pressed).
 		this.lastMouseEvent = e;
 };
-	
+
 
 
 	// Handles keydown and keyup events during drag operation by sending dragover event.

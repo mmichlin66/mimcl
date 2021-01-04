@@ -324,23 +324,23 @@ export class DragTargetHandler
 		let allowedEffects = e.dataTransfer.effectAllowed as DragAllowedEffects;
 		switch( allowedEffects)
 		{
-			case DragAllowedEffects.Copy:
-				return DragDropEffect.Copy;
-			case DragAllowedEffects.Move:
-				return DragDropEffect.Move;
-			case DragAllowedEffects.Link:
-				return DragDropEffect.Link;
-			case DragAllowedEffects.CopyMove:
-				return e.ctrlKey ? DragDropEffect.Copy : DragDropEffect.Move;
-			case DragAllowedEffects.CopyLink:
-				return e.altKey ? DragDropEffect.Link : DragDropEffect.Copy;
-			case DragAllowedEffects.LinkMove:
-				return e.altKey ? DragDropEffect.Link : DragDropEffect.Move;
+			case "copy":
+				return "copy";
+			case "move":
+				return "move";
+			case "link":
+				return "link";
+			case "copyMove":
+				return e.ctrlKey ? "copy" : "move";
+			case "copyLink":
+				return e.altKey ? "link" : "copy";
+			case"linkMove":
+				return e.altKey ? "link" : "move";
 
-			case DragAllowedEffects.All:
-				return e.altKey ? DragDropEffect.Link : e.ctrlKey ? DragDropEffect.Copy : DragDropEffect.Move;
+			case "all":
+				return e.altKey ? "link" : e.ctrlKey ? "copy" : "move";
 
-			default: DragDropEffect.None;
+			default: "none";
 		}
 	}
 
@@ -351,20 +351,20 @@ export class DragTargetHandler
 	{
 		switch( allowedEffects)
 		{
-			case DragAllowedEffects.Copy:
-				return dropEffect === DragDropEffect.Copy;
-			case DragAllowedEffects.Move:
-				return dropEffect === DragDropEffect.Move;
-			case DragAllowedEffects.Link:
-				return dropEffect === DragDropEffect.Link;
-			case DragAllowedEffects.CopyMove:
-				return dropEffect === DragDropEffect.Copy || dropEffect === DragDropEffect.Move;
-			case DragAllowedEffects.CopyLink:
-				return dropEffect === DragDropEffect.Copy || dropEffect === DragDropEffect.Link;
-			case DragAllowedEffects.LinkMove:
-				return dropEffect === DragDropEffect.Link || dropEffect === DragDropEffect.Move;
-			case DragAllowedEffects.All:
-				return dropEffect !== DragDropEffect.None;
+			case "copy":
+				return dropEffect === "copy";
+			case "move":
+				return dropEffect === "move";
+			case "link":
+				return dropEffect === "link";
+			case "copyMove":
+				return dropEffect === "copy" || dropEffect === "move";
+			case "copyLink":
+				return dropEffect === "copy" || dropEffect === "link";
+			case "linkMove":
+				return dropEffect === "link" || dropEffect === "move";
+			case "none":
+				return dropEffect !== "none";
 
 			default: return false;
 		}

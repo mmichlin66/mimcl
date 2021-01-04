@@ -1,18 +1,18 @@
-﻿import * as mim from "mimbl"
-import {Styleset} from "mimcss"
+﻿import {Styleset} from "mimcss"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // The DragDropEffect enumeration provides values for different drag & drop effects.
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-export const enum DragDropEffect
-{
-	None = "none",
-	Copy = "copy",
-	Move = "move",
-	Link = "link",
-}
+export type DragDropEffect = "none" | "copy" | "link" | "move";
+// export const enum DragDropEffect
+// {
+// 	None = "none",
+// 	Copy = "copy",
+// 	Move = "move",
+// 	Link = "link",
+// }
 
 
 
@@ -21,17 +21,19 @@ export const enum DragDropEffect
 // The DragDropEffect enumeration provides values for different drag & drop effects.
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-export const enum DragAllowedEffects
-{
-	None = "none",
-	Copy = "copy",
-	Move = "move",
-	Link = "link",
-	CopyMove = "copyMove",
-	CopyLink = "copyLink",
-	LinkMove = "linkMove",
-	All = "all",
-}
+export type DragAllowedEffects = "none" | "copy" | "copyLink" | "copyMove" | "link" | "linkMove" | "move" | "all" | "uninitialized";
+// export const enum DragAllowedEffects
+// {
+// 	None = "none",
+// 	Copy = "copy",
+// 	Move = "move",
+// 	Link = "link",
+// 	CopyMove = "copyMove",
+// 	CopyLink = "copyLink",
+// 	LinkMove = "linkMove",
+// 	All = "all",
+// 	Uninitialized = "uninitialized",
+// }
 
 
 

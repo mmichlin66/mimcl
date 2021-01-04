@@ -156,9 +156,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 {
 	constructor( props: IRouterProps)
 	{
-		super();
-
-		this.props = props;
+		super( props);
 
 		if (this.props.children)
 		{
@@ -253,7 +251,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 		let [route, fields] = this.findRouteByURL( url);
 		if (!route)
 		{
-			if (this.higherRouterService)
+			if (this.higherRouterService && this.higherRouterService.r)
 				this.higherRouterService.r.navigateByURL( url, makeHistoryEntry);
 
 			return;
@@ -277,7 +275,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 		let route: Route = this.routesByID.get( id);
 		if (!route)
 		{
-			if (this.higherRouterService)
+			if (this.higherRouterService && this.higherRouterService.r)
 				this.higherRouterService.r.navigateByID( id, fields);
 
 			return;

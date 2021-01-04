@@ -111,26 +111,26 @@ export class EmulDataTransfer extends DataTransfer implements IEmulDataTransfer
 
 
 
-	set effectAllowed( val: string)
+	set effectAllowed( val: api.DragAllowedEffects)
 	{
 		this.effectAllowedEx = val;
 		super.effectAllowed = val;
 	}
 
-	get effectAllowed(): string
+	get effectAllowed(): api.DragAllowedEffects
 	{
 		return this.effectAllowedEx === undefined ? super.effectAllowed : this.effectAllowedEx;
 	}
 
 
 
-	set dropEffect( val: string)
+	set dropEffect( val: api.DragDropEffect)
 	{
 		this.dropEffectEx = val;
 		super.dropEffect = val;
 	}
 
-	get dropEffect(): string
+	get dropEffect(): api.DragDropEffect
 	{
 		return this.dropEffectEx === undefined ? super.dropEffect : this.dropEffectEx;
 	}
@@ -180,12 +180,12 @@ export class EmulDataTransfer extends DataTransfer implements IEmulDataTransfer
 	// Remembered allowed effect - needed because when drag and drop operation is emulated, the
 	// original DragTransfer object doesn't seem to accept any allowed effect value, which always
 	// stays "none".
-	private effectAllowedEx: string;
+	private effectAllowedEx: api.DragAllowedEffects;
 
 	// Remembered drop effect - needed because when drag and drop operation is emulated, the
 	// original DragTransfer object doesn't seem to accept any drop effect value, which always
 	// stays "none".
-	private dropEffectEx: string;
+	private dropEffectEx: api.DragDropEffect;
 
 	// Map of data types (aka formats) to data items.
 	private dataMap: Map<string,string>;
@@ -230,24 +230,24 @@ export class EmulLegacyDataTransfer extends DataTransfer implements IEmulDataTra
 
 
 
-	set effectAllowed( val: string)
+	set effectAllowed( val: api.DragAllowedEffects)
 	{
 		this.effectAllowedEx = val;
 	}
 
-	get effectAllowed(): string
+	get effectAllowed(): api.DragAllowedEffects
 	{
 		return this.effectAllowedEx;
 	}
 
 
 
-	set dropEffect( val: string)
+	set dropEffect( val: api.DragDropEffect)
 	{
 		this.dropEffectEx = val;
 	}
 
-	get dropEffect(): string
+	get dropEffect(): api.DragDropEffect
 	{
 		return this.dropEffectEx;
 	}
@@ -298,12 +298,12 @@ export class EmulLegacyDataTransfer extends DataTransfer implements IEmulDataTra
 	// Remembered allowed effect - needed because when drag and drop operation is emulated, the
 	// original DragTransfer object doesn't seem to accept any allowed effect value, which always
 	// stays "none".
-	private effectAllowedEx: string;
+	private effectAllowedEx: api.DragAllowedEffects;
 
 	// Remembered drop effect - needed because when drag and drop operation is emulated, the
 	// original DragTransfer object doesn't seem to accept any drop effect value, which always
 	// stays "none".
-	private dropEffectEx: string;
+	private dropEffectEx: api.DragDropEffect;
 
 	// Map of data types (aka formats) to data items.
 	private dataMap: Map<string,string>;

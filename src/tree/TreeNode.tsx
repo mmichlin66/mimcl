@@ -229,10 +229,10 @@ export class TreeNode extends mim.Component implements ITreeNode
 
 	public render(): any
 	{
-		return <mim.Fragment>
+		return <>
 			{this.renderNode()}
 			{this.renderSubNodes()}
-		</mim.Fragment>;
+		</>;
 	}
 
 
