@@ -3,7 +3,7 @@ import * as mim from "mimbl"
 
 
 
-declare module "mimbl/lib/api/mim"
+declare module "mimbl"
 {
     export interface IServiceDefinitions
 	{
@@ -419,7 +419,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 			(content as Promise<any>).then( ( delayedContent: any) =>
 			{
 				this.currRouteContent = delayedContent;
-				this.updateMe;
+				this.updateMe();
 			});
 		}
 		else
