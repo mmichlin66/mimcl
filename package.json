@@ -32,9 +32,11 @@
 		"lib/mimcl.js",
 		"lib/mimcl.dev.js",
 		"lib/index.d.ts",
+		"lib/popup/Popups.d.ts",
 		"lib/router/Router.d.ts",
 		"lib/tree/TreeApi.d.ts",
-		"lib/virt/VTable.d.ts"
+        "lib/virt/VTable.d.ts",
+        "lib/utl/ModuleAug.d.ts"
 	],
 	"dependencies": {
 		"mimbl": "^0.6.2",

@@ -3,16 +3,6 @@ import {Styleset, getStylePropValue, ExtendedStyleset} from "mimcss"
 
 
 
-declare module "mimbl/lib/api/mim"
-{
-    export interface IServiceDefinitions
-	{
-        LocalStyles: ILocalStyleService;
-    }
-}
-
-
-
 /**
  * The Slice type defines an object structure describing
  * parameters for rendering an element. They include: Class, Style, Properties, Content. This
@@ -140,7 +130,7 @@ export abstract class ComponentWithLocalStyles<TProps = {}, TChildren = any>
 	public willMount()
 	{
 		this.vn.publishService( "LocalStyles", this);
-	}	
+	}
 
 
 
@@ -409,7 +399,7 @@ function mergeStylesTo( resStyle: Styleset, ...styles: (Styleset | string)[] ): 
 				? style as Styleset
 				: parseStyleString( style as string);
 
-		// copy all properties defined in teh current style object to our resultant object			
+		// copy all properties defined in teh current style object to our resultant object
 		for( let propName in styleObj)
 			resStyle[propName] = styleObj[propName];
 	}

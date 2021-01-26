@@ -194,14 +194,3 @@ export type DragTargetPropType = IDragTarget | ISimpleDragTarget;
 
 
 
-declare module "mimbl"
-{
-	interface IElementProps<TRef,TChildren>
-	{
-		dragSource?: DragSourcePropType;
-		dragTarget?: DragTargetPropType;
-	}
-}
-
-
-

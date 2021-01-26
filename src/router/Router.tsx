@@ -3,16 +3,6 @@ import * as mim from "mimbl"
 
 
 
-declare module "mimbl"
-{
-    export interface IServiceDefinitions
-	{
-        Router: IRouterService;
-    }
-}
-
-
-
 /**
  * The IRouterService is a service that is published by the Router component. It allows
  * subscribers to navigate to paths defined by Router's routes.
@@ -467,7 +457,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 
 
 
-	public handleError( err: any): void
+	public handleError( err: any): any
 	{
 		//this.error = err;
 		//this.errorPath = nodePath;
@@ -475,7 +465,9 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 			<div id="rootError" style={{backgroundColor:"pink", display:"flex",
 										flexDirection:"column", alignItems: "start"}}>
 				{err}
-			</div>;
+            </div>;
+
+        return this.currRouteContent;
 	}
 
 
