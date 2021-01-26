@@ -1,6 +1,6 @@
 {
 	"name": "mimcl",
-	"version": "0.6.2",
+	"version": "0.6.3",
 	"description": "MiM Component Library",
 	"homepage": "https://mmichlin66.github.io/mimbl/mimclAbout.html",
 	"repository": "github:mmichlin66/mimcl",
@@ -39,8 +39,8 @@
         "lib/utl/ModuleAug.d.ts"
 	],
 	"dependencies": {
-		"mimbl": "^0.6.2",
-		"mimcss": "^0.8.6",
+		"mimbl": "^0.6.3",
+		"mimcss": "^0.8.7",
 		"mimurl": "^0.1.5"
 	}
 }
