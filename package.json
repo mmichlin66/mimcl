@@ -1,6 +1,6 @@
 {
 	"name": "mimcl",
-	"version": "0.6.3",
+	"version": "0.6.5",
 	"description": "MiM Component Library",
 	"homepage": "https://mmichlin66.github.io/mimbl/mimclAbout.html",
 	"repository": "github:mmichlin66/mimcl",
@@ -33,10 +33,13 @@
 		"lib/mimcl.dev.js",
 		"lib/index.d.ts",
 		"lib/popup/Popups.d.ts",
+		"lib/dnd/DragDropApi.d.ts",
 		"lib/router/Router.d.ts",
 		"lib/tree/TreeApi.d.ts",
+        "lib/virt/ScrollAxis.d.ts",
         "lib/virt/VTable.d.ts",
-        "lib/utl/ModuleAug.d.ts"
+        "lib/util/LocalStyles.d.ts",
+        "lib/util/ModuleAug.d.ts"
 	],
 	"dependencies": {
 		"mimbl": "^0.6.3",
