@@ -23,7 +23,7 @@
 	"devDependencies": {
 		"ifdef-loader": "^2.1.5",
 		"source-map-loader": "^2.0.0",
-		"typescript": "^4.1.3",
+		"typescript": "^4.3.5",
 		"webpack": "^5.11.1",
 		"webpack-cli": "^4.3.1"
 	},
@@ -36,10 +36,10 @@
 		"lib/dnd/DragDropApi.d.ts",
 		"lib/router/Router.d.ts",
 		"lib/tree/TreeApi.d.ts",
-        "lib/virt/ScrollAxis.d.ts",
-        "lib/virt/VTable.d.ts",
-        "lib/util/LocalStyles.d.ts",
-        "lib/util/ModuleAug.d.ts"
+		"lib/virt/ScrollAxis.d.ts",
+		"lib/virt/VTable.d.ts",
+		"lib/util/LocalStyles.d.ts",
+		"lib/util/ModuleAug.d.ts"
 	],
 	"dependencies": {
 		"mimbl": "^0.6.3",
