@@ -134,7 +134,7 @@ export class DragTargetHandler
 
 		// if IDragTarget.types property is defined and is not empty, drag will be possible
 		// only if the data being dragged has at least on type from the types array.
-		if (this.simpleDragTarget!== undefined)
+		if (this.simpleDragTarget)
 		{
 			for( let type of this.simpleDragTarget.dataTypes)
 			{
@@ -149,7 +149,7 @@ export class DragTargetHandler
 			if (!this.isDropPossible)
 				return;
 		}
-		else if (this.dragTarget !== undefined)
+		else if (this.dragTarget)
 		{
 			// if the onDragEnter method is not implemented on the drag target, we consider drop possible
 			if (this.dragTarget.onDragEnter === undefined)
@@ -165,10 +165,10 @@ export class DragTargetHandler
 		{
 			e.preventDefault();
 
-			if (this.simpleDragTarget !== undefined)
+			if (this.simpleDragTarget)
 			{
 				// apply visual feedback if specified
-				if (this.simpleDragTarget.feedback !== undefined)
+				if (this.simpleDragTarget.feedback)
 				{
 					// although style property exists in both HTMLElement and SVGElement, it is defined on a
 					// separate type - ElementCSSInlineStyle
@@ -184,10 +184,10 @@ export class DragTargetHandler
 					}
 				}
 			}
-			else if (this.dragTarget !== undefined)
+			else if (this.dragTarget)
 			{
 				// if the callback is not defined we need to set drop effect
-				if (this.dragTarget.onDragEnter === undefined)
+				if (!this.dragTarget.onDragEnter)
 					e.dataTransfer.dropEffect = this.getDefaultDropEffect( e);
 			}
 		}
@@ -201,12 +201,12 @@ export class DragTargetHandler
 
 		let isDropPossible = false;
 
-		if (this.simpleDragTarget !== undefined)
+		if (this.simpleDragTarget)
 			isDropPossible = true;
-		else if (this.dragTarget !== undefined)
+		else if (this.dragTarget)
 		{
 			// if the onDragOver method is not implemented on the drag target, we consider drop possible
-			if (this.dragTarget.onDragOver === undefined)
+			if (!this.dragTarget.onDragOver)
 				isDropPossible = true;
 			else
 			{
@@ -220,12 +220,12 @@ export class DragTargetHandler
 		{
 			e.preventDefault();
 
-			if (this.simpleDragTarget !== undefined)
+			if (this.simpleDragTarget)
 				e.dataTransfer.dropEffect = this.getDefaultDropEffect( e);
-			else if (this.dragTarget !== undefined)
+			else if (this.dragTarget)
 			{
 				// if the callback is not defined we need to set drop effect
-				if (this.dragTarget.onDragOver === undefined)
+				if (!this.dragTarget.onDragOver)
 					e.dataTransfer.dropEffect = this.getDefaultDropEffect( e);
 			}
 		}
@@ -243,10 +243,10 @@ export class DragTargetHandler
 		if (--this.dragTargetEnterCounter > 0)
 			return;
 
-		if (this.simpleDragTarget !== undefined)
+		if (this.simpleDragTarget)
 		{
 			// revert visual feedback (if was specified)
-			if (this.savedStyle !== undefined)
+			if (this.savedStyle)
 			{
 				// although style property exists in both HTMLElement and SVGElement, it is defined on a
 				// separate type - ElementCSSInlineStyle
@@ -258,9 +258,9 @@ export class DragTargetHandler
 				this.savedStyle = undefined;
 			}
 		}
-		else if (this.dragTarget !== undefined)
+		else if (this.dragTarget)
 		{
-			if (this.dragTarget.onDragLeave !== undefined)
+			if (this.dragTarget.onDragLeave)
 			{
 				this.dragTargetEvent.dragEvent = e;
 				this.dragTarget.onDragLeave( this.dragTargetEvent);
@@ -275,7 +275,7 @@ export class DragTargetHandler
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (this.simpleDragTarget !== undefined)
+		if (this.simpleDragTarget)
 		{
 			let expectedTypes: string[] = this.simpleDragTarget.dataTypes;
 			let dataObj = {};
@@ -299,7 +299,7 @@ export class DragTargetHandler
 
 			this.simpleDragTarget.onDataDropped( dataObj);
 		}
-		else if (this.dragTarget !== undefined)
+		else if (this.dragTarget)
 		{
 			this.dragTargetEvent.dragEvent = e;
 			this.dragTarget.onDrop( this.dragTargetEvent);

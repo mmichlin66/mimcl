@@ -1,5 +1,5 @@
 ﻿import * as mim from "mimbl"
-import {DragAllowedEffects, DragSourcePropType, IDragSource, ISimpleDragSource, IDragSourceEvent, DNDTYPE_ELEMENT} from "./DragDropApi";
+import {DragSourcePropType, IDragSource, ISimpleDragSource, IDragSourceEvent, DNDTYPE_ELEMENT} from "./DragDropApi";
 import {DragAndDropData, IEmulDataTransfer, EmulDataTransfer, EmulLegacyDataTransfer} from "./DataTransfer";
 
 
@@ -366,7 +366,7 @@ export class DragSourceEmulator extends DragSourceHandler
 			this.emulDataTransfer = new EmulLegacyDataTransfer();
 
 		// fire onDragStart event - if the default action is prevented, we cancel the operation
-		let dragstartEvent: DragEvent = this.createDragEventFromMouseEvent( e, "dragstart");
+		let dragstartEvent = this.createDragEventFromMouseEvent( e, "dragstart");
 		this.elm.dispatchEvent( dragstartEvent);
 		if (dragstartEvent.defaultPrevented)
 		{
@@ -379,7 +379,7 @@ export class DragSourceEmulator extends DragSourceHandler
 		{
 			// calculte drag image coordinates so that initially the drag image coinsides with
 			// the original image
-			let rc: ClientRect = this.elm.getBoundingClientRect();
+			let rc = this.elm.getBoundingClientRect();
 			this.emulDataTransfer.setDragImage( this.elm, e.clientX - rc.left, e.clientY - rc.top);
 		}
 
@@ -408,9 +408,24 @@ export class DragSourceEmulator extends DragSourceHandler
 		this.emulDataTransfer.dropEffect = "none";
 
 		// find element under the cursor
-		if (this.imageElm) this.imageElm.hidden = true;
-		let newTarget = document.elementFromPoint( e.clientX, e.clientY);
-		if (this.imageElm) this.imageElm.hidden = false;
+		let newTarget: Element = null;
+        let elmsUnderPoint = document.elementsFromPoint( e.clientX, e.clientY);
+        if (elmsUnderPoint !== null)
+        {
+            // find the first element in the list after our image element
+            let imageElmEncountered = false;
+            for( let elmUnderPoint of elmsUnderPoint)
+            {
+                if (imageElmEncountered)
+                {
+                    newTarget = elmUnderPoint;
+                    break;
+                }
+                else if (elmUnderPoint === this.imageElm)
+                    imageElmEncountered = true;
+            }
+        }
+
 		if (newTarget)
 		{
 			// if we are on the same target as the previous mouse move, just send dragover (if
@@ -470,6 +485,10 @@ export class DragSourceEmulator extends DragSourceHandler
 		{
 			this.imageElm.style.left = e.clientX - this.emulDataTransfer.imageElmX + "px";
 			this.imageElm.style.top = e.clientY - this.emulDataTransfer.imageElmY + "px";
+			// this.imageElm.setStyleset( {
+            //     left: px( e.clientX - this.emulDataTransfer.imageElmX),
+			//     top: px( e.clientY - this.emulDataTransfer.imageElmY)
+            // });
 		}
 
 		// update image based on the latest feedback
@@ -479,13 +498,17 @@ export class DragSourceEmulator extends DragSourceHandler
 			this.setDropEffectImageCue( dropEffect);
 			this.dropEffectElm.style.left = this.emulDataTransfer.imageElmX + 12 + "px";
 			this.dropEffectElm.style.top = this.emulDataTransfer.imageElmY + 0 + "px";
+			// this.dropEffectElm.setStyleset( {
+            //     left: px( this.emulDataTransfer.imageElmX + 12),
+			//     top: px( this.emulDataTransfer.imageElmY)
+            // });
 		}
 
 		// remember last mouse event - we may use it to create DragEvent objects if we need to
 		// dispatch drag events upon keyboard events (e.g. cancel operation when Escape is pressed
 		// or dragover event if Ctrl, Alt or Shift buttons are pressed).
 		this.lastMouseEvent = e;
-};
+    };
 
 
 
