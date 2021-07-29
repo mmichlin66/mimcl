@@ -217,8 +217,8 @@ export class TreeNode extends mim.Component implements ITreeNode
 			return;
 
 		// get tree and node bounding rect
-		let rcTree: ClientRect = this.m_tree.elmRef.r.getBoundingClientRect();
-		let rcNode: ClientRect = this.contentElmRef.r.getBoundingClientRect();
+		let rcTree = this.m_tree.elmRef.r.getBoundingClientRect();
+		let rcNode = this.contentElmRef.r.getBoundingClientRect();
 		if (rcNode.bottom <= rcTree.bottom && rcNode.top >= rcTree.top)
 			return;
 

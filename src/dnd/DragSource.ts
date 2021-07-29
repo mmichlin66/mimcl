@@ -584,8 +584,8 @@ export class DragSourceEmulator extends DragSourceHandler
 		// element. Their top-left coordinates may not coinside due to several factors (e.g.
 		// absolute positioning or SVG coordinates). If this is the case, adjust the x and y
 		// coordinates in the EmulDataTransfer object.
-		let rcClonedElm: ClientRect = clonedElm.getBoundingClientRect();
-		let rcDivElm: ClientRect = divElm.getBoundingClientRect();
+		let rcClonedElm = clonedElm.getBoundingClientRect();
+		let rcDivElm = divElm.getBoundingClientRect();
 		if (rcClonedElm.left != rcDivElm.left)
 			this.emulDataTransfer.imageElmX += rcClonedElm.left - rcDivElm.left;
 		if (rcClonedElm.top != rcDivElm.top)
