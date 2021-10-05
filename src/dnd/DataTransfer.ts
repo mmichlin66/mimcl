@@ -43,7 +43,7 @@ export abstract class DragAndDropData
 	// Determines whether the given data type is available in the given DataTransfer object.
 	public static hasType( dataTransfer: DataTransfer, type: string): boolean
 	{
-		// Edge implemnts types via DOMStringList, whcih doesn't have indexOf
+		// Edge implemnts types via DOMStringList, which doesn't have indexOf
 		if (dataTransfer.types.indexOf)
 			return dataTransfer.types.indexOf( type) >= 0;
 		else

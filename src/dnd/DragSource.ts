@@ -804,7 +804,7 @@ export class DragSourceEmulator extends DragSourceHandler
 	// this target.
 	private isDropPossibleOnLastTarget: boolean;
 
-	// Latest MouseEvent object, whcih we use to create DragEvent objects.
+	// Latest MouseEvent object, which we use to create DragEvent objects.
 	private lastMouseEvent: MouseEvent;
 }
 
