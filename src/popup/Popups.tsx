@@ -58,7 +58,7 @@ export interface IPopupStyles extends css.StyleDefinition
 export class DefaultPopupStyles extends css.StyleDefinition implements IPopupStyles
 {
     /** Styles for the `<dialog>` element. */
-    dialog = css.$class({
+    dialog = this.$class({
         border: [1, "solid", "grey"],
         boxShadow: { x: 4, y: 4, blur: 4, color: "lightgrey" },
         padding: 0,
@@ -699,18 +699,18 @@ export interface IDialogStyles extends IPopupStyles
  */
 export class DefaultDialogStyles extends DefaultPopupStyles implements IDialogStyles
 {
-    dialogCaption = css.$class({
+    dialogCaption = this.$class({
         backgroundColor: "dodgerblue",
         color: "white",
         boxShadow: { x: 0, y: 2, blur: 2, color: "lightgrey" },
         padding: 0.4,
     })
 
-    dialogBody = css.$class({
+    dialogBody = this.$class({
         padding: 0.7,
     })
 
-    dialogButtonBar = css.$class({
+    dialogButtonBar = this.$class({
         // backgroundColor: "lightgrey",
         padding: [0.7, 1.01],
         display: "flex",
@@ -718,7 +718,7 @@ export class DefaultDialogStyles extends DefaultPopupStyles implements IDialogSt
         alignItems: "center",
     })
 
-    dialogButton = css.$class({
+    dialogButton = this.$class({
         padding: 0.3,
         marginInlineStart: 1.01,
         minWidth: 5.5,
@@ -1062,19 +1062,19 @@ export const enum MsgBoxIcon
  */
 export class MsgBoxStyles extends DefaultDialogStyles
 {
-    container = css.$class({
+    container = this.$class({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
     })
 
-    icon = css.$class({
+    icon = this.$class({
         padding: css.rem(0.5),
         fontSize: css.em(3),
         fontWeight: 900,
     })
 
-    text = css.$class({
+    text = this.$class({
         padding: 0.5,
         minWidth: css.em(15),
         maxWidth: css.em(60),
@@ -1225,7 +1225,7 @@ export class MsgBox extends Dialog<MsgBoxStyles>
  */
 export class ProgressBoxStyles extends DefaultDialogStyles
 {
-    container = css.$class({
+    container = this.$class({
         width: css.rem(30),
         height: css.rem(5),
         display: "flex",
@@ -1234,13 +1234,13 @@ export class ProgressBoxStyles extends DefaultDialogStyles
         justifyContent: "space-around"
     })
 
-    progress = css.$class({
+    progress = this.$class({
         width: css.rem(20),
         height: css.rem(1),
         margin: css.rem(1)
     })
 
-    text = css.$class({
+    text = this.$class({
         textAlign: "center",
     })
 
