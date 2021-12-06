@@ -1,5 +1,5 @@
 import * as mim from "mimbl"
-import {Styleset, getStylePropValue, ExtendedBaseStyleset} from "mimcss"
+import {Styleset, getStylePropValue, IStyleset} from "mimcss"
 
 
 
@@ -328,7 +328,7 @@ class MCssStyleRule extends MCssRuleBase<CSSStyleRule> implements IMCssStyleRule
 
 		for( let propName in props)
 		{
-			let propVal = getStylePropValue( propName as keyof ExtendedBaseStyleset, props[propName]);
+			let propVal = getStylePropValue( propName as keyof IStyleset, props[propName]);
 			this.cssomRule.style[this.replace( propName)] = this.replace( propVal);
 		}
 	}
