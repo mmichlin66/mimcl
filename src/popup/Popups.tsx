@@ -12,6 +12,17 @@ import * as mim from "mimbl"
 import * as css from "mimcss"
 
 
+// Had to augment the HTMLDialogElement interface because TypeScript's 4.4 lib.dom.d.ts not only
+// deprecated it but also removed properties and methods from it.
+interface HTMLDialogElement extends HTMLElement
+{
+    open: boolean;
+    returnValue: string;
+    close(returnValue?: string): void;
+    show(): void;
+    showModal(): void;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -410,7 +421,7 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
             this.optionalStyles = css.activate( this.options.styles) as TStyles;
 
         // create dialog element and add it to the DOM
-        this.dlg = document.createElement( "dialog");
+        this.dlg = document.createElement( "dialog") as HTMLDialogElement;
         this.dlg.className = css.chooseClass( this.options?.dialogStyleClass,
                         this.optionalStyles?.dialog, this.defaultStyles.dialog);
         this.anchorElement.appendChild( this.dlg);
