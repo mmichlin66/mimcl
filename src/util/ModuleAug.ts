@@ -7,7 +7,7 @@ import { ILocalStyleService } from "./LocalStyles"
 
 declare module "mimbl"
 {
-    export interface IServiceDefinitions
+    interface IServiceDefinitions
 	{
         LocalStyles: ILocalStyleService;
         Router: IRouterService;
