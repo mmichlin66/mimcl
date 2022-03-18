@@ -1,5 +1,6 @@
 import { DragSourcePropType, DragTargetPropType } from "../dnd/DragDropApi";
-import { IDialog, IPopup } from "../popup/Popups";
+import { IPopup } from "../popup/Popup";
+import { IDialog } from "../popup/Dialog";
 import { IRouterService } from "../router/Router";
 import { ILocalStyleService } from "./LocalStyles"
 

@@ -1,6 +1,9 @@
 // Type definitions for mimcl
 
-export * from "./popup/Popups"
+export * from "./popup/Popup"
+export * from "./popup/Dialog"
+export * from "./popup/MsgBox"
+export * from "./popup/Progress"
 export * from "./dnd/DragDropApi"
 export * from "./router/Router"
 export * from "./tree/TreeApi"
