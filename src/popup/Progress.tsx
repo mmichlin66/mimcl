@@ -1,47 +1,40 @@
-/**
- * This module contains definitions of [[Popup]], [[Dialog]] and [[MsgBox]] components.
- *
- * The [[Popup]] component is a base component that displays a popup usig the `<dialog>` HTML
- * element. The [[Dialog]] component derives from [[Popup]] and divides the popup area into
- * secontions for caption, body and button bar. Dialogs support moving around by clicking on the
- * caption area. The [[MsgBox]] component derives from [[Dialog]] and displays a message
- * optionally accompannied with an icon and a pre-defined set of buttons.
- */
-
 import * as mim from "mimbl"
 import * as css from "mimcss"
-import {DefaultDialogStyles, Dialog} from "./Dialog"
+import {Dialog} from "./Dialog"
+import {IProgressStyles} from "./PopupStyles";
 
 
-/**
- * Default styles that will be used by the Popup if styles are not specified using options.
- */
-export class ProgressBoxStyles extends DefaultDialogStyles
+// /**
+//  * Default styles that will be used by the Popup if styles are not specified using options.
+//  */
+// export class ProgressBoxStyles extends DefaultDialogStyles
+// {
+//     constructor( parent?: css.StyleDefinition)
+//     {
+//         super(parent);
+//         this.dialogButtonBar.setProp( "justifyContent", "center")
+//     }
+// }
+
+
+
+export interface IProgressOptions
 {
-    container = this.$class({
-        width: css.rem(30),
-        height: css.rem(5),
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "space-around"
-    })
+    /**
+     * Text to show in the progress box caption
+     */
+    title?: string;
 
-    progress = this.$class({
-        width: css.rem(20),
-        height: css.rem(1),
-        margin: css.rem(1)
-    })
+    /**
+     * Value to return when the cancel button is clicked. If this property is null or not defined,
+     * there will be no cancel button.
+     */
+    cancelReturnValue?: any;
 
-    text = this.$class({
-        textAlign: "center",
-    })
-
-    constructor( parent?: css.StyleDefinition)
-    {
-        super(parent);
-        this.dialogButtonBar.setProp( "justifyContent", "center")
-    }
+    /**
+     * Object that defines CSS styles for different parts of the message box.
+     */
+    styles?: IProgressStyles
 }
 
 
@@ -50,7 +43,7 @@ export class ProgressBoxStyles extends DefaultDialogStyles
  * The ProgressBox class is a dialog that displays a progress indicator, a text and an optional
  * Cancel button.
  */
-export class ProgressBox extends Dialog<ProgressBoxStyles>
+export class ProgressBox extends Dialog
 {
     /**
      * Displays the modal progress box with the given content and title, which is displayed until
@@ -67,7 +60,7 @@ export class ProgressBox extends Dialog<ProgressBoxStyles>
     public static async showUntil( promise: Promise<any>, content: any, title?: string,
         delayMilliseconds: number = 750): Promise<any>
 	{
-        let progress = new ProgressBox( content, title);
+        let progress = new ProgressBox( content, {title});
         progress.showModalWithDelay( delayMilliseconds);
         try
         {
@@ -81,12 +74,12 @@ export class ProgressBox extends Dialog<ProgressBoxStyles>
 
 
 
-	constructor( content?: string, title?: string, cancelReturnValue?: any)
+	constructor( content?: string, options?: IProgressOptions)
 	{
-		super( content, title, { styles: ProgressBoxStyles });
+		super( content, options?.title, { styles: options?.styles });
 
-        if (cancelReturnValue != null)
-            this.addButton({ id: 1, content: "Cancel", returnValue: cancelReturnValue });
+        if (options?.cancelReturnValue != null)
+            this.addButton({ id: 1, content: "Cancel", returnValue: options.cancelReturnValue });
 	}
 
 
@@ -135,9 +128,9 @@ export class ProgressBox extends Dialog<ProgressBoxStyles>
 	{
         // we are using this.optionalStyles because we explicitly pass our styles in the options
         // parameter of the Dialog constructor.
-		return <div class={this.optionalStyles.container}>
-            <progress class={this.optionalStyles.progress} />
-            <div class={this.optionalStyles.text}>
+		return <div class={this.styles.progressContainer}>
+            <progress class={this.styles.progressElm} />
+            <div class={this.styles.progressText}>
                 {this.content}
             </div>
         </div>;
@@ -146,12 +139,22 @@ export class ProgressBox extends Dialog<ProgressBoxStyles>
 
 
     /**
-     * Returns the default style definition instance or class
+     * Sets properties of the `this.styles` object, which determines the styles used for popups.
+     * This method is intended to be overridden by the derived classes, which must call the
+     * `super.adjustStyles()` implementation.
      */
-	protected getDefaultStyles(): ProgressBoxStyles | css.IStyleDefinitionClass<ProgressBoxStyles>
-	{
-        return ProgressBoxStyles;
-	};
+    protected adjustStyles(): void
+    {
+        super.adjustStyles();
+
+        let styles = this.styles;
+        let defaultStyles = this.defaultStyles;
+        let optionStyles = this.options?.styles;
+
+        styles.progressContainer = optionStyles?.progressContainer ?? defaultStyles.progressContainer;
+        styles.progressElm = optionStyles?.progressElm ?? defaultStyles.progressElm;
+        styles.progressText = optionStyles?.progressText ?? defaultStyles.progressText;
+    }
 
 
 
@@ -162,6 +165,12 @@ export class ProgressBox extends Dialog<ProgressBoxStyles>
     }
 
 
+
+    /** Options */
+    protected options: IProgressOptions;
+
+    /** Activated styles */
+    protected styles: IProgressStyles;
 
     // Handle of the setTimeout call when openeing the popup with delay.
     private delayHandle = 0;

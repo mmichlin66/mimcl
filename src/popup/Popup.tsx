@@ -1,5 +1,6 @@
 import * as mim from "mimbl"
 import * as css from "mimcss"
+import {IPopupStyles, DefaultPopupStyles} from "./PopupStyles";
 
 
 // Had to augment the HTMLDialogElement interface because TypeScript's 4.4 lib.dom.d.ts not only
@@ -32,64 +33,20 @@ export interface IPopup
 
 
 /**
- * The IPopupStyles interface defines styles used by the Popup class to create the `<dialog>`
- * element. The implementations should provide the class rule for the dialog property and can
- * also define the ::backdrop pseudo element styles, which is used when the popup is shown as a
- * modal dialog.
- */
-export interface IPopupStyles extends css.StyleDefinition
-{
-    /**
-     * Defines what CSS class to use for the `<dialog>` element.
-     */
-    readonly dialog?: css.ClassPropType;
-}
-
-
-
-/**
- * Default styles that will be used by the Popup if styles are not specified using options.
- */
-export class DefaultPopupStyles extends css.StyleDefinition implements IPopupStyles
-{
-    /** Styles for the `<dialog>` element. */
-    dialog = this.$class({
-        border: [1, "solid", "grey"],
-        boxShadow: { x: 4, y: 4, blur: 4, color: "lightgrey" },
-        padding: 0,
-        maxWidth: "100%",
-        maxHeight: "100%",
-        // transform: css.scale(0.1),
-        // transition: { property: "transform", duration: 200 },
-        "::backdrop": { backgroundColor: "grey", opacity: 0.3 }
-    })
-}
-
-
-
-/**
  * The IPopupOptions interface represents the options that cofigure the behavior of the Popup
  * object. They are passed in the constructor to the [[Popup]] class
  * @typeParam TStyles Type for the styles property. Options for derived components will have to
  * derive from the IPopupOptions interface and to implement the [[IPopupStyles]] interface for
  * the styles property.
  */
-export interface IPopupOptions<TStyles extends IPopupStyles = IPopupStyles>
+export interface IPopupOptions
 {
     /**
      * Defines what styles to use for the `<dialog>` element and optionally for the ::backdrop
-     * pseudo element. The value can be either a style definition class implementing the
-     * [[IPopupStyles]] interface or an instance of such class. The popup activates the styles
-     * when it opens and deactivates them when it closes. If this property is not defined, the
-     * popup will use the default styles. The default value is undefined.
+     * pseudo element. If this property is not defined, the popup will use the default styles. The
+     * default value is undefined.
      */
-    readonly styles?: TStyles | css.IStyleDefinitionClass<TStyles>;
-
-    /**
-     * Defines what CSS class to use for the `<dialog>` element. If this property is defined,
-     * the [[style]] property is ignored
-     */
-    readonly dialogStyleClass?: css.ClassPropType;
+    readonly styles?: IPopupStyles;
 
     /**
      * Value that is returned when the user closes the popup by pressing the Escape key. If this
@@ -162,16 +119,14 @@ export interface IPopupEvents
  * @typeParam TOptions Type of the object used to specify options for the component. Must
  * implement the IPopupOptions interface.
  */
-export class Popup<TStyles extends IPopupStyles = IPopupStyles,
-            TOptions extends IPopupOptions<TStyles> = IPopupOptions<TStyles>>
-            extends mim.Component implements IPopup
+export class Popup extends mim.Component implements IPopup
 {
     /**
      * Popup is constructed by specifying the initial content it should display and the options
      * @param content
      * @param options
      */
-    public constructor( content?: any, options?: TOptions)
+    public constructor( content?: any, options?: IPopupOptions)
     {
         super();
         this.content = content;
@@ -357,19 +312,6 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
 	public willUnmount(): void
 	{
         this.vn.unpublishService( "popup");
-
-        // deactivate styles
-        css.deactivate( this.defaultStyles);
-        this.defaultStyles = null;
-        if (this.optionalStyles)
-        {
-            css.deactivate( this.optionalStyles);
-            this.optionalStyles = null;
-        }
-
-        // clean up
-        this.dlg = null;
-        this.anchorElement = null;
     };
 
     /**
@@ -382,38 +324,48 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
 
 
 
+    /**
+     * Sets properties of the `this.styles` object, which determines the styles used for popups.
+     * This method is intended to be overridden by the derived classes, which must call the
+     * `super.adjustStyles()` implementation.
+     */
+    protected adjustStyles(): void
+    {
+        this.styles = {};
+        this.styles.dialogElement = this.options?.styles?.dialogElement ?? this.defaultStyles.dialogElement;
+    }
+
+
+
     // Creates the dialog element
     private create(): void
     {
         // obtain the anchor element
-        this.anchorElement = this.options && this.options.anchorElement ? this.options.anchorElement : document.body;
+        this.anchorElement = this.options?.anchorElement ?? document.body;
 
-        // activate our default styles and if styles are specified in the options, then activate
-        // them too.
-        this.defaultStyles = css.activate( this.getDefaultStyles()) as TStyles;
-        if (this.options && this.options.styles)
-            this.optionalStyles = css.activate( this.options.styles) as TStyles;
+        // obtain necessary styles
+        this.defaultStyles = css.activate( DefaultPopupStyles);
+        this.adjustStyles();
 
         // create dialog element and add it to the DOM
         this.dlg = document.createElement( "dialog") as HTMLDialogElement;
-        this.dlg.className = css.chooseClass( this.options?.dialogStyleClass,
-                        this.optionalStyles?.dialog, this.defaultStyles.dialog);
+        this.dlg.className = this.styles.dialogElement.name;
         this.anchorElement.appendChild( this.dlg);
 
         // assign positioning styles dirctly to the dialog element. If x and/or y are undefined,
         // we center the dialog horizontally and/or vertically
-        let style: css.Styleset = { position: "fixed" };
+        let dlgElmStyle: css.Styleset = { position: "fixed" };
         if (!this.options || this.options.initialX === undefined)
-            style.left = style.right = 0;
+            dlgElmStyle.left = dlgElmStyle.right = 0;
         else
-            style.left = this.options.initialX;
+            dlgElmStyle.left = this.options.initialX;
 
         if (!this.options || this.options.initialY === undefined)
-            style.top = style.bottom = 0;
+            dlgElmStyle.top = dlgElmStyle.bottom = 0;
         else
-            style.top = this.options.initialY;
+            dlgElmStyle.top = this.options.initialY;
 
-        css.setElementStyle( this.dlg, style, css.SchedulerType.Sync);
+        css.setElementStyle( this.dlg, dlgElmStyle /*, css.SchedulerType.Sync*/);
 
         // mount the component
         mim.mount( this, this.dlg)
@@ -425,9 +377,14 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         // unmount the content
         mim.unmount( this.dlg);
 
-        // remove the dialog element
+        // remove the dialog element and clean up
         this.dlg.remove();
         this.dlg = null;
+        this.anchorElement = null;
+
+        // deactivate default styles
+        css.deactivate( this.defaultStyles);
+        this.styles = this.defaultStyles = null;
     }
 
 	/**
@@ -510,14 +467,6 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
 
 
     /**
-     * Returns the default style definition instance or class
-     */
-	protected getDefaultStyles(): TStyles | css.IStyleDefinitionClass<TStyles>
-	{
-        return DefaultPopupStyles as css.IStyleDefinitionClass<TStyles>;
-	};
-
-    /**
      * This method is called when the popup opens. If derived classes override it they
      * must call super.onOpen().
      */
@@ -549,13 +498,14 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
     protected content: any;
 
     // Options
-    protected options: TOptions;
+    protected options: IPopupOptions;
 
     // Activated default styles
-    protected defaultStyles: TStyles;
+    protected defaultStyles: DefaultPopupStyles;
 
-    // Activated optional styles
-    protected optionalStyles: TStyles;
+    // Actual styles to use - may come from the default styles or from the styles defined in the
+    // options
+    protected styles: IPopupStyles;
 
     // Anchor element under which to create the dialog element
     private anchorElement: HTMLElement;

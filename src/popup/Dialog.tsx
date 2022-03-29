@@ -1,6 +1,7 @@
 import * as mim from "mimbl"
 import * as css from "mimcss"
-import {DefaultPopupStyles, IPopup, IPopupOptions, IPopupStyles, Popup} from "./Popup";
+import {IPopupOptions, IPopup, Popup} from "./Popup";
+import {IDialogStyles} from "./PopupStyles";
 
 
 /**
@@ -65,105 +66,15 @@ export interface IDialog extends IPopup
 
 
 /**
- * The IDialogStyles interface defines styles used by the Dialog class to create different elements
- * of the dialog. The implementations should provide class rules for the following properties:
- * - dialogCaption
- * - dialogBody
- * - dialogButtonBar
- * - dialogButton
- */
-export interface IDialogStyles extends IPopupStyles
-{
-    /**
-     * Defines what CSS class to use for the caption section.
-     */
-    readonly dialogCaption?: css.ClassPropType;
-
-    /**
-     * Defines what CSS class to use for the body section.
-     */
-    readonly dialogBody?: css.ClassPropType;
-
-    /**
-     * Defines what CSS class to use for the button bar section.
-     */
-    readonly dialogButtonBar?: css.ClassPropType;
-
-    /**
-     * Defines what CSS class to use for the buttons.
-     */
-    readonly dialogButton?: css.ClassPropType;
-}
-
-
-
-/**
- * Default styles that will be used by the Popup if styles are not specified using options.
- */
-export class DefaultDialogStyles extends DefaultPopupStyles implements IDialogStyles
-{
-    dialogCaption = this.$class({
-        backgroundColor: "dodgerblue",
-        color: "white",
-        boxShadow: { x: 0, y: 2, blur: 2, color: "lightgrey" },
-        padding: 0.4,
-    })
-
-    dialogBody = this.$class({
-        padding: 0.7,
-    })
-
-    dialogButtonBar = this.$class({
-        // backgroundColor: "lightgrey",
-        padding: [0.7, 1.01],
-        display: "flex",
-        justifyContent: "flex-end",
-        alignItems: "center",
-    })
-
-    dialogButton = this.$class({
-        padding: 0.3,
-        marginInlineStart: 1.01,
-        minWidth: 5.5,
-        border: "none",
-        backgroundColor: 0xf2f2f2,
-		":hover": {
-			backgroundColor: 0xe2e2e2,
-		},
-		":focus": {
-            backgroundColor: 0xe2e2e2,
-            outline: [1, "solid", 0xa2a2a2],
-		}
-    })
-}
-
-
-
-/**
  * The IDialogOptions interface represents the options that cofigure the behavior of the Dialog
  * object. They are passed in the constructor to the [[Dialog]] class
  */
-export interface IDialogOptions<TStyles extends IDialogStyles = IDialogStyles> extends IPopupOptions<TStyles>
+export interface IDialogOptions extends IPopupOptions
 {
     /**
      * Defines what CSS class to use for the caption section.
      */
-    readonly dialogCaptionStyleClass?: css.ClassPropType;
-
-    /**
-     * Defines what CSS class to use for the body section.
-     */
-    readonly dialogBodyStyleClass?: css.ClassPropType;
-
-    /**
-     * Defines what CSS class to use for the button bar section.
-     */
-    readonly dialogButtonBarStyleClass?: css.ClassPropType;
-
-    /**
-     * Defines what CSS class to use for the buttons.
-     */
-    readonly dialogButtonStyleClass?: css.ClassPropType;
+    readonly styles?: IDialogStyles;
 
     /**
      * Identifier of the default button, which will have focus when the dialog appears.
@@ -177,11 +88,9 @@ export interface IDialogOptions<TStyles extends IDialogStyles = IDialogStyles> e
  * The Dialog class is a popup that divides the popup area into three sections: caption, body and
  * button bar. The caption area can be used to move the dialog around.
  */
-export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
-            TOptions extends IDialogOptions<TStyles> = IDialogOptions<TStyles>>
-            extends Popup<TStyles,TOptions> implements IDialog
+export class Dialog extends Popup implements IDialog
 {
-    constructor( bodyContent?: any, captionContent?: any, options?: TOptions, ...buttons: IDialogButton[])
+    constructor( bodyContent?: any, captionContent?: any, options?: IDialogOptions, ...buttons: IDialogButton[])
     {
         // we reuse the Popup's content property for dialog's body
         super( bodyContent, options);
@@ -221,31 +130,11 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 
 
     /**
-     * Returns the default style definition instance or class
-     */
-	protected getDefaultStyles(): TStyles | css.IStyleDefinitionClass<TStyles>
-	{
-        return DefaultDialogStyles as css.IStyleDefinitionClass<TStyles>;
-	};
-
-
-
-    /**
      * If derived classes override this method, they must call super.willMount()
      */
     public willMount(): void
 	{
         super.willMount();
-
-        // obtain class names for our elements
-        this.captionClassName = css.chooseClass( this.options?.dialogCaptionStyleClass,
-            this.optionalStyles?.dialogCaption, this.defaultStyles.dialogCaption);
-        this.bodyClassName = css.chooseClass( this.options?.dialogBodyStyleClass,
-            this.optionalStyles?.dialogBody, this.defaultStyles.dialogBody);
-        this.buttonBarClassName = css.chooseClass( this.options?.dialogButtonBarStyleClass,
-            this.optionalStyles?.dialogButtonBar, this.defaultStyles.dialogButtonBar);
-        this.buttonClassName = css.chooseClass( this.options?.dialogButtonStyleClass,
-            this.optionalStyles?.dialogButton, this.defaultStyles.dialogButton);
 
         this.vn.publishService( "dialog", this);
 
@@ -280,27 +169,48 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
     public renderCaption(): any
     {
         // have to specify touch-action "none" - otherwise, pointer events are canceled by the browser
-        return <div class={this.captionClassName} pointerdown={this.onCaptionPointerDown} style={{touchAction: "none"}}>
+        return <div class={this.styles.dialogCaption} pointerdown={this.onCaptionPointerDown} style={{touchAction: "none"}}>
             {this.captionContent}
         </div>
     }
 
     public renderBody(): any
     {
-        return <div class={this.bodyClassName}>
+        return <div class={this.styles.dialogBody}>
             {this.content}
         </div>
     }
 
     public renderButtons(): any
     {
-        return <div class={this.buttonBarClassName}>
+        return <div class={this.styles.dialogButtonBar}>
             {Array.from( this.buttons.values()).map( info =>
-                <button id={info.btn.id} ref={info.ref} class={this.buttonClassName} click={() => this.onButtonClicked(info)}>
+                <button id={info.btn.id} ref={info.ref} class={this.styles.dialogButton} click={() => this.onButtonClicked(info)}>
                     {info.btn.content}
                 </button>
             )}
         </div>
+    }
+
+
+
+    /**
+     * Sets properties of the `this.styles` object, which determines the styles used for popups.
+     * This method is intended to be overridden by the derived classes, which must call the
+     * `super.adjustStyles()` implementation.
+     */
+    protected adjustStyles(): void
+    {
+        super.adjustStyles();
+
+        let styles = this.styles;
+        let defaultStyles = this.defaultStyles;
+        let optionStyles = this.options?.styles;
+
+        styles.dialogCaption = optionStyles?.dialogCaption ?? defaultStyles.dialogCaption;
+        styles.dialogBody = optionStyles?.dialogBody ?? defaultStyles.dialogBody;
+        styles.dialogButtonBar = optionStyles?.dialogButtonBar ?? defaultStyles.dialogButtonBar;
+        styles.dialogButton = optionStyles?.dialogButton ?? defaultStyles.dialogButton;
     }
 
 
@@ -339,6 +249,12 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 
 
 
+    // Options
+    protected options: IDialogOptions;
+
+    // Activated default styles
+    protected styles: IDialogStyles;
+
     // Map of button IDs to button information objects
     @mim.trigger
     private captionContent: any;
@@ -352,18 +268,6 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 
     // Tab index value to use for the next button to be added
     private nextButtonTabIndex = 1001;
-
-    // Class name to use for the caption
-    private captionClassName: string;
-
-    // Class name to use for the body
-    private bodyClassName: string;
-
-    // Class name to use for the button bar
-    private buttonBarClassName: string;
-
-    // Class name to use for the buttons
-    private buttonClassName: string;
 }
 
 

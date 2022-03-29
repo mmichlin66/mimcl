@@ -1,6 +1,7 @@
 import * as mim from "mimbl"
 import * as css from "mimcss"
-import {DefaultDialogStyles, Dialog} from "./Dialog"
+import {Dialog} from "./Dialog"
+import {IMsgBoxStyles} from "./PopupStyles";
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,32 +68,30 @@ export const enum MsgBoxIcon
 
 
 
-/**
- * Default styles that will be used by the Popup if styles are not specified using options.
- */
-export class MsgBoxStyles extends DefaultDialogStyles
+export interface IMsgBoxOptions
 {
-    container = this.$class({
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-    })
+    /**
+     * What buttons to show. Default vlue is MsgBoxButtonBar.OK
+     */
+    buttons?: MsgBoxButtonBar;
 
-    icon = this.$class({
-        padding: css.rem(0.5),
-        fontSize: css.em(3),
-        fontWeight: 900,
-    })
+    /**
+     * Text to show in the message box caption
+     */
+    title?: string;
 
-    text = this.$class({
-        padding: 0.5,
-        minWidth: css.em(15),
-        maxWidth: css.em(60),
-        minHeight: css.em(2),
-        maxHeight: css.em(20),
-        overflow: "auto",
-        verticalAlign: "middle",
-    })
+    /**
+     * Icon to show.
+     */
+    icon?: MsgBoxIcon;
+
+    /** Button that should be used as a default one */
+    defaultButton?: MsgBoxButton;
+
+    /**
+     * Object that defines CSS styles for different parts of the message box.
+     */
+    styles?: IMsgBoxStyles
 }
 
 
@@ -100,7 +99,7 @@ export class MsgBoxStyles extends DefaultDialogStyles
 /**
  * The MsgBox class is a dialog that displays a message with a set of pre-defined buttons.
  */
-export class MsgBox extends Dialog<MsgBoxStyles>
+export class MsgBox extends Dialog
 {
     /**
      * Displays modal message box with the given parameters and returns a promise, which is
@@ -112,27 +111,24 @@ export class MsgBox extends Dialog<MsgBoxStyles>
      * @param icon Optional identifier of the icon to be displayed.
      * @returns Promise that is resolved with the identifier of the button clicked by the user.
      */
-    public static showModal( message: string, title?: string,
-                    buttons: MsgBoxButtonBar = MsgBoxButtonBar.OK,
-                    icon: MsgBoxIcon = MsgBoxIcon.None,
-                    defaultButton?: MsgBoxButton): Promise<MsgBoxButton>
+    public static showModal( message: string, options?: IMsgBoxOptions): Promise<MsgBoxButton>
 	{
-		let msgBox: MsgBox = new MsgBox( message, title, buttons, icon, defaultButton);
+		let msgBox: MsgBox = new MsgBox( message, options);
 		return msgBox.showModal();
 	}
 
 
 
-	constructor( message: any, title?: string, buttons: MsgBoxButtonBar = MsgBoxButtonBar.OK,
-					icon: MsgBoxIcon = MsgBoxIcon.None, defaultButton?: MsgBoxButton)
+	constructor( message: any, options?: IMsgBoxOptions)
 	{
-        super( message, title, {
-            styles: MsgBoxStyles,
+        let buttons = options?.buttons ?? MsgBoxButtonBar.OK;
+        super( message, options?.title, {
+            styles: options?.styles,
             escapeReturnValue: buttons === MsgBoxButtonBar.None ? MsgBoxButton.Close : undefined,
-            defaultButton
+            defaultButton: options?.defaultButton
         });
 
-		this.icon = icon;
+		this.icon = options?.icon ?? MsgBoxIcon.None;
 
 		this.createButtons( buttons);
 	}
@@ -145,21 +141,31 @@ export class MsgBox extends Dialog<MsgBoxStyles>
 
         // we are using this.optionalStyles because we explicitly pass our styles in the options
         // parameter of the Dialog constructor.
-		return <div class={this.optionalStyles.container}>
-            {char && <span class={this.optionalStyles.icon} style={{color}}>{char}</span>}
-            <span class={this.optionalStyles.text}>{this.content}</span>
+		return <div class={this.styles.msgBoxContainer}>
+            {char && <span class={this.styles.msgBoxIcon} style={{color}}>{char}</span>}
+            <span class={this.styles.msgBoxText}>{this.content}</span>
         </div>;
 	}
 
 
 
     /**
-     * Returns the default style definition instance or class
+     * Sets properties of the `this.styles` object, which determines the styles used for popups.
+     * This method is intended to be overridden by the derived classes, which must call the
+     * `super.adjustStyles()` implementation.
      */
-	protected getDefaultStyles(): MsgBoxStyles | css.IStyleDefinitionClass<MsgBoxStyles>
-	{
-        return MsgBoxStyles;
-	};
+    protected adjustStyles(): void
+    {
+        super.adjustStyles();
+
+        let styles = this.styles;
+        let defaultStyles = this.defaultStyles;
+        let optionStyles = this.options?.styles;
+
+        styles.msgBoxContainer = optionStyles?.msgBoxContainer ?? defaultStyles.msgBoxContainer;
+        styles.msgBoxIcon = optionStyles?.msgBoxIcon ?? defaultStyles.msgBoxIcon;
+        styles.msgBoxText = optionStyles?.msgBoxText ?? defaultStyles.msgBoxText;
+    }
 
 
 
@@ -215,7 +221,13 @@ export class MsgBox extends Dialog<MsgBoxStyles>
 
 
 
-	// Icon
+    /** Options */
+    protected options: IMsgBoxOptions;
+
+    /** Activated styles */
+    protected styles: IMsgBoxStyles;
+
+	/** Icon */
 	private icon: MsgBoxIcon;
 
 }
