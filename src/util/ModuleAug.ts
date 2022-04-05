@@ -1,8 +1,8 @@
-import { DragSourcePropType, DragTargetPropType } from "../dnd/DragDropApi";
-import { IPopup } from "../popup/Popup";
-import { IDialog } from "../popup/Dialog";
-import { IRouterService } from "../router/Router";
-import { ILocalStyleService } from "./LocalStyles"
+import {DragSourcePropType, DragTargetPropType} from "../dnd/DragDropApi"
+import {IPopup} from "../popup/Popup"
+import {IDialog} from "../popup/Dialog"
+import {IRouterService} from "../router/Router"
+import {ILocalStyleService} from "./LocalStyles"
 
 
 
@@ -32,12 +32,6 @@ declare module "mimbl"
 		dragSource?: DragSourcePropType;
 		dragTarget?: DragTargetPropType;
 	}
-}
-
-
-
-declare module "mimbl"
-{
 }
 
 

@@ -1,27 +1,16 @@
 import * as mim from "mimbl"
-import * as css from "mimcss"
-import {Dialog} from "./Dialog"
-import {IProgressStyles} from "./PopupStyles";
-
-
-// /**
-//  * Default styles that will be used by the Popup if styles are not specified using options.
-//  */
-// export class ProgressBoxStyles extends DefaultDialogStyles
-// {
-//     constructor( parent?: css.StyleDefinition)
-//     {
-//         super(parent);
-//         this.dialogButtonBar.setProp( "justifyContent", "center")
-//     }
-// }
+import {Dialog, IDialogOptions} from "./Dialog"
+import {IProgressStyles} from "./PopupStyles"
 
 
 
-export interface IProgressOptions
+/**
+ * Options defining progress dialog behavior
+ */
+export interface IProgressOptions extends IDialogOptions<IProgressStyles>
 {
     /**
-     * Text to show in the progress box caption
+     * Text to show in the progress dialog caption
      */
     title?: string;
 
@@ -30,11 +19,6 @@ export interface IProgressOptions
      * there will be no cancel button.
      */
     cancelReturnValue?: any;
-
-    /**
-     * Object that defines CSS styles for different parts of the message box.
-     */
-    styles?: IProgressStyles
 }
 
 
@@ -43,14 +27,14 @@ export interface IProgressOptions
  * The ProgressBox class is a dialog that displays a progress indicator, a text and an optional
  * Cancel button.
  */
-export class ProgressBox extends Dialog
+export class ProgressBox extends Dialog<IProgressStyles, IProgressOptions>
 {
     /**
-     * Displays the modal progress box with the given content and title, which is displayed until
+     * Displays the modal progress dialog with the given content and title, which is displayed until
      * the given promise is settled. The delayMilliseconds parameter controls whether the progress
      * box is displayed immediately or is delayed. If the input promise is settled before the
      * delay expires, the progress box is not displayed at all.
-     * @param promise Promise to monitor - the progress box is displayed until this promis is settled.
+     * @param promise Promise to monitor - the progress box is displayed until this promise is settled.
      * @param content Content to be used in the progress box's body.
      * @param title Content to display in the progress box's caption.
      * @param delayMilliseconds Delay in milliseconds until which the progress box isn't displayed.
@@ -111,7 +95,7 @@ export class ProgressBox extends Dialog
      * For modeless popups, this value will be available as the returnValue property.
      * @param retVal
      */
-    public close( retVal?: any): void
+    public async close( retVal?: any): Promise<void>
     {
         if (this.delayHandle > 0)
         {
@@ -119,7 +103,7 @@ export class ProgressBox extends Dialog
             this.delayHandle = 0;
         }
 
-        super.close( retVal);
+        return super.close( retVal);
     }
 
 
@@ -138,26 +122,6 @@ export class ProgressBox extends Dialog
 
 
 
-    /**
-     * Sets properties of the `this.styles` object, which determines the styles used for popups.
-     * This method is intended to be overridden by the derived classes, which must call the
-     * `super.adjustStyles()` implementation.
-     */
-    protected adjustStyles(): void
-    {
-        super.adjustStyles();
-
-        let styles = this.styles;
-        let defaultStyles = this.defaultStyles;
-        let optionStyles = this.options?.styles;
-
-        styles.progressContainer = optionStyles?.progressContainer ?? defaultStyles.progressContainer;
-        styles.progressElm = optionStyles?.progressElm ?? defaultStyles.progressElm;
-        styles.progressText = optionStyles?.progressText ?? defaultStyles.progressText;
-    }
-
-
-
     private showNow()
     {
         this.delayHandle = 0;
@@ -165,12 +129,6 @@ export class ProgressBox extends Dialog
     }
 
 
-
-    /** Options */
-    protected options: IProgressOptions;
-
-    /** Activated styles */
-    protected styles: IProgressStyles;
 
     // Handle of the setTimeout call when openeing the popup with delay.
     private delayHandle = 0;

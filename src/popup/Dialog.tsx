@@ -1,7 +1,6 @@
 import * as mim from "mimbl"
-import * as css from "mimcss"
 import {IPopupOptions, IPopup, Popup} from "./Popup";
-import {IDialogStyles} from "./PopupStyles";
+import {IDialogStyles} from "./PopupStyles"
 
 
 /**
@@ -69,13 +68,8 @@ export interface IDialog extends IPopup
  * The IDialogOptions interface represents the options that cofigure the behavior of the Dialog
  * object. They are passed in the constructor to the [[Dialog]] class
  */
-export interface IDialogOptions extends IPopupOptions
+export interface IDialogOptions<TStyles extends IDialogStyles = IDialogStyles> extends IPopupOptions<TStyles>
 {
-    /**
-     * Defines what CSS class to use for the caption section.
-     */
-    readonly styles?: IDialogStyles;
-
     /**
      * Identifier of the default button, which will have focus when the dialog appears.
      */
@@ -88,9 +82,11 @@ export interface IDialogOptions extends IPopupOptions
  * The Dialog class is a popup that divides the popup area into three sections: caption, body and
  * button bar. The caption area can be used to move the dialog around.
  */
-export class Dialog extends Popup implements IDialog
+export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
+    TOptions extends IDialogOptions<TStyles> = IDialogOptions<TStyles>>
+    extends Popup<TStyles, TOptions> implements IDialog
 {
-    constructor( bodyContent?: any, captionContent?: any, options?: IDialogOptions, ...buttons: IDialogButton[])
+    constructor( bodyContent?: any, captionContent?: any, options?: TOptions, ...buttons: IDialogButton[])
     {
         // we reuse the Popup's content property for dialog's body
         super( bodyContent, options);
@@ -194,27 +190,6 @@ export class Dialog extends Popup implements IDialog
 
 
 
-    /**
-     * Sets properties of the `this.styles` object, which determines the styles used for popups.
-     * This method is intended to be overridden by the derived classes, which must call the
-     * `super.adjustStyles()` implementation.
-     */
-    protected adjustStyles(): void
-    {
-        super.adjustStyles();
-
-        let styles = this.styles;
-        let defaultStyles = this.defaultStyles;
-        let optionStyles = this.options?.styles;
-
-        styles.dialogCaption = optionStyles?.dialogCaption ?? defaultStyles.dialogCaption;
-        styles.dialogBody = optionStyles?.dialogBody ?? defaultStyles.dialogBody;
-        styles.dialogButtonBar = optionStyles?.dialogButtonBar ?? defaultStyles.dialogButtonBar;
-        styles.dialogButton = optionStyles?.dialogButton ?? defaultStyles.dialogButton;
-    }
-
-
-
     private onCaptionPointerDown( e: PointerEvent): void
     {
         // initiate move only on primary button down
@@ -248,12 +223,6 @@ export class Dialog extends Popup implements IDialog
     }
 
 
-
-    // Options
-    protected options: IDialogOptions;
-
-    // Activated default styles
-    protected styles: IDialogStyles;
 
     // Map of button IDs to button information objects
     @mim.trigger

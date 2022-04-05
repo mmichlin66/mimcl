@@ -1,6 +1,6 @@
 import * as mim from "mimbl"
 import * as css from "mimcss"
-import {IPopupStyles, DefaultPopupStyles} from "./PopupStyles";
+import {IPopupStyles, DefaultPopupStyles} from "./PopupStyles"
 
 
 // Had to augment the HTMLDialogElement interface because TypeScript's 4.4 lib.dom.d.ts not only
@@ -39,14 +39,14 @@ export interface IPopup
  * derive from the IPopupOptions interface and to implement the [[IPopupStyles]] interface for
  * the styles property.
  */
-export interface IPopupOptions
+export interface IPopupOptions<TStyles extends IPopupStyles = IPopupStyles>
 {
     /**
      * Defines what styles to use for the `<dialog>` element and optionally for the ::backdrop
      * pseudo element. If this property is not defined, the popup will use the default styles. The
      * default value is undefined.
      */
-    readonly styles?: IPopupStyles;
+    readonly styles?: TStyles;
 
     /**
      * Value that is returned when the user closes the popup by pressing the Escape key. If this
@@ -57,6 +57,24 @@ export interface IPopupOptions
      * clicking on the backdrop - that is, the area outside of the popup itslef.
      */
     readonly escapeReturnValue?: any;
+
+    /**
+     * Flag indicating that no animation should be used when the popup appears. The default value
+     * is `false`; that is, animation is used.
+     */
+    readonly noEntranceAnimation?: boolean;
+
+    /**
+     * Flag indicating that no animation should be used when the popup is closed. The default value
+     * is `false`; that is, animation is used.
+     */
+    readonly noExitAnimation?: boolean;
+
+    /**
+     * Flag indicating that no animation should be used when the popup is programmatically moved.
+     * The default value is `false`; that is, animation is used.
+     */
+    readonly noMoveAnimation?: boolean;
 
     /**
      * HTML element under which the `<dialog>` element is created. If this property is undefined,
@@ -119,14 +137,16 @@ export interface IPopupEvents
  * @typeParam TOptions Type of the object used to specify options for the component. Must
  * implement the IPopupOptions interface.
  */
-export class Popup extends mim.Component implements IPopup
+export class Popup<TStyles extends IPopupStyles = IPopupStyles,
+    TOptions extends IPopupOptions<TStyles> = IPopupOptions<TStyles>>
+    extends mim.Component implements IPopup
 {
     /**
      * Popup is constructed by specifying the initial content it should display and the options
      * @param content
      * @param options
      */
-    public constructor( content?: any, options?: IPopupOptions)
+    public constructor( content?: any, options?: TOptions)
     {
         super();
         this.content = content;
@@ -184,14 +204,15 @@ export class Popup extends mim.Component implements IPopup
      * Closes the popup and passes a value to be used as a return value. For the modal popups,
      * this value will be the resolved value of the promise returned by the showModal() method.
      * For modeless popups, this value will be available as the returnValue property.
-     * @param retVal
+     * @param returnValue Value to use a return value after the popup is closed.
      */
-    public close( returnValue?: any): void
+    public async close( returnValue?: any): Promise<void>
     {
         if (!this.isOpen)
             return;
 
-		if (this.modalPromise)
+        let modalPromise = this.modalPromise;
+		if (modalPromise)
 		{
             // if escapeReturnValue was defined in options, we need to remove the click handler
             // that we created in showModal
@@ -200,15 +221,14 @@ export class Popup extends mim.Component implements IPopup
                 this.dlg.removeEventListener( "click", this.onDetectClickOutside);
 
             window.removeEventListener( "keydown", this.onKeyDown);
-
-			this.modalPromise.resolve( returnValue);
 			this.modalPromise = undefined;
 		}
 
-        this.dlg.close();
-        this.destroy();
+        await this.destroy();
 
         this._returnValue = returnValue;
+
+		modalPromise?.resolve( returnValue);
 
         this.onClose( returnValue);
     }
@@ -294,6 +314,13 @@ export class Popup extends mim.Component implements IPopup
 
         this.move( newX, newY);
         this.dlg.style.margin = "0";
+        if (!this.options?.noMoveAnimation)
+        {
+            this.dlg.classList.add( Popup.defaultStyles.popupMoving.name);
+            this.dlg.ontransitionend = () => {
+                this.dlg.classList.remove( Popup.defaultStyles.popupMoving.name);
+            }
+        }
 	};
 
 
@@ -324,19 +351,6 @@ export class Popup extends mim.Component implements IPopup
 
 
 
-    /**
-     * Sets properties of the `this.styles` object, which determines the styles used for popups.
-     * This method is intended to be overridden by the derived classes, which must call the
-     * `super.adjustStyles()` implementation.
-     */
-    protected adjustStyles(): void
-    {
-        this.styles = {};
-        this.styles.dialogElement = this.options?.styles?.dialogElement ?? this.defaultStyles.dialogElement;
-    }
-
-
-
     // Creates the dialog element
     private create(): void
     {
@@ -344,35 +358,77 @@ export class Popup extends mim.Component implements IPopup
         this.anchorElement = this.options?.anchorElement ?? document.body;
 
         // obtain necessary styles
-        this.defaultStyles = css.activate( DefaultPopupStyles);
-        this.adjustStyles();
+        if (!Popup.defaultStyles)
+            Popup.defaultStyles = css.activate( DefaultPopupStyles);
+
+        if (this.options?.styles)
+            this.optionStyles = this.options.styles;
+
+        this.styles = Object.assign( {}, Popup.defaultStyles, this.options?.styles);
 
         // create dialog element and add it to the DOM
-        this.dlg = document.createElement( "dialog") as HTMLDialogElement;
-        this.dlg.className = this.styles.dialogElement.name;
-        this.anchorElement.appendChild( this.dlg);
+        let dlg = document.createElement( "dialog") as HTMLDialogElement;
+        dlg.className = this.styles.popupElement.name;
 
-        // assign positioning styles dirctly to the dialog element. If x and/or y are undefined,
+        if (!this.options?.noEntranceAnimation)
+        {
+            dlg.classList.add( Popup.defaultStyles.popupEntering.name);
+            dlg.onanimationend = () => {
+                dlg.classList.remove( Popup.defaultStyles.popupEntering.name);
+            }
+        }
+
+        // assign positioning styles directly to the dialog element. If x and/or y are undefined,
         // we center the dialog horizontally and/or vertically
         let dlgElmStyle: css.Styleset = { position: "fixed" };
-        if (!this.options || this.options.initialX === undefined)
+        if (this.options?.initialX === undefined)
             dlgElmStyle.left = dlgElmStyle.right = 0;
         else
+        {
             dlgElmStyle.left = this.options.initialX;
+            dlgElmStyle.marginInline = 0;
+        }
 
-        if (!this.options || this.options.initialY === undefined)
+        if (this.options?.initialY === undefined)
             dlgElmStyle.top = dlgElmStyle.bottom = 0;
         else
+        {
             dlgElmStyle.top = this.options.initialY;
+            dlgElmStyle.marginBlock = 0;
+        }
 
-        css.setElementStyle( this.dlg, dlgElmStyle /*, css.SchedulerType.Sync*/);
+        dlg.setStyleset( dlgElmStyle);
+        // css.setElementStyle( this.dlg, dlgElmStyle /*, css.SchedulerType.Sync*/);
 
         // mount the component
-        mim.mount( this, this.dlg)
+        this.anchorElement.appendChild( dlg);
+        this.dlg = dlg;
+        mim.mount( this, dlg);
     }
 
-    // Destroys the dialog element
-    private destroy(): void
+    /** Destroys the dialog element */
+    private async destroy(): Promise<void>
+    {
+        return new Promise( (resolveFunc) =>
+        {
+            if (!this.options?.noExitAnimation)
+            {
+                this.dlg.classList.add( Popup.defaultStyles.popupExiting.name);
+                this.dlg.onanimationend = () => {
+                    this.cleanup();
+                    resolveFunc();
+                }
+            }
+            else
+            {
+                this.cleanup();
+                resolveFunc();
+            }
+        });
+    }
+
+    /** Unmounts the popup content and cleans up internal stuctures */
+    private cleanup(): void
     {
         // unmount the content
         mim.unmount( this.dlg);
@@ -382,9 +438,8 @@ export class Popup extends mim.Component implements IPopup
         this.dlg = null;
         this.anchorElement = null;
 
-        // deactivate default styles
-        css.deactivate( this.defaultStyles);
-        this.styles = this.defaultStyles = null;
+        // we don't deactivate default styles - let them remain active
+        this.styles = null;
     }
 
 	/**
@@ -498,14 +553,17 @@ export class Popup extends mim.Component implements IPopup
     protected content: any;
 
     // Options
-    protected options: IPopupOptions;
+    protected options: TOptions;
 
     // Activated default styles
-    protected defaultStyles: DefaultPopupStyles;
+    protected static defaultStyles: DefaultPopupStyles;
+
+    // Activated styles from the options (can be undefined)
+    protected optionStyles?: TStyles;
 
     // Actual styles to use - may come from the default styles or from the styles defined in the
     // options
-    protected styles: IPopupStyles;
+    protected styles: TStyles;
 
     // Anchor element under which to create the dialog element
     private anchorElement: HTMLElement;

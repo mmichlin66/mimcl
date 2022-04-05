@@ -1,14 +1,9 @@
 import * as mim from "mimbl"
 import * as css from "mimcss"
-import {Dialog} from "./Dialog"
-import {IMsgBoxStyles} from "./PopupStyles";
+import {Dialog, IDialogOptions} from "./Dialog"
+import {IMsgBoxStyles} from "./PopupStyles"
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Message box
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * The MsgBoxButton enumeration defines constants to indicate standard buttons used in dialogs.
@@ -68,7 +63,7 @@ export const enum MsgBoxIcon
 
 
 
-export interface IMsgBoxOptions
+export interface IMsgBoxOptions extends IDialogOptions<IMsgBoxStyles>
 {
     /**
      * What buttons to show. Default vlue is MsgBoxButtonBar.OK
@@ -87,11 +82,6 @@ export interface IMsgBoxOptions
 
     /** Button that should be used as a default one */
     defaultButton?: MsgBoxButton;
-
-    /**
-     * Object that defines CSS styles for different parts of the message box.
-     */
-    styles?: IMsgBoxStyles
 }
 
 
@@ -99,16 +89,15 @@ export interface IMsgBoxOptions
 /**
  * The MsgBox class is a dialog that displays a message with a set of pre-defined buttons.
  */
-export class MsgBox extends Dialog
+export class MsgBox extends Dialog<IMsgBoxStyles, IMsgBoxOptions>
 {
     /**
      * Displays modal message box with the given parameters and returns a promise, which is
      * resolved when the user clicks on one of the buttons. The identifier of the button is used
      * as the promise's value.
      * @param message Content to be used in the message box's body.
-     * @param title Content to display in the message box's caption.
-     * @param buttons Identifier of a button ot button combination to be displayed.
-     * @param icon Optional identifier of the icon to be displayed.
+     * @param options Options further defining the message box behavior including title, icon and
+     * styles.
      * @returns Promise that is resolved with the identifier of the button clicked by the user.
      */
     public static showModal( message: string, options?: IMsgBoxOptions): Promise<MsgBoxButton>
@@ -149,26 +138,6 @@ export class MsgBox extends Dialog
 
 
 
-    /**
-     * Sets properties of the `this.styles` object, which determines the styles used for popups.
-     * This method is intended to be overridden by the derived classes, which must call the
-     * `super.adjustStyles()` implementation.
-     */
-    protected adjustStyles(): void
-    {
-        super.adjustStyles();
-
-        let styles = this.styles;
-        let defaultStyles = this.defaultStyles;
-        let optionStyles = this.options?.styles;
-
-        styles.msgBoxContainer = optionStyles?.msgBoxContainer ?? defaultStyles.msgBoxContainer;
-        styles.msgBoxIcon = optionStyles?.msgBoxIcon ?? defaultStyles.msgBoxIcon;
-        styles.msgBoxText = optionStyles?.msgBoxText ?? defaultStyles.msgBoxText;
-    }
-
-
-
     // Adds buttons according to the parameter specified in the constructor.
 	private createButtons( buttons: MsgBoxButtonBar): void
 	{
@@ -205,10 +174,10 @@ export class MsgBox extends Dialog
 	{
 		switch( this.icon)
 		{
-			case MsgBoxIcon.Info: return { char: "i", color: "blue" };
-			case MsgBoxIcon.Question: return { char: "?", color: "green" };
-			case MsgBoxIcon.Warning: return { char: "!", color: "orange" };
-			case MsgBoxIcon.Error: return { char: "x", color: "red" };
+			case MsgBoxIcon.Info: return { char: "\u{1F6C8}", color: "blue" };
+			case MsgBoxIcon.Question: return { char: "\uFF1F", color: "green" };
+			case MsgBoxIcon.Warning: return { char: "\u26A0", color: "orange" };
+			case MsgBoxIcon.Error: return { char: "\u{1F6AB}", color: "red" };
 
 			default: return {};
 		}
@@ -220,12 +189,6 @@ export class MsgBox extends Dialog
 	}
 
 
-
-    /** Options */
-    protected options: IMsgBoxOptions;
-
-    /** Activated styles */
-    protected styles: IMsgBoxStyles;
 
 	/** Icon */
 	private icon: MsgBoxIcon;

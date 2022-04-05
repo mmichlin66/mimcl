@@ -8,10 +8,18 @@ import * as css from "mimcss"
  */
 export interface IPopupStyles
 {
+    popupEntrance?: css.IAnimationRule;
+
+    popupExit?: css.IAnimationRule;
+
+    popupEntering?: css.IClassRule | css.IClassNameRule;
+    popupExiting?: css.IClassRule | css.IClassNameRule;
+    popupMoving?: css.IClassRule | css.IClassNameRule;
+
     /**
      * Defines CSS class to use for the `<dialog>` element.
      */
-    dialogElement?: css.IClassRule | css.IClassNameRule;
+    popupElement?: css.IClassRule | css.IClassNameRule;
 }
 
 
@@ -99,16 +107,33 @@ export interface IProgressStyles extends IDialogStyles
 export class DefaultPopupStyles extends css.StyleDefinition implements IPopupStyles,
     IDialogStyles, IMsgBoxStyles
 {
+    popupEntrance = this.$keyframes([
+        ["from", {transform: css.scale(0.001)}],
+        // ["to", {}]
+    ])
+
+    popupExit = this.$keyframes([
+        // ["from", {}],
+        ["to", {transform: css.scale(0.001)}]
+    ])
+
+    popupEntering = this.$class();
+    popupExiting = this.$class();
+    popupMoving = this.$class();
+
     /** Styles for the `<dialog>` element. */
-    dialogElement = this.$class({
+    popupElement = this.$class({
         border: [1, "solid", "grey"],
         boxShadow: { x: 4, y: 4, blur: 4, color: "lightgrey" },
         padding: 0,
         maxWidth: "100%",
         maxHeight: "100%",
-        // transform: css.scale(0.1),
-        // transition: { property: "transform", duration: 200 },
-        "::backdrop": { backgroundColor: "grey", opacity: 0.3 }
+        "::backdrop": { backgroundColor: "grey", opacity: 0.3 },
+        "&": [
+            [this.popupEntering, {animation: { name: this.popupEntrance, duration: 150 }}],
+            [this.popupExiting, {animation: { name: this.popupExit, duration: 150 }}],
+            [this.popupMoving, {transitionProperty: ["left", "top"], transitionDuration: 150}]
+        ]
     })
 
     dialogCaption = this.$class({
