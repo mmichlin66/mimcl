@@ -46,7 +46,7 @@ export interface IPopupOptions<TStyles extends IPopupStyles = IPopupStyles>
      * pseudo element. If this property is not defined, the popup will use the default styles. The
      * default value is undefined.
      */
-    readonly styles?: TStyles;
+    styles?: TStyles;
 
     /**
      * Value that is returned when the user closes the popup by pressing the Escape key. If this
@@ -56,43 +56,43 @@ export interface IPopupOptions<TStyles extends IPopupStyles = IPopupStyles>
      * For modal popups, this property also controls whether the user can dismiss the popup by
      * clicking on the backdrop - that is, the area outside of the popup itslef.
      */
-    readonly escapeReturnValue?: any;
+    escapeReturnValue?: any;
 
     /**
      * Flag indicating that no animation should be used when the popup appears. The default value
      * is `false`; that is, animation is used.
      */
-    readonly noEntranceAnimation?: boolean;
+    noEntranceAnimation?: boolean;
 
     /**
      * Flag indicating that no animation should be used when the popup is closed. The default value
      * is `false`; that is, animation is used.
      */
-    readonly noExitAnimation?: boolean;
+    noExitAnimation?: boolean;
 
     /**
      * Flag indicating that no animation should be used when the popup is programmatically moved.
      * The default value is `false`; that is, animation is used.
      */
-    readonly noMoveAnimation?: boolean;
+    noMoveAnimation?: boolean;
 
     /**
      * HTML element under which the `<dialog>` element is created. If this property is undefined,
      * the `<dialog>` element is created under the `<body>` element. The default value is undefined.
      */
-    readonly anchorElement?: HTMLElement;
+    anchorElement?: HTMLElement;
 
     /**
      * X-coordinate of the top-left corner of the dialog from the anchor element. If undefined,
      * the dialog will be centered horizontally.
      */
-    readonly initialX?: css.CssLength;
+    initialX?: css.CssLength;
 
     /**
      * Y-coordinate of the top-left corner of the dialog from the anchor element. If undefined,
      * the dialog will be centered vertically.
      */
-    readonly initialY?: css.CssLength;
+    initialY?: css.CssLength;
 }
 
 

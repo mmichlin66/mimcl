@@ -47,22 +47,36 @@ export const enum MsgBoxButtonBar
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// The MsgBoxIcon enumeration specifies values of predefined icons for message box.
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * The MsgBoxIcon enumeration specifies values of predefined icons for message box.
+ */
 export const enum MsgBoxIcon
 {
 	None = 0,
 	Info,
 	Warning,
 	Error,
+    Success,
 	Question,
+    Stop,
 }
 
 
 
+/**
+ * Type defining the icon to be displayed in the message box. The `char` property defines the
+ * Unicode character and the optional `color` property defines the color in which this character
+ * should be displayed.
+ */
+export type MsgBoxIconInfo = {char: string, color?: css.CssColor};
+
+export type MsgBoxIconType = MsgBoxIcon | string | MsgBoxIconInfo | undefined;
+
+
+
+/**
+ * Represents options that further define message box behavior
+ */
 export interface IMsgBoxOptions extends IDialogOptions<IMsgBoxStyles>
 {
     /**
@@ -71,14 +85,9 @@ export interface IMsgBoxOptions extends IDialogOptions<IMsgBoxStyles>
     buttons?: MsgBoxButtonBar;
 
     /**
-     * Text to show in the message box caption
-     */
-    title?: string;
-
-    /**
      * Icon to show.
      */
-    icon?: MsgBoxIcon;
+    icon?: MsgBoxIcon | string | MsgBoxIconInfo;
 
     /** Button that should be used as a default one */
     defaultButton?: MsgBoxButton;
@@ -110,12 +119,9 @@ export class MsgBox extends Dialog<IMsgBoxStyles, IMsgBoxOptions>
 
 	constructor( message: any, options?: IMsgBoxOptions)
 	{
+        super( message, options ?? {});
         let buttons = options?.buttons ?? MsgBoxButtonBar.OK;
-        super( message, options?.title, {
-            styles: options?.styles,
-            escapeReturnValue: buttons === MsgBoxButtonBar.None ? MsgBoxButton.Close : undefined,
-            defaultButton: options?.defaultButton
-        });
+        this.options.escapeReturnValue = buttons === MsgBoxButtonBar.None ? MsgBoxButton.Close : undefined;
 
 		this.icon = options?.icon ?? MsgBoxIcon.None;
 
@@ -126,7 +132,7 @@ export class MsgBox extends Dialog<IMsgBoxStyles, IMsgBoxOptions>
 
 	public renderBody(): any
 	{
-        let { char, color } = this.getIconClassAndColor();
+        let { char, color } = this.getIconClassAndColor() ?? {};
 
         // we are using this.optionalStyles because we explicitly pass our styles in the options
         // parameter of the Dialog constructor.
@@ -144,42 +150,49 @@ export class MsgBox extends Dialog<IMsgBoxStyles, IMsgBoxOptions>
 		switch( buttons)
 		{
 			case MsgBoxButtonBar.Close:
-				this.createButton( "Close", MsgBoxButton.Close);
+				this.createButton( "Close", MsgBoxButton.Close, "Escape");
 				break;
 
 			case MsgBoxButtonBar.OK:
-				this.createButton( "OK", MsgBoxButton.OK);
+				this.createButton( "OK", MsgBoxButton.OK, "Enter");
 				break;
 
 			case MsgBoxButtonBar.OkCancel:
-				this.createButton( "OK", MsgBoxButton.OK);
+				this.createButton( "OK", MsgBoxButton.OK, "Enter");
 				this.createButton( "Cancel", MsgBoxButton.Cancel, "Escape");
 				break;
 
 			case MsgBoxButtonBar.YesNo:
-				this.createButton( "Yes", MsgBoxButton.Yes);
-				this.createButton( "No", MsgBoxButton.No);
+				this.createButton( "Yes", MsgBoxButton.Yes, "KeyY");
+				this.createButton( "No", MsgBoxButton.No, "KeyN");
 				break;
 
 			case MsgBoxButtonBar.YesNoCancel:
-				this.createButton( "Yes", MsgBoxButton.Yes);
-				this.createButton( "No", MsgBoxButton.No);
+				this.createButton( "Yes", MsgBoxButton.Yes, "KeyY");
+				this.createButton( "No", MsgBoxButton.No, "KeyN");
 				this.createButton( "Cancel", MsgBoxButton.Cancel, "Escape");
 				break;
 		}
 	}
 
 	// Returns symbol and color for displaying the icon.
-	private getIconClassAndColor(): { char?: string, color?: css.CssColor }
+	private getIconClassAndColor(): MsgBoxIconInfo | undefined
 	{
+        if (typeof this.icon === "string")
+            return {char: this.icon};
+        else if (typeof this.icon === "object")
+            return this.icon;
+
 		switch( this.icon)
 		{
 			case MsgBoxIcon.Info: return { char: "\u{1F6C8}", color: "blue" };
-			case MsgBoxIcon.Question: return { char: "\uFF1F", color: "green" };
 			case MsgBoxIcon.Warning: return { char: "\u26A0", color: "orange" };
 			case MsgBoxIcon.Error: return { char: "\u{1F6AB}", color: "red" };
+			case MsgBoxIcon.Success: return { char: "\u2705", color: "green" };
+			case MsgBoxIcon.Question: return { char: "\uFF1F", color: "green" };
+			case MsgBoxIcon.Stop: return { char: "\u{1F6D1}", color: "green" };
 
-			default: return {};
+			default: return undefined;
 		}
 	}
 
@@ -191,7 +204,7 @@ export class MsgBox extends Dialog<IMsgBoxStyles, IMsgBoxOptions>
 
 
 	/** Icon */
-	private icon: MsgBoxIcon;
+	private icon: MsgBoxIcon | string | MsgBoxIconInfo;
 
 }
 

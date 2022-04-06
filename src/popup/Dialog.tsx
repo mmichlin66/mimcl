@@ -71,9 +71,14 @@ export interface IDialog extends IPopup
 export interface IDialogOptions<TStyles extends IDialogStyles = IDialogStyles> extends IPopupOptions<TStyles>
 {
     /**
+     * Content for the dialog's caption.
+     */
+    caption?: any;
+
+    /**
      * Identifier of the default button, which will have focus when the dialog appears.
      */
-    readonly defaultButton?: any;
+    defaultButton?: any;
 }
 
 
@@ -86,12 +91,11 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
     TOptions extends IDialogOptions<TStyles> = IDialogOptions<TStyles>>
     extends Popup<TStyles, TOptions> implements IDialog
 {
-    constructor( bodyContent?: any, captionContent?: any, options?: TOptions, ...buttons: IDialogButton[])
+    constructor( bodyContent?: any, options?: TOptions, ...buttons: IDialogButton[])
     {
         // we reuse the Popup's content property for dialog's body
         super( bodyContent, options);
-
-        this.captionContent = captionContent;
+        this.caption = options?.caption;
 
         for( let btn of buttons)
             this.addButton( btn);
@@ -102,9 +106,10 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
     /**
      * Adds a button to the button bar
      */
-    public setCaption( captionContent: any): void
+    public setCaption( caption: any): void
     {
-        this.captionContent = captionContent;
+        this.caption = caption;
+        this.updateMe( this.renderCaption);
     }
 
     /**
@@ -155,7 +160,7 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 
     public render(): any
     {
-        return <div keydown={this.onButtonKeyDown}>
+        return <div keydown={this.onButtonKeyDown} tabindex={0}>
             {this.renderCaption}
             {this.renderBody}
             {this.renderButtons}
@@ -165,9 +170,10 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
     public renderCaption(): any
     {
         // have to specify touch-action "none" - otherwise, pointer events are canceled by the browser
-        return <div class={this.styles.dialogCaption} pointerdown={this.onCaptionPointerDown} style={{touchAction: "none"}}>
-            {this.captionContent}
-        </div>
+        return this.caption &&
+            <div class={this.styles.dialogCaption} pointerdown={this.onCaptionPointerDown} style={{touchAction: "none"}}>
+                {this.caption}
+            </div>
     }
 
     public renderBody(): any
@@ -179,13 +185,14 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 
     public renderButtons(): any
     {
-        return <div class={this.styles.dialogButtonBar}>
-            {Array.from( this.buttons.values()).map( info =>
-                <button id={info.btn.id} ref={info.ref} class={this.styles.dialogButton} click={() => this.onButtonClicked(info)}>
-                    {info.btn.content}
-                </button>
-            )}
-        </div>
+        return this.buttons.size > 0 &&
+            <div class={this.styles.dialogButtonBar}>
+                {Array.from( this.buttons.values()).map( info =>
+                    <button id={info.btn.id} ref={info.ref} class={this.styles.dialogButton} click={() => this.onButtonClicked(info)}>
+                        {info.btn.content}
+                    </button>
+                )}
+            </div>
     }
 
 
@@ -224,9 +231,8 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 
 
 
-    // Map of button IDs to button information objects
-    @mim.trigger
-    private captionContent: any;
+    // Content for the dialog's caption
+    private caption: any;
 
     // Map of button IDs to button information objects
     @mim.trigger(3)

@@ -123,7 +123,9 @@ export class DefaultPopupStyles extends css.StyleDefinition implements IPopupSty
 
     /** Styles for the `<dialog>` element. */
     popupElement = this.$class({
-        border: [1, "solid", "grey"],
+        border: "none",
+        borderLeft: [1, "solid", "lightgrey"],
+        borderTop: [1, "solid", "lightgrey"],
         boxShadow: { x: 4, y: 4, blur: 4, color: "lightgrey" },
         padding: 0,
         maxWidth: "100%",
@@ -151,13 +153,13 @@ export class DefaultPopupStyles extends css.StyleDefinition implements IPopupSty
         // backgroundColor: "lightgrey",
         padding: [0.7, 1.01],
         display: "flex",
+        gap: css.em(1),
         justifyContent: "flex-end",
         alignItems: "center",
     })
 
     dialogButton = this.$class({
         padding: 0.3,
-        marginInlineStart: 1.01,
         minWidth: 5.5,
         border: "none",
         backgroundColor: 0xf2f2f2,
@@ -180,13 +182,14 @@ export class DefaultPopupStyles extends css.StyleDefinition implements IPopupSty
         padding: css.rem(0.5),
         fontSize: css.em(3),
         fontWeight: 900,
+        border: "none",
     })
 
     msgBoxText = this.$class({
         padding: 0.5,
         minWidth: css.em(15),
         maxWidth: css.em(60),
-        minHeight: css.em(2),
+        // minHeight: css.em(2),
         maxHeight: css.em(20),
         overflow: "auto",
         verticalAlign: "middle",

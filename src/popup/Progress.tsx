@@ -10,11 +10,6 @@ import {IProgressStyles} from "./PopupStyles"
 export interface IProgressOptions extends IDialogOptions<IProgressStyles>
 {
     /**
-     * Text to show in the progress dialog caption
-     */
-    title?: string;
-
-    /**
      * Value to return when the cancel button is clicked. If this property is null or not defined,
      * there will be no cancel button.
      */
@@ -44,7 +39,7 @@ export class ProgressBox extends Dialog<IProgressStyles, IProgressOptions>
     public static async showUntil( promise: Promise<any>, content: any, title?: string,
         delayMilliseconds: number = 750): Promise<any>
 	{
-        let progress = new ProgressBox( content, {title});
+        let progress = new ProgressBox( content, {caption: title});
         progress.showModalWithDelay( delayMilliseconds);
         try
         {
@@ -60,7 +55,7 @@ export class ProgressBox extends Dialog<IProgressStyles, IProgressOptions>
 
 	constructor( content?: string, options?: IProgressOptions)
 	{
-		super( content, options?.title, { styles: options?.styles });
+		super( content, options);
 
         if (options?.cancelReturnValue != null)
             this.addButton({ id: 1, content: "Cancel", returnValue: options.cancelReturnValue });
@@ -97,7 +92,7 @@ export class ProgressBox extends Dialog<IProgressStyles, IProgressOptions>
      */
     public async close( retVal?: any): Promise<void>
     {
-        if (this.delayHandle > 0)
+        if (this.delayHandle)
         {
             clearTimeout( this.delayHandle);
             this.delayHandle = 0;
@@ -131,7 +126,7 @@ export class ProgressBox extends Dialog<IProgressStyles, IProgressOptions>
 
 
     // Handle of the setTimeout call when openeing the popup with delay.
-    private delayHandle = 0;
+    private delayHandle?: number;
 }
 
 
