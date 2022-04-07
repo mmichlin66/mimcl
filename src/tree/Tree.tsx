@@ -1,9 +1,8 @@
 import * as mim from "mimbl"
 import * as css from "mimcss"
-import {ITree, ITreeNode, ITreeNodeContainer, ITreeNodeParams} from "./TreeApi"
+import {ITree, ITreeNode, ITreeNodeParams, TreeStyles} from "./TreeApi"
 import {TreeNodeContainer} from "./TreeNodeContainer"
 import {TreeNode} from "./TreeNode"
-import {ComponentWithLocalStyles, IMCssStyleRule} from "../util/LocalStyles";
 
 
 
@@ -12,8 +11,10 @@ import {ComponentWithLocalStyles, IMCssStyleRule} from "../util/LocalStyles";
 // The Tree class is a general purpose tree control.
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-export class Tree extends ComponentWithLocalStyles implements ITree
+export class Tree extends mim.Component implements ITree
 {
+    public styles: TreeStyles;
+
 	constructor()
 	{
 		super();
@@ -21,9 +22,17 @@ export class Tree extends ComponentWithLocalStyles implements ITree
 		this.tabIndex = 0;
 		this.container = new TreeNodeContainer( () => new TreeNode( null, 0, this));
 		this.elmRef = new mim.Ref<HTMLDivElement>();
-
-		this.prepareLocalStyles();
 	}
+
+    willMount(): void
+    {
+        this.styles = css.activate( new TreeStyles());
+    }
+
+    willUnmount(): void
+    {
+        css.deactivate( this.styles);
+    }
 
 
 
@@ -88,7 +97,7 @@ export class Tree extends ComponentWithLocalStyles implements ITree
 
 	public render(): any
 	{
-		return <div ref={this.elmRef} tabindex={this.tabIndex} class={this.cssClassTree} keydown={this.onKeyDown}>
+		return <div ref={this.elmRef} tabindex={this.tabIndex} class={this.styles.tree} keydown={this.onKeyDown}>
 			{this.container}
 		</div>;
 	}
@@ -240,72 +249,6 @@ export class Tree extends ComponentWithLocalStyles implements ITree
 
 
 
-	private prepareLocalStyles()
-	{
-		this.cssClassTree = this.decorateName( "tree");
-		this.cssRuleTree = this.createStyleRule( "tree", ".tree(*)",
-			{
-				cursor: "default",
-				border: [1, "solid", "dodgerblue"],
-				fontFamily: "Verdana, Geneva, Tahoma, sans-serif",
-				fontSize: 12,
-				boxSizing: "border-box",
-				maxHeight: "100%",
-				overflow: "auto",
-			}
-		);
-
-		this.cssClassNode = this.decorateName( "tree-node");
-		this.cssRuleNode = this.createStyleRule( "tree-node", ".tree-node(*)",
-			{
-				display: "flex",
-				alignItems: "center",
-			}
-		);
-
-		this.cssClassNodeContent = this.decorateName( "tree-node-content");
-		this.cssRuleNodeContent = this.createStyleRule( "tree-node-content", ".tree-node-content(*)",
-			{
-				marginLeft: 2,
-				padding: 1,
-			}
-		);
-
-		this.cssRuleNodeContentHover = this.createStyleRule( "tree-node-content:hover", ".tree-node-content(*):hover",
-			{
-				backgroundColor: "lightcyan",
-			}
-		);
-
-		this.cssClassNodeContentSelected = this.decorateName( "tree-node-content-selected");
-		this.cssRuleNodeContentSelected = this.createStyleRule( "tree-node-content-selected", ".tree-node-content-selected(*)",
-			{
-				marginLeft: 2,
-				border: [1, "dotted"],
-				backgroundColor: "dodgerblue",
-				color: "white",
-			}
-		);
-
-		this.cssClassNodeIcon = this.decorateName( "tree-node-icon");
-		this.cssRuleNodeIcon = this.createStyleRule( "tree-node-icon", ".tree-node-icon(*)",
-			{
-				fontSize: 10,
-				width: css.em(1),
-				height: css.em(1),
-			}
-		);
-
-		this.cssClassSubnodes = this.decorateName( "tree-subnodes");
-		this.cssRuleSubNodes = this.createStyleRule( "tree-subnodes", ".tree-subnodes(*)",
-			{
-				marginLeft: 16,
-			}
-		);
-	}
-
-
-
 	// Tab index of the tree control.
 	private m_tabIndex: number;
 
@@ -317,23 +260,6 @@ export class Tree extends ComponentWithLocalStyles implements ITree
 
 	// Reference to the element containing the tree.
 	public elmRef: mim.Ref<HTMLDivElement>;
-
-	// CSS rules used by the Tree and TreeNode controls
-	private cssRuleTree: IMCssStyleRule;
-	private cssRuleNode: IMCssStyleRule;
-	private cssRuleNodeContent: IMCssStyleRule;
-	private cssRuleNodeContentHover: IMCssStyleRule;
-	private cssRuleNodeContentSelected: IMCssStyleRule;
-	private cssRuleNodeIcon: IMCssStyleRule;
-	private cssRuleSubNodes: IMCssStyleRule;
-
-	// CSS local class names
-	public cssClassTree: string;
-	public cssClassNode: string;
-	public cssClassNodeContent: string;
-	public cssClassNodeContentSelected: string;
-	public cssClassNodeIcon: string;
-	public cssClassSubnodes: string;
 }
 
 

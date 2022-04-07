@@ -245,14 +245,14 @@ export class TreeNode extends mim.Component implements ITreeNode
 		if (this.m_icon)
 		{
 			if ("class" in this.m_icon)
-				iconContent = <span class={this.m_tree.cssClassNodeIcon + " " + this.m_icon.class}
+				iconContent = <span class={this.m_tree.styles.nodeIcon + " " + this.m_icon.class}
 									click={this.onClick} dblclick={this.onDblClick} />;
 			else if ("img" in this.m_icon)
-				iconContent = <img class={this.m_tree.cssClassNodeIcon} src={this.m_icon.img}
+				iconContent = <img class={this.m_tree.styles.nodeIcon} src={this.m_icon.img}
 									click={this.onClick} dblclick={this.onDblClick} />;
 		}
 
-		let contentClass: string = this.m_isSelected ? this.m_tree.cssClassNodeContentSelected : this.m_tree.cssClassNodeContent;
+		let contentClass = (this.m_isSelected ? this.m_tree.styles.nodeContentSelected : this.m_tree.styles.nodeContent).name;
 		if (this.m_customClass)
 			contentClass += " " + this.m_customClass;
 
@@ -266,7 +266,7 @@ export class TreeNode extends mim.Component implements ITreeNode
 		if (this.m_bold)
 			contentStyle.fontWeight = "bold";
 
-		return <div class={this.m_tree.cssClassNode}>
+		return <div class={this.m_tree.styles.node}>
 			<i class={"fa fa-fw " + expanderClassName} click={this.onExpanderClicked} />
 			{iconContent}
 			<span ref={this.contentElmRef} dragSource class={contentClass} style={contentStyle}
@@ -281,7 +281,7 @@ export class TreeNode extends mim.Component implements ITreeNode
 		if (this.subNodes.length === 0)
 			return null;
 
-		return <div class={this.m_tree.cssClassSubnodes} style={{display:this.m_isExpanded ? "block" : "none"}}>
+		return <div class={this.m_tree.styles.subNodes} style={{display:this.m_isExpanded ? "block" : "none"}}>
 			{this.container}
 		</div>;
 	}

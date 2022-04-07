@@ -1,5 +1,5 @@
 import * as mim from "mimbl";
-import {ITreeNode, ITreeNodeContainer, ITreeNodeParams} from "./TreeApi";
+import {ITreeNodeParams} from "./TreeApi";
 import {TreeNode} from "./TreeNode";
 
 

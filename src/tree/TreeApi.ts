@@ -1,12 +1,56 @@
-import {CssColor} from "mimcss" 
+import * as css from "mimcss"
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// The ITree interface represents a tree control.
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////
+export class TreeStyles extends css.StyleDefinition
+{
+    tree = this.$class({
+        cursor: "default",
+        border: [1, "solid", "dodgerblue"],
+        fontFamily: "Verdana, Geneva, Tahoma, sans-serif",
+        fontSize: 12,
+        boxSizing: "border-box",
+        maxHeight: "100%",
+        overflow: "auto",
+    })
+
+    node = this.$class({
+        display: "flex",
+        alignItems: "center",
+    })
+
+    nodeContent = this.$class({
+        marginLeft: 2,
+        padding: 1,
+    })
+
+    nodeContentHover = this.$class({
+        backgroundColor: "lightcyan",
+    })
+
+    nodeContentSelected = this.$class({
+        marginLeft: 2,
+        border: [1, "dotted"],
+        backgroundColor: "dodgerblue",
+        color: "white",
+    })
+
+    nodeIcon = this.$class({
+        fontSize: 10,
+        width: css.em(1),
+        height: css.em(1),
+    })
+
+    subNodes = this.$class({
+        marginLeft: 16,
+    })
+}
+
+
+
+/**
+ * The ITree interface represents a tree control.
+ */
 export interface ITree extends ITreeNodeContainer
 {
 	// Tab index of the tree control.
@@ -21,18 +65,16 @@ export interface ITree extends ITreeNodeContainer
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// The ITreeNodeParams interface represents parameters of a tree node that can be set/changed
-// externally.
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * The ITreeNodeParams interface represents parameters of a tree node that can be set/changed
+ *  externally.
+ */
 export interface ITreeNodeParams
 {
 	content: any;
 	icon?: TreeNodeIconParams;
-	textColor?: CssColor;
-	bgColor?: CssColor;
+	textColor?: css.CssColor;
+	bgColor?: css.CssColor;
 	italic?: boolean;
 	bold?: boolean;
 	customClass?: string;
@@ -41,20 +83,16 @@ export interface ITreeNodeParams
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// The ITreeNodeIconParams interface represents parameters of an icon of a tree node.
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * The ITreeNodeIconParams interface represents parameters of an icon of a tree node.
+ */
 export type TreeNodeIconParams = {class: string} | {img: string}
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// The ITreeNode interface represents a single node in the tree hierarchy.
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * The ITreeNode interface represents a single node in the tree hierarchy.
+ */
 export interface ITreeNode extends ITreeNodeParams, ITreeNodeContainer
 {
 	// Tree to which this node belongs.
@@ -90,11 +128,9 @@ export interface ITreeNode extends ITreeNodeParams, ITreeNodeContainer
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// The ITreeNodeContainer interface represents a collection of tree nodes.
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * The ITreeNodeContainer interface represents a collection of tree nodes.
+ */
 export interface ITreeNodeContainer
 {
 	// Creates a new node. If the index parameter is between zero and the current number of nodes,

@@ -1,7 +1,28 @@
 ﻿import * as mim from "mimbl"
-import {Styleset} from "mimcss"
+import * as css from "mimcss"
 import {ScrollAxis, ScrollAxisAction} from "./ScrollAxis"
-import {ComponentWithLocalStyles} from "../util/LocalStyles";
+
+
+
+export class VTableStyles extends css.StyleDefinition
+{
+    frame = this.$id({
+        width: "100%",
+        height: "100%",
+        overflow:"auto",
+    })
+
+    wall = this.$id({
+        position: "relative",
+        overflow: "hidden",
+    })
+
+    table = this.$id({
+        position: "absolute",
+        borderCollapse: "collapse",
+        border: [1, "solid", "black"],
+    })
+}
 
 
 
@@ -21,7 +42,7 @@ export interface VTableCellData
 	colSpan?: number;
 
 	/** Style that should be applied to the `<td>` or `<th>` element containing the cell. */
-	style?: Styleset;
+	style?: css.Styleset;
 
 	/** Class that should be applied to the `<td>` or `<th>` element containing the cell. */
 	class?: string;
@@ -81,14 +102,14 @@ export interface VTableProps
 /**
  * "Virtualized" table that renders only a subset of a dataset and changes this subset
  * as the user scrolls back and forth.
- * 
+ *
  * VTable uses the following 3 DOM elements:
  *  - frame - the "outer" `<div>` element which displays the scrollbars when necessary
  *  - wall - the "inner" `<div>` element which has the size of the entire possible table. It is
  *    needed to make scrolling more-or-less accurate.
  *  - table - the `<table>` element that contains only rows and columns that fit the frame plus
  *    a certain number for "overscan".
- * 
+ *
  * VTable calculates average row height and column width by dividing the size of the table
  * by the number of rows/columns. These average values are recalculated every time rows and
  * columns are added or deleted from the table. Based on these average values the wall element
@@ -100,8 +121,9 @@ export interface VTableProps
  * maximum values. During scrolling, if the actual overscan number becomes less than the minimum,
  * new cells are added and if it becomes more then the maximum cells are deleted.
  */
-export class VTable extends ComponentWithLocalStyles<VTableProps>
+export class VTable extends mim.Component<VTableProps>
 {
+    private styles: VTableStyles;
 	constructor( props: VTableProps)
 	{
 		super( props);
@@ -125,14 +147,13 @@ export class VTable extends ComponentWithLocalStyles<VTableProps>
 		this.minColOverscan = this.props.colOverscan ? this.props.colOverscan[0] : 3;
 		this.optColOverscan = this.props.colOverscan ? this.props.colOverscan[1] : 6;
 		this.maxColOverscan = this.props.colOverscan ? this.props.colOverscan[2] : 12;
-
-		this.prepareLocalStyles();
 	}
 
 
 
 	public willMount(): void
 	{
+        this.styles = css.activate( VTableStyles);
 		this.rows = [];
 
 		// fill in initial dataset
@@ -158,36 +179,10 @@ export class VTable extends ComponentWithLocalStyles<VTableProps>
 		this.hAxis = new ScrollAxis( this.minColOverscan, this.optColOverscan, this.maxColOverscan)
 	}
 
-
-
-	private prepareLocalStyles()
-	{
-		this.frameID = this.decorateName( "frame");
-		this.createStyleRule( "frame", "#frame(*)",
-			{
-				width: "100%",
-				height: "100%",
-				overflow:"auto",
-			}
-		);
-
-		this.wallID = this.decorateName( "wall");
-		this.createStyleRule( "wall", "#wall(*)",
-			{
-				position: "relative",
-				overflow: "hidden",
-			}
-		);
-
-		this.tableID = this.decorateName( "table");
-		this.createStyleRule( "table", "#table(*)",
-			{
-				position: "absolute",
-				borderCollapse: "collapse",
-				border: [1, "solid", "black"],
-			}
-		);
-	}
+    willUnmount(): void
+    {
+        css.deactivate( this.styles);
+    }
 
 
 
@@ -198,9 +193,9 @@ export class VTable extends ComponentWithLocalStyles<VTableProps>
 		// after the render and will schedule update in the same tick if necessary.
 		this.callMeBeforeUpdate( this.measureAndUpdate);
 
-		return <div id={this.frameID} ref={this.frameRef} scroll={this.onScroll}>
-			<div id={this.wallID} ref={this.wallRef}>
-				<table id={this.tableID} ref={this.tableRef}>
+		return <div id={this.styles.frame} ref={this.frameRef} scroll={this.onScroll}>
+			<div id={this.styles.wall} ref={this.wallRef}>
+				<table id={this.styles.table} ref={this.tableRef}>
 					<tbody>{this.renderRows}</tbody>
 				</table>
 			</div>
@@ -363,7 +358,7 @@ export class VTable extends ComponentWithLocalStyles<VTableProps>
 				let vrow = new VRow();
 				for( let j = this.firstCol; j <= this.lastCol; j++)
 					vrow.addCell( this.getCellData( i, j));
-	
+
 				// add the new row at the end
 				this.rows.push( vrow);
 			}
@@ -399,7 +394,7 @@ export class VTable extends ComponentWithLocalStyles<VTableProps>
 					let vrow = new VRow();
 					for( let j = this.firstCol; j <= this.lastCol; j++)
 						vrow.addCell( this.getCellData( i, j));
-		
+
 					// add the new row at the start
 					this.rows.push( vrow);
 				}
@@ -416,7 +411,7 @@ export class VTable extends ComponentWithLocalStyles<VTableProps>
 					let vrow = new VRow();
 					for( let j = this.firstCol; j <= this.lastCol; j++)
 						vrow.addCell( this.getCellData( i, j));
-		
+
 					// add the new row at the start
 					this.rows.splice( 0, 0, vrow);
 				}
@@ -580,11 +575,6 @@ export class VTable extends ComponentWithLocalStyles<VTableProps>
 	// Objects that deal with vertical and horizontal scrolling
 	private vAxis: ScrollAxis;
 	private hAxis: ScrollAxis;
-
-	// IDs of virtual table parts
-	private frameID: string;
-	private wallID: string;
-	private tableID: string;
 }
 
 
