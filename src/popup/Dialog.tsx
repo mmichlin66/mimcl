@@ -91,10 +91,11 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
     TOptions extends IDialogOptions<TStyles> = IDialogOptions<TStyles>>
     extends Popup<TStyles, TOptions> implements IDialog
 {
-    constructor( bodyContent?: any, options?: TOptions, ...buttons: IDialogButton[])
+    constructor( body?: any, options?: TOptions, ...buttons: IDialogButton[])
     {
         // we reuse the Popup's content property for dialog's body
-        super( bodyContent, options);
+        super( null, options);
+        this.body = body;
         this.caption = options?.caption;
 
         for( let btn of buttons)
@@ -139,14 +140,22 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 
         this.vn.publishService( "dialog", this);
 
-        if (this.options?.defaultButton != null)
+        this.content = <div keydown={this.onButtonKeyDown} tabindex={0} ref={this.containerRef}>
+            {this.renderCaption}
+            {this.renderBody}
+            {this.renderButtons}
+        </div>
+
+        this.callMeAfterUpdate( () =>
         {
-            this.callMeAfterUpdate( () =>
+            if (this.options?.defaultButton != null)
             {
                 let info = this.buttons.get( this.options?.defaultButton);
-                info && info.ref.focus();
-            })
-        }
+                info ? info.ref.focus() : this.containerRef?.focus();
+            }
+            else
+                this.containerRef?.focus();
+        })
 	}
 
     /**
@@ -158,14 +167,29 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
         super.willUnmount();
 	}
 
-    public render(): any
-    {
-        return <div keydown={this.onButtonKeyDown} tabindex={0}>
-            {this.renderCaption}
-            {this.renderBody}
-            {this.renderButtons}
-        </div>
-    }
+    // public render(): any
+    // {
+    //     return <div keydown={this.onButtonKeyDown} tabindex={0} ref={this.containerRef}>
+    //         {this.renderCaption}
+    //         {this.renderBody}
+    //         {this.renderButtons}
+    //     </div>
+    // }
+
+    // public renderCaption(): any
+    // {
+    //     let closerValue = this.options?.closerValue;
+    //     let hasCloser = closerValue !== undefined;
+
+    //     // have to specify touch-action "none" - otherwise, pointer events are canceled by the browser
+    //     return (this.caption || hasCloser) &&
+    //         <div class={this.styles.dialogCaption} pointerdown={this.onCaptionPointerDown} style={{touchAction: "none"}}>
+    //             {this.caption}
+    //             {hasCloser &&
+    //                 <span class={this.styles?.popupCloser} click={() => this.close(closerValue)}>{"\u2A2F"}</span>
+    //             }
+    //         </div>
+    // }
 
     public renderCaption(): any
     {
@@ -178,9 +202,10 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 
     public renderBody(): any
     {
-        return <div class={this.styles.dialogBody}>
-            {this.content}
-        </div>
+        return this.body &&
+            <div class={this.styles.dialogBody}>
+                {this.body}
+            </div>
     }
 
     public renderButtons(): any
@@ -232,11 +257,18 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 
 
     // Content for the dialog's caption
-    private caption: any;
+    protected caption: any;
+
+    // Content for the dialog's body
+    protected body: any;
 
     // Map of button IDs to button information objects
     @mim.trigger(3)
-    private buttons = new Map<any, DialogButtonInfo>();
+    protected buttons = new Map<any, DialogButtonInfo>();
+
+    // Reference to the dialog container
+    @mim.ref
+    private containerRef: HTMLDivElement;
 
     // Map of keyboard key or code values to the button objects associated with them
     private buttonKeys = new Map<string, DialogButtonInfo>();

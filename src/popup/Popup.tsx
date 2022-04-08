@@ -1,6 +1,6 @@
 import * as mim from "mimbl"
 import * as css from "mimcss"
-import {IPopupStyles, DefaultPopupStyles} from "./PopupStyles"
+import {IPopupStyles, DefaultPopupTheme, PopupTheme} from "./PopupStyles"
 
 
 // Had to augment the HTMLDialogElement interface because TypeScript's 4.4 lib.dom.d.ts not only
@@ -43,8 +43,8 @@ export interface IPopupOptions<TStyles extends IPopupStyles = IPopupStyles>
 {
     /**
      * Defines what styles to use for the `<dialog>` element and optionally for the ::backdrop
-     * pseudo element. If this property is not defined, the popup will use the default styles. The
-     * default value is undefined.
+     * pseudo element. If this property is not defined, the popup will use styles from the current
+     * popup theme. The default value is undefined.
      */
     styles?: TStyles;
 
@@ -56,7 +56,14 @@ export interface IPopupOptions<TStyles extends IPopupStyles = IPopupStyles>
      * For modal popups, this property also controls whether the user can dismiss the popup by
      * clicking on the backdrop - that is, the area outside of the popup itslef.
      */
-    escapeReturnValue?: any;
+    escapeValue?: any;
+
+    /**
+     * Value that is returned when the user closes the popup by clicking the closer button. If this
+     * property is undefined, the popup will not have the closer button. Note that null is valid
+     * value that can be used to close a popup. The default value is undefined.
+     */
+    closerValue?: any;
 
     /**
      * Flag indicating that no animation should be used when the popup appears. The default value
@@ -191,7 +198,7 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
 
         // if the escapeReturnValue is defined in the options, start listening to the keyboard and
         // click events to detect clicks outside the popup because they will act as Escape too.
-        let escapeRetVal = this.options?.escapeReturnValue;
+        let escapeRetVal = this.options?.escapeValue;
         if (escapeRetVal !== undefined)
             this.dlg.addEventListener( "click", this.onDetectClickOutside);
 
@@ -216,7 +223,7 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
 		{
             // if escapeReturnValue was defined in options, we need to remove the click handler
             // that we created in showModal
-            let escapeRetVal = this.options?.escapeReturnValue;
+            let escapeRetVal = this.options?.escapeValue;
             if (escapeRetVal !== undefined)
                 this.dlg.removeEventListener( "click", this.onDetectClickOutside);
 
@@ -316,10 +323,14 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         this.dlg.style.margin = "0";
         if (!this.options?.noMoveAnimation)
         {
-            this.dlg.classList.add( Popup.defaultStyles.popupMoving.name);
-            this.dlg.ontransitionend = () => {
-                this.dlg.classList.remove( Popup.defaultStyles.popupMoving.name);
+            let onMoveTransitionEnd = (): void =>
+            {
+                this.dlg.classList.remove( Popup.theme.popupMoving.name);
+                this.dlg.removeEventListener( "transitionend", onMoveTransitionEnd)
             }
+
+            this.dlg.addEventListener( "transitionend", onMoveTransitionEnd)
+            this.dlg.classList.add( Popup.theme.popupMoving.name);
         }
 	};
 
@@ -346,7 +357,16 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
      */
 	public render(): any
 	{
-        return this.content;
+        let closerValue = this.options?.closerValue;
+        let hasCloser = closerValue !== undefined;
+
+        if (hasCloser)
+            return <>
+                {this.content}
+                <button class={this.styles?.popupCloser} click={() => this.close(closerValue)}>{"\u2A2F"}</button>
+            </>
+        else
+            return this.content;
 	};
 
 
@@ -358,13 +378,17 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         this.anchorElement = this.options?.anchorElement ?? document.body;
 
         // obtain necessary styles
-        if (!Popup.defaultStyles)
-            Popup.defaultStyles = css.activate( DefaultPopupStyles);
+        if (!Popup.theme)
+        {
+            Popup.theme = css.getActiveTheme( PopupTheme) as PopupTheme;
+            if (!Popup.theme)
+                Popup.theme = css.activate( DefaultPopupTheme);
+        }
 
         if (this.options?.styles)
             this.optionStyles = this.options.styles;
 
-        this.styles = Object.assign( {}, Popup.defaultStyles, this.options?.styles);
+        this.styles = Object.assign( {}, Popup.theme, this.options?.styles);
 
         // create dialog element and add it to the DOM
         let dlg = document.createElement( "dialog") as HTMLDialogElement;
@@ -372,10 +396,14 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
 
         if (!this.options?.noEntranceAnimation)
         {
-            dlg.classList.add( Popup.defaultStyles.popupEntering.name);
-            dlg.onanimationend = () => {
-                dlg.classList.remove( Popup.defaultStyles.popupEntering.name);
+            let onEntranceAnimationEnd = (): void =>
+            {
+                dlg.classList.remove( Popup.theme.popupEntering.name);
+                dlg.removeEventListener( "animationend", onEntranceAnimationEnd)
             }
+
+            dlg.addEventListener( "animationend", onEntranceAnimationEnd)
+            dlg.classList.add( Popup.theme.popupEntering.name);
         }
 
         // assign positioning styles directly to the dialog element. If x and/or y are undefined,
@@ -413,11 +441,17 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         {
             if (!this.options?.noExitAnimation)
             {
-                this.dlg.classList.add( Popup.defaultStyles.popupExiting.name);
-                this.dlg.onanimationend = () => {
+                let dlg = this.dlg;
+                let onExitAnimationEnd = (): void =>
+                {
+                    dlg.classList.remove( Popup.theme.popupExiting.name);
+                    dlg.removeEventListener( "animationend", onExitAnimationEnd)
                     this.cleanup();
                     resolveFunc();
                 }
+
+                dlg.addEventListener( "animationend", onExitAnimationEnd)
+                dlg.classList.add( Popup.theme.popupExiting.name);
             }
             else
             {
@@ -438,9 +472,10 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         this.dlg = null;
         this.anchorElement = null;
 
-        // we don't deactivate default styles - let them remain active
         this.styles = null;
     }
+
+
 
 	/**
      * Moves the dialog to the given coordinates. The coordinates are adjusted so that at least
@@ -475,7 +510,7 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
 
             // we ignore the Escape key if the escapeReturnValue option is undefined; otherwise,
             // we close the dialog with its value
-            let retVal = this.options?.escapeReturnValue;
+            let retVal = this.options?.escapeValue;
             if (retVal !== undefined)
                 this.close( retVal);
         }
@@ -496,7 +531,7 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         // outside of the popup area.
         let rc = this.dlg.getBoundingClientRect();
         if (e.clientX < rc.left || e.clientX > rc.right || e.clientY < rc.top || e.clientY > rc.bottom)
-            this.close( this.options?.escapeReturnValue);
+            this.close( this.options?.escapeValue);
     }
 
 	private onPointerMove = (e: PointerEvent) =>
@@ -556,7 +591,7 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
     protected options: TOptions;
 
     // Activated default styles
-    protected static defaultStyles: DefaultPopupStyles;
+    protected static theme: PopupTheme;
 
     // Activated styles from the options (can be undefined)
     protected optionStyles?: TStyles;

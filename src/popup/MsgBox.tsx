@@ -121,7 +121,7 @@ export class MsgBox extends Dialog<IMsgBoxStyles, IMsgBoxOptions>
 	{
         super( message, options ?? {});
         let buttons = options?.buttons ?? MsgBoxButtonBar.OK;
-        this.options.escapeReturnValue = buttons === MsgBoxButtonBar.None ? MsgBoxButton.Close : undefined;
+        this.options.escapeValue = buttons === MsgBoxButtonBar.None ? MsgBoxButton.Close : undefined;
 
 		this.icon = options?.icon ?? MsgBoxIcon.None;
 
@@ -138,7 +138,7 @@ export class MsgBox extends Dialog<IMsgBoxStyles, IMsgBoxOptions>
         // parameter of the Dialog constructor.
 		return <div class={this.styles.msgBoxContainer}>
             {char && <span class={this.styles.msgBoxIcon} style={{color}}>{char}</span>}
-            <span class={this.styles.msgBoxText}>{this.content}</span>
+            <span class={this.styles.msgBoxText}>{this.body}</span>
         </div>;
 	}
 

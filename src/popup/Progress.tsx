@@ -110,7 +110,7 @@ export class ProgressBox extends Dialog<IProgressStyles, IProgressOptions>
 		return <div class={this.styles.progressContainer}>
             <progress class={this.styles.progressElm} />
             <div class={this.styles.progressText}>
-                {this.content}
+                {this.body}
             </div>
         </div>;
 	}

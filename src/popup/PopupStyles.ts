@@ -8,18 +8,33 @@ import * as css from "mimcss"
  */
 export interface IPopupStyles
 {
-    popupEntrance?: css.IAnimationRule;
-
-    popupExit?: css.IAnimationRule;
-
-    popupEntering?: css.IClassRule | css.IClassNameRule;
-    popupExiting?: css.IClassRule | css.IClassNameRule;
-    popupMoving?: css.IClassRule | css.IClassNameRule;
-
     /**
      * Defines CSS class to use for the `<dialog>` element.
      */
     popupElement?: css.IClassRule | css.IClassNameRule;
+
+    /**
+     * Defines CSS class to use for the closer button clicking which closes the popup.
+     */
+    popupCloser?: css.IClassRule | css.IClassNameRule;
+
+    /**
+     * CSS class assigned to the `<dialog>` element upon creation. This class is used to
+     * define entrance animation.
+     */
+    popupEntering?: css.IClassRule | css.IClassNameRule;
+
+    /**
+     * CSS class assigned to the `<dialog>` element before destruction. This class is used to
+     * define exit animation.
+     */
+    popupExiting?: css.IClassRule | css.IClassNameRule;
+
+    /**
+     * CSS class assigned to the `<dialog>` element before moving as a result of calling the
+     * [[moveTo]] method. This class is used to define move animation.
+     */
+    popupMoving?: css.IClassRule | css.IClassNameRule;
 }
 
 
@@ -104,8 +119,35 @@ export interface IProgressStyles extends IDialogStyles
 /**
  * Default styles that will be used by the different popup components.
  */
-export class DefaultPopupStyles extends css.StyleDefinition implements IPopupStyles,
+ export class PopupTheme extends css.ThemeDefinition implements IPopupStyles,
     IDialogStyles, IMsgBoxStyles
+{
+    popupElement = this.$class()
+    popupCloser = this.$class()
+    popupEntering = this.$class()
+    popupExiting = this.$class()
+    popupMoving = this.$class()
+
+    dialogCaption = this.$class()
+    dialogBody = this.$class()
+    dialogButtonBar = this.$class()
+    dialogButton = this.$class()
+
+    msgBoxContainer = this.$class()
+    msgBoxIcon = this.$class()
+    msgBoxText = this.$class()
+
+    progressContainer = this.$class()
+    progressElm = this.$class()
+    progressText = this.$class()
+}
+
+
+
+/**
+ * Default styles that will be used by the different popup components.
+ */
+export class DefaultPopupTheme extends PopupTheme
 {
     popupEntrance = this.$keyframes([
         ["from", {transform: css.scale(0.001)}],
@@ -121,7 +163,6 @@ export class DefaultPopupStyles extends css.StyleDefinition implements IPopupSty
     popupExiting = this.$class();
     popupMoving = this.$class();
 
-    /** Styles for the `<dialog>` element. */
     popupElement = this.$class({
         border: "none",
         borderLeft: [1, "solid", "lightgrey"],
@@ -136,6 +177,23 @@ export class DefaultPopupStyles extends css.StyleDefinition implements IPopupSty
             [this.popupExiting, {animation: { name: this.popupExit, duration: 150 }}],
             [this.popupMoving, {transitionProperty: ["left", "top"], transitionDuration: 150}]
         ]
+    })
+
+    popupCloser = this.$class({
+        position: "absolute", right: 1, top: 1,
+        // boxSizing: "border-box",
+        width: 1.4, height: 1.4, padding: 0.2,
+        textAlign: "center",
+        border: "none",
+        borderRadius: "50%",
+        fontWeight: "bold",
+        cursor: "pointer",
+        backgroundColor: "transparent",
+        ":hover": { backgroundColor: 0xe2e2e2, color: "red" },
+        ":focus": {
+            backgroundColor: 0xe2e2e2,
+            outline: [1, "solid", 0xa2a2a2],
+        }
     })
 
     dialogCaption = this.$class({
@@ -163,13 +221,13 @@ export class DefaultPopupStyles extends css.StyleDefinition implements IPopupSty
         minWidth: 5.5,
         border: "none",
         backgroundColor: 0xf2f2f2,
-		":hover": {
-			backgroundColor: 0xe2e2e2,
-		},
-		":focus": {
+        ":hover": {
+            backgroundColor: 0xe2e2e2,
+        },
+        ":focus": {
             backgroundColor: 0xe2e2e2,
             outline: [1, "solid", 0xa2a2a2],
-		}
+        }
     })
 
     msgBoxContainer = this.$class({
@@ -215,6 +273,12 @@ export class DefaultPopupStyles extends css.StyleDefinition implements IPopupSty
         textAlign: "center",
     })
 }
+
+
+
+// // Activate the popup deafult theme if another theme implmentation is not activated yet.
+// if (!css.getActiveTheme( PopupTheme))
+//     css.activate( DefaultPopupTheme);
 
 
 
