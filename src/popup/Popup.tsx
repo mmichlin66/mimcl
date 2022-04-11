@@ -1,6 +1,6 @@
 import * as mim from "mimbl"
 import * as css from "mimcss"
-import {IPopupStyles, DefaultPopupTheme, PopupTheme} from "./PopupStyles"
+import {IPopupStyles, PopupTheme} from "./PopupStyles"
 
 
 // Had to augment the HTMLDialogElement interface because TypeScript's 4.4 lib.dom.d.ts not only
@@ -15,19 +15,88 @@ interface HTMLDialogElement extends HTMLElement
 }
 
 
+
+// /**
+//  * Promise that can be resolved from outside.
+//  */
+// class PromiseEx<T = void> extends Promise<T>
+// {
+//     constructor()
+//     {
+//         // the "executor" function of the base Promise class is not used
+//         super(() => {});
+
+//         // create a new promise object and remember resolve and reject functions in temp variables
+//         let tempResolve: (value: T | PromiseLike<T>) => void;
+//         let tempReject: (reason?: any) => void;
+//         let promise = new Promise<T>( (resolve, reject) => {
+//             tempResolve = resolve;
+//             tempReject = reject;
+//         });
+
+//         // assign remembered resolve and reject functions to the promise object itself.
+//         (promise as any).resolve = tempResolve;
+//         (promise as any).reject = tempReject;
+
+//         // return the promise object from the constructor, so that the actual object created by
+//         // "new PromiseEx()" is a Promise.
+//         return promise as any;
+//     }
+
+//     // The following resolve and reject methods are not actually invoked because the instance that
+//     // is returned form the constuctor is not an instance of PromiseEx but rather a Promise. These
+//     // methods are only needed to provide signatures.
+//     resolve( value?: T | PromiseLike<T>): void {};
+//     reject( reason?: any): void {};
+// }
+
+
+
 /**
- * The IPopup interface represents a popup from the point of view of the content. This interface
- * is published as a service and can be used by the content components to close the popup.
+ * Starts animation or transition by adding the given CSS class to the given element, and waits
+ * until it ends. Since there might be that adding the class to the element doesn't actually start
+ * the animation, this function first waits for the animation to start. If it doesn't start, the
+ * function returns; otherwise, it waits until the animation ends.
+ * @param elm Element to perform animation or transition on
+ * @param cls Class to add to the element to start the animation or transition. The class is
+ * removed from the element after the animation or transition ends.
+ * @param isTransition Flag indicaing that this is a transition as opposed to animation.
  */
-export interface IPopup
+async function waitAnim( elm: Element, cls: string, isTransition?: boolean): Promise<void>
 {
-    /**
-     * Closes the popup and passes a value to be used as a return value. For the modal popups,
-     * this value will be the resolved value of the promise returned by the showModal() method.
-     * For modeless popups, this value will be available as the returnValue property.
-     * @param returnValue
-     */
-    close( returnValue?: any): void;
+    let name = isTransition ? "transition" : "animation";
+    let startName = name + "start";
+    let endName = name + "end";
+
+    let started: boolean;
+    let ended: boolean;
+
+    let startPromise = new Promise<void>( resolveFunc => setTimeout( resolveFunc, 50));
+    let endPromise = mim.createPromiseEx();
+    let startHandler = () => started = true;
+    let endHandler = () => {
+        cleanup();
+        ended = true;
+        endPromise.resolve();
+    };
+
+    let cleanup = () =>
+    {
+        elm.classList.remove(cls);
+        elm.removeEventListener( startName, startHandler);
+        elm.removeEventListener( endName, endHandler);
+    }
+
+    elm.addEventListener( startName, startHandler);
+    elm.addEventListener( endName, endHandler);
+    elm.classList.add(cls);
+
+    await startPromise;
+    console.debug( "After await: started = " + started + "; ended = " + ended);
+    if (!started)
+        cleanup();
+    else if (!ended)
+        await endPromise;
 }
 
 
@@ -146,7 +215,7 @@ export interface IPopupEvents
  */
 export class Popup<TStyles extends IPopupStyles = IPopupStyles,
     TOptions extends IPopupOptions<TStyles> = IPopupOptions<TStyles>>
-    extends mim.Component implements IPopup
+    extends mim.Component
 {
     /**
      * Popup is constructed by specifying the initial content it should display and the options
@@ -164,17 +233,19 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
      * Displays the popup as a modeless dialog. The method will return false if the popup
      * is already open.
      */
-    public open(): boolean
+    public async open(): Promise<boolean>
     {
         if (this.isOpen)
             return false;
 
         this._returnValue = undefined;
 
-        this.create();
+        let createPromise = this.create();
         this.dlg.show();
+        await createPromise;
 
         this.onOpen( false);
+        return true;
     }
 
     /**
@@ -182,14 +253,14 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
      * popup is closed. The resolved value of the promise is the value passed to the close()
      * method. The method will return a rejected promise if the popup is already open.
      */
-    public showModal(): Promise<any>
+    public async showModal(): Promise<any>
     {
         if (this.isOpen)
             return Promise.reject( new Error( "Popup already open"));
 
         this._returnValue = undefined;
 
-        this.create();
+        let createPromise = this.create();
         this.dlg.showModal();
 
         // must establish listener on window because otherwise, the Escape key is processed by
@@ -202,8 +273,10 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         if (escapeRetVal !== undefined)
             this.dlg.addEventListener( "click", this.onDetectClickOutside);
 
-        this.modalPromise = mim.createPromiseEx();
+        await createPromise;
+        this.onOpen( true);
 
+        this.modalPromise = mim.createPromiseEx();
         return this.modalPromise;
     }
 
@@ -314,7 +387,7 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
      * some part of the dialog at the top-left corner remains visible in order to the user to be
      * able to continue moving it.
      */
-	public moveTo( newX: number, newY: number)
+	public async moveTo( newX: number, newY: number)
 	{
         if (!this.dlg)
             return;
@@ -322,35 +395,10 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         this.move( newX, newY);
         this.dlg.style.margin = "0";
         if (!this.options?.noMoveAnimation)
-        {
-            let onMoveTransitionEnd = (): void =>
-            {
-                this.dlg.classList.remove( Popup.theme.popupMoving.name);
-                this.dlg.removeEventListener( "transitionend", onMoveTransitionEnd)
-            }
-
-            this.dlg.addEventListener( "transitionend", onMoveTransitionEnd)
-            this.dlg.classList.add( Popup.theme.popupMoving.name);
-        }
+            await waitAnim( this.dlg, this.theme.popupMoving.name, true);
 	};
 
 
-
-    /**
-     * If derived classes override this method, they must call super.willMount()
-     */
-    public willMount(): void
-	{
-        this.vn.publishService( "popup", this);
-	};
-
-    /**
-     * If derived classes override this method, they must call super.willUnmount()
-     */
-	public willUnmount(): void
-	{
-        this.vn.unpublishService( "popup");
-    };
 
     /**
      * The render method simply returns the current content but it can be overridden by derived classes
@@ -372,39 +420,23 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
 
 
     // Creates the dialog element
-    private create(): void
+    private async create(): Promise<void>
     {
         // obtain the anchor element
         this.anchorElement = this.options?.anchorElement ?? document.body;
 
-        // obtain necessary styles
-        if (!Popup.theme)
-        {
-            Popup.theme = css.getActiveTheme( PopupTheme) as PopupTheme;
-            if (!Popup.theme)
-                Popup.theme = css.activate( DefaultPopupTheme);
-        }
+        // obtain current theme or activate default if not popup them yet activated
+        this.theme = css.getActiveTheme( PopupTheme);
 
         if (this.options?.styles)
             this.optionStyles = this.options.styles;
 
-        this.styles = Object.assign( {}, Popup.theme, this.options?.styles);
+        this.styles = Object.assign( {}, this.theme, this.options?.styles);
 
         // create dialog element and add it to the DOM
-        let dlg = document.createElement( "dialog") as HTMLDialogElement;
+        let dlg = this.dlg = document.createElement( "dialog") as HTMLDialogElement;
+        this.anchorElement.appendChild( dlg);
         dlg.className = this.styles.popupElement.name;
-
-        if (!this.options?.noEntranceAnimation)
-        {
-            let onEntranceAnimationEnd = (): void =>
-            {
-                dlg.classList.remove( Popup.theme.popupEntering.name);
-                dlg.removeEventListener( "animationend", onEntranceAnimationEnd)
-            }
-
-            dlg.addEventListener( "animationend", onEntranceAnimationEnd)
-            dlg.classList.add( Popup.theme.popupEntering.name);
-        }
 
         // assign positioning styles directly to the dialog element. If x and/or y are undefined,
         // we center the dialog horizontally and/or vertically
@@ -429,36 +461,19 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         // css.setElementStyle( this.dlg, dlgElmStyle /*, css.SchedulerType.Sync*/);
 
         // mount the component
-        this.anchorElement.appendChild( dlg);
-        this.dlg = dlg;
         mim.mount( this, dlg);
+
+        if (!this.options?.noEntranceAnimation)
+            await waitAnim( dlg, this.theme.popupEntering.name);
     }
 
     /** Destroys the dialog element */
     private async destroy(): Promise<void>
     {
-        return new Promise( (resolveFunc) =>
-        {
-            if (!this.options?.noExitAnimation)
-            {
-                let dlg = this.dlg;
-                let onExitAnimationEnd = (): void =>
-                {
-                    dlg.classList.remove( Popup.theme.popupExiting.name);
-                    dlg.removeEventListener( "animationend", onExitAnimationEnd)
-                    this.cleanup();
-                    resolveFunc();
-                }
+        if (!this.options?.noExitAnimation)
+            await waitAnim( this.dlg, this.theme.popupExiting.name);
 
-                dlg.addEventListener( "animationend", onExitAnimationEnd)
-                dlg.classList.add( Popup.theme.popupExiting.name);
-            }
-            else
-            {
-                this.cleanup();
-                resolveFunc();
-            }
-        });
+        this.cleanup();
     }
 
     /** Unmounts the popup content and cleans up internal stuctures */
@@ -590,8 +605,8 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
     // Options
     protected options: TOptions;
 
-    // Activated default styles
-    protected static theme: PopupTheme;
+    // Current popup theme
+    protected theme: PopupTheme;
 
     // Activated styles from the options (can be undefined)
     protected optionStyles?: TStyles;

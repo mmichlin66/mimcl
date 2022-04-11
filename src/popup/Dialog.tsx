@@ -1,5 +1,5 @@
 import * as mim from "mimbl"
-import {IPopupOptions, IPopup, Popup} from "./Popup";
+import {IPopupOptions, Popup} from "./Popup";
 import {IDialogStyles} from "./PopupStyles"
 
 
@@ -46,25 +46,6 @@ export interface IDialogButton
 
 
 /**
- * The IPopup interface represents a popup from the point of view of the content. This interface
- * is published as a service and can be used by the content components to close the popup.
- */
-export interface IDialog extends IPopup
-{
-    /**
-     * Adds a button to the button bar
-     */
-    addButton( btn: IDialogButton): void;
-
-    /**
-     * Returns the number of buttons in the button bar
-     */
-    readonly buttonCount: number;
-}
-
-
-
-/**
  * The IDialogOptions interface represents the options that cofigure the behavior of the Dialog
  * object. They are passed in the constructor to the [[Dialog]] class
  */
@@ -89,7 +70,7 @@ export interface IDialogOptions<TStyles extends IDialogStyles = IDialogStyles> e
  */
 export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
     TOptions extends IDialogOptions<TStyles> = IDialogOptions<TStyles>>
-    extends Popup<TStyles, TOptions> implements IDialog
+    extends Popup<TStyles, TOptions>
 {
     constructor( body?: any, options?: TOptions, ...buttons: IDialogButton[])
     {
@@ -136,10 +117,6 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
      */
     public willMount(): void
 	{
-        super.willMount();
-
-        this.vn.publishService( "dialog", this);
-
         this.content = <div keydown={this.onButtonKeyDown} tabindex={0} ref={this.containerRef}>
             {this.renderCaption}
             {this.renderBody}
@@ -157,39 +134,6 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
                 this.containerRef?.focus();
         })
 	}
-
-    /**
-     * If derived classes override this method, they must call super.willUnmount()
-     */
-	public willUnmount(): void
-	{
-        this.vn.unpublishService( "dialog");
-        super.willUnmount();
-	}
-
-    // public render(): any
-    // {
-    //     return <div keydown={this.onButtonKeyDown} tabindex={0} ref={this.containerRef}>
-    //         {this.renderCaption}
-    //         {this.renderBody}
-    //         {this.renderButtons}
-    //     </div>
-    // }
-
-    // public renderCaption(): any
-    // {
-    //     let closerValue = this.options?.closerValue;
-    //     let hasCloser = closerValue !== undefined;
-
-    //     // have to specify touch-action "none" - otherwise, pointer events are canceled by the browser
-    //     return (this.caption || hasCloser) &&
-    //         <div class={this.styles.dialogCaption} pointerdown={this.onCaptionPointerDown} style={{touchAction: "none"}}>
-    //             {this.caption}
-    //             {hasCloser &&
-    //                 <span class={this.styles?.popupCloser} click={() => this.close(closerValue)}>{"\u2A2F"}</span>
-    //             }
-    //         </div>
-    // }
 
     public renderCaption(): any
     {

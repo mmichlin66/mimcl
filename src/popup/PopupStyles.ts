@@ -159,15 +159,9 @@ export class DefaultPopupTheme extends PopupTheme
         ["to", {transform: css.scale(0.001)}]
     ])
 
-    popupEntering = this.$class();
-    popupExiting = this.$class();
-    popupMoving = this.$class();
-
     popupElement = this.$class({
         border: "none",
-        borderLeft: [1, "solid", "lightgrey"],
-        borderTop: [1, "solid", "lightgrey"],
-        boxShadow: { x: 4, y: 4, blur: 4, color: "lightgrey" },
+        boxShadow: { x: 0, y: 0, blur: 4, color: "lightgrey" },
         padding: 0,
         maxWidth: "100%",
         maxHeight: "100%",
@@ -180,9 +174,9 @@ export class DefaultPopupTheme extends PopupTheme
     })
 
     popupCloser = this.$class({
-        position: "absolute", right: 1, top: 1,
+        position: "absolute", right: 2, top: 2,
         // boxSizing: "border-box",
-        width: 1.4, height: 1.4, padding: 0.2,
+        width: 1.2, height: 1.2, padding: 0.1,
         textAlign: "center",
         border: "none",
         borderRadius: "50%",
@@ -201,6 +195,7 @@ export class DefaultPopupTheme extends PopupTheme
         color: "white",
         boxShadow: { x: 0, y: 2, blur: 2, color: "lightgrey" },
         padding: 0.4,
+        cursor: "default",
     })
 
     dialogBody = this.$class({
