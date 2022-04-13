@@ -1,4 +1,5 @@
 import * as css from "mimcss"
+import { ColorTheme } from "../core/ColorStyles";
 
 /**
  * The IPopupStyles interface defines styles used by the Popup class to create the `<dialog>`
@@ -117,9 +118,9 @@ export interface IProgressStyles extends IDialogStyles
 
 
 /**
- * Default styles that will be used by the different popup components.
+ * Theme defining styles for different popup components.
  */
- export class PopupTheme extends css.ThemeDefinition implements IPopupStyles,
+export class PopupTheme extends css.ThemeDefinition implements IPopupStyles,
     IDialogStyles, IMsgBoxStyles
 {
     popupElement = this.$class()
@@ -145,10 +146,12 @@ export interface IProgressStyles extends IDialogStyles
 
 
 /**
- * Default styles that will be used by the different popup components.
+ * Default theme for popup components.
  */
 export class DefaultPopupTheme extends PopupTheme
 {
+    colors = this.$use( ColorTheme)
+
     popupEntrance = this.$keyframes([
         ["from", {transform: css.scale(0.001)}],
         // ["to", {}]
@@ -165,7 +168,9 @@ export class DefaultPopupTheme extends PopupTheme
         padding: 0,
         maxWidth: "100%",
         maxHeight: "100%",
-        "::backdrop": { backgroundColor: "grey", opacity: 0.3 },
+        backgroundColor: this.colors.bgColor,
+        color: this.colors.frColor,
+        "::backdrop": { backgroundColor: this.colors.backdropBgColor, opacity: this.colors.backdropOpacity },
         "&": [
             [this.popupEntering, {animation: { name: this.popupEntrance, duration: 150 }}],
             [this.popupExiting, {animation: { name: this.popupExit, duration: 150 }}],
@@ -183,16 +188,19 @@ export class DefaultPopupTheme extends PopupTheme
         fontWeight: "bold",
         cursor: "pointer",
         backgroundColor: "transparent",
-        ":hover": { backgroundColor: 0xe2e2e2, color: "red" },
+        ":hover": {
+            backgroundColor: this.colors.btnBgColorHover, color: "red"
+        },
         ":focus": {
-            backgroundColor: 0xe2e2e2,
-            outline: [1, "solid", 0xa2a2a2],
+            backgroundColor: this.colors.btnBgColorFocus,
+            color: "red",
+            outline: [1, "solid", this.colors.btnFocusOutline],
         }
     })
 
     dialogCaption = this.$class({
-        backgroundColor: "dodgerblue",
-        color: "white",
+        backgroundColor: this.colors.captionBgColor,
+        color: this.colors.captionFrColor,
         boxShadow: { x: 0, y: 2, blur: 2, color: "lightgrey" },
         padding: 0.4,
         cursor: "default",
@@ -203,7 +211,6 @@ export class DefaultPopupTheme extends PopupTheme
     })
 
     dialogButtonBar = this.$class({
-        // backgroundColor: "lightgrey",
         padding: [0.7, 1.01],
         display: "flex",
         gap: css.em(1),
@@ -215,13 +222,16 @@ export class DefaultPopupTheme extends PopupTheme
         padding: 0.3,
         minWidth: 5.5,
         border: "none",
-        backgroundColor: 0xf2f2f2,
+        backgroundColor: this.colors.btnBgColor,
+        color: this.colors.btnFrColor,
         ":hover": {
-            backgroundColor: 0xe2e2e2,
+            backgroundColor: this.colors.btnBgColorHover,
+            color: this.colors.btnFrColorHover,
         },
         ":focus": {
-            backgroundColor: 0xe2e2e2,
-            outline: [1, "solid", 0xa2a2a2],
+            backgroundColor: this.colors.btnBgColorFocus,
+            color: this.colors.btnFrColorFocus,
+            outline: [1, "solid", this.colors.btnFocusOutline],
         }
     })
 

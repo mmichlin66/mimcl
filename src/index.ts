@@ -1,5 +1,6 @@
 // Type definitions for mimcl
 
+export * from "./core/ColorStyles"
 export * from "./popup/PopupStyles"
 export * from "./popup/Popup"
 export * from "./popup/Dialog"

@@ -262,6 +262,7 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
 
         let createPromise = this.create();
         this.dlg.showModal();
+        await createPromise;
 
         // must establish listener on window because otherwise, the Escape key is processed by
         // the system (closing the popup) never arriving at the dialog
@@ -273,7 +274,6 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         if (escapeRetVal !== undefined)
             this.dlg.addEventListener( "click", this.onDetectClickOutside);
 
-        await createPromise;
         this.onOpen( true);
 
         this.modalPromise = mim.createPromiseEx();

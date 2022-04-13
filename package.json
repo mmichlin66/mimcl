@@ -32,6 +32,7 @@
 		"lib/mimcl.js",
 		"lib/mimcl.dev.js",
 		"lib/index.d.ts",
+		"lib/core/ColorStyles.d.ts",
 		"lib/popup/PopupStyles.d.ts",
 		"lib/popup/Popups.d.ts",
 		"lib/popup/Dialog.d.ts",
