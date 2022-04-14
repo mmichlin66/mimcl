@@ -162,6 +162,19 @@ export class DefaultPopupTheme extends PopupTheme
         ["to", {transform: css.scale(0.001)}]
     ])
 
+    popupEntering = this.$class({
+        animation: { name: this.popupEntrance, duration: 150 }
+    })
+
+    popupExiting = this.$class({
+        animation: { name: this.popupExit, duration: 150 }
+    })
+
+    popupMoving = this.$class({
+        transitionProperty: ["left", "top"], transitionDuration: 150
+    })
+
+
     popupElement = this.$class({
         border: "none",
         boxShadow: { x: 0, y: 0, blur: 4, color: "lightgrey" },
@@ -171,11 +184,6 @@ export class DefaultPopupTheme extends PopupTheme
         backgroundColor: this.colors.bgColor,
         color: this.colors.frColor,
         "::backdrop": { backgroundColor: this.colors.backdropBgColor, opacity: this.colors.backdropOpacity },
-        "&": [
-            [this.popupEntering, {animation: { name: this.popupEntrance, duration: 150 }}],
-            [this.popupExiting, {animation: { name: this.popupExit, duration: 150 }}],
-            [this.popupMoving, {transitionProperty: ["left", "top"], transitionDuration: 150}]
-        ]
     })
 
     popupCloser = this.$class({
@@ -184,7 +192,7 @@ export class DefaultPopupTheme extends PopupTheme
         width: 1.2, height: 1.2, padding: 0.1,
         textAlign: "center",
         border: "none",
-        borderRadius: "50%",
+        // borderRadius: "50%",
         fontWeight: "bold",
         cursor: "pointer",
         backgroundColor: "transparent",

@@ -134,23 +134,23 @@ export interface IPopupOptions<TStyles extends IPopupStyles = IPopupStyles>
      */
     closerValue?: any;
 
-    /**
-     * Flag indicating that no animation should be used when the popup appears. The default value
-     * is `false`; that is, animation is used.
-     */
-    noEntranceAnimation?: boolean;
+    // /**
+    //  * Flag indicating that no animation should be used when the popup appears. The default value
+    //  * is `false`; that is, animation is used.
+    //  */
+    // noEntranceAnimation?: boolean;
 
-    /**
-     * Flag indicating that no animation should be used when the popup is closed. The default value
-     * is `false`; that is, animation is used.
-     */
-    noExitAnimation?: boolean;
+    // /**
+    //  * Flag indicating that no animation should be used when the popup is closed. The default value
+    //  * is `false`; that is, animation is used.
+    //  */
+    // noExitAnimation?: boolean;
 
-    /**
-     * Flag indicating that no animation should be used when the popup is programmatically moved.
-     * The default value is `false`; that is, animation is used.
-     */
-    noMoveAnimation?: boolean;
+    // /**
+    //  * Flag indicating that no animation should be used when the popup is programmatically moved.
+    //  * The default value is `false`; that is, animation is used.
+    //  */
+    // noMoveAnimation?: boolean;
 
     /**
      * HTML element under which the `<dialog>` element is created. If this property is undefined,
@@ -394,27 +394,24 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
 
         this.move( newX, newY);
         this.dlg.style.margin = "0";
-        if (!this.options?.noMoveAnimation)
-            await waitAnim( this.dlg, this.theme.popupMoving.name, true);
+        if (this.styles?.popupMoving)
+            await waitAnim( this.dlg, this.styles.popupMoving.name, true);
 	};
 
 
 
     /**
-     * The render method simply returns the current content but it can be overridden by derived classes
+     * The render method can be overridden by derived classes
      */
 	public render(): any
 	{
         let closerValue = this.options?.closerValue;
-        let hasCloser = closerValue !== undefined;
-
-        if (hasCloser)
-            return <>
-                {this.content}
+        return <>
+            {this.content}
+            {closerValue !== undefined &&
                 <button class={this.styles?.popupCloser} click={() => this.close(closerValue)}>{"\u2A2F"}</button>
-            </>
-        else
-            return this.content;
+            }
+        </>
 	};
 
 
@@ -463,15 +460,15 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         // mount the component
         mim.mount( this, dlg);
 
-        if (!this.options?.noEntranceAnimation)
-            await waitAnim( dlg, this.theme.popupEntering.name);
+        if (this.styles?.popupEntering)
+            await waitAnim( dlg, this.styles.popupEntering.name);
     }
 
     /** Destroys the dialog element */
     private async destroy(): Promise<void>
     {
-        if (!this.options?.noExitAnimation)
-            await waitAnim( this.dlg, this.theme.popupExiting.name);
+        if (this.styles?.popupExiting)
+            await waitAnim( this.dlg, this.styles.popupExiting.name);
 
         this.cleanup();
     }
