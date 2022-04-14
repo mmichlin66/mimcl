@@ -74,7 +74,7 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 {
     constructor( body?: any, options?: TOptions, ...buttons: IDialogButton[])
     {
-        // we reuse the Popup's content property for dialog's body
+        // we pass null for the content, but we will assign content later in willMount
         super( null, options);
         this.body = body;
         this.caption = options?.caption;

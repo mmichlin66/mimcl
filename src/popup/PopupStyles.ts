@@ -1,5 +1,5 @@
 import * as css from "mimcss"
-import { ColorTheme } from "../core/ColorStyles";
+import {ColorTheme} from "../core/ColorStyles";
 
 /**
  * The IPopupStyles interface defines styles used by the Popup class to create the `<dialog>`
@@ -188,21 +188,33 @@ export class DefaultPopupTheme extends PopupTheme
 
     popupCloser = this.$class({
         position: "absolute", right: 2, top: 2,
-        // boxSizing: "border-box",
         width: 1.2, height: 1.2, padding: 0.1,
         textAlign: "center",
-        border: "none",
-        // borderRadius: "50%",
         fontWeight: "bold",
         cursor: "pointer",
-        backgroundColor: "transparent",
+        backgroundColor: this.colors.btn.bg,
+        color: this.colors.btn.fr,
+        border: this.colors.btn.border,
+        outline: this.colors.btn.outline,
         ":hover": {
-            backgroundColor: this.colors.btnBgColorHover, color: "red"
+            backgroundColor: this.colors.btn.hover.bg,
+            color: this.colors.btn.hover.fr,
+            outline: this.colors.btn.hover.outline,
         },
         ":focus": {
-            backgroundColor: this.colors.btnBgColorFocus,
-            color: "red",
-            outline: [1, "solid", this.colors.btnFocusOutline],
+            backgroundColor: this.colors.btn.focus.bg,
+            color: this.colors.btn.focus.fr,
+            outline: this.colors.btn.focus.outline,
+        },
+        ":focus-visible": {
+            backgroundColor: this.colors.btn.focusVisible.bg,
+            color: this.colors.btn.focusVisible.fr,
+            outline: this.colors.btn.focusVisible.outline,
+        },
+        ":active": {
+            backgroundColor: this.colors.btn.active.bg,
+            color: this.colors.btn.active.fr,
+            outline: this.colors.btn.active.outline,
         }
     })
 
@@ -229,17 +241,29 @@ export class DefaultPopupTheme extends PopupTheme
     dialogButton = this.$class({
         padding: 0.3,
         minWidth: 5.5,
-        border: "none",
-        backgroundColor: this.colors.btnBgColor,
-        color: this.colors.btnFrColor,
+        backgroundColor: this.colors.btn.bg,
+        color: this.colors.btn.fr,
+        border: this.colors.btn.border,
+        outline: this.colors.btn.outline,
         ":hover": {
-            backgroundColor: this.colors.btnBgColorHover,
-            color: this.colors.btnFrColorHover,
+            backgroundColor: this.colors.btn.hover.bg,
+            color: this.colors.btn.hover.fr,
+            outline: this.colors.btn.hover.outline,
         },
         ":focus": {
-            backgroundColor: this.colors.btnBgColorFocus,
-            color: this.colors.btnFrColorFocus,
-            outline: [1, "solid", this.colors.btnFocusOutline],
+            backgroundColor: this.colors.btn.focus.bg,
+            color: this.colors.btn.focus.fr,
+            outline: this.colors.btn.focus.outline,
+        },
+        ":focus-visible": {
+            backgroundColor: this.colors.btn.focusVisible.bg,
+            color: this.colors.btn.focusVisible.fr,
+            outline: this.colors.btn.focusVisible.outline,
+        },
+        ":active": {
+            backgroundColor: this.colors.btn.active.bg,
+            color: this.colors.btn.active.fr,
+            outline: this.colors.btn.active.outline,
         }
     })
 
