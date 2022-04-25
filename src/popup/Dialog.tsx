@@ -57,6 +57,13 @@ export interface IDialogOptions<TStyles extends IDialogStyles = IDialogStyles> e
     caption?: any;
 
     /**
+     * Value that is returned when the user closes the popup by clicking the closer button. If this
+     * property is undefined, the popup will not have the closer button. Note that null is valid
+     * value that can be used to close a popup. The default value is undefined.
+     */
+    closerValue?: any;
+
+    /**
      * Identifier of the default button, which will have focus when the dialog appears.
      */
     defaultButton?: any;
@@ -117,12 +124,6 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
      */
     public willMount(): void
 	{
-        this.content = <div keydown={this.onButtonKeyDown} tabindex={0} ref={this.containerRef}>
-            {this.renderCaption}
-            {this.renderBody}
-            {this.renderButtons}
-        </div>
-
         this.callMeAfterUpdate( () =>
         {
             if (this.options?.defaultButton != null)
@@ -135,13 +136,32 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
         })
 	}
 
+    public render(): any
+	{
+        return <div keydown={this.onButtonKeyDown} tabindex={0} ref={this.containerRef}>
+            {this.renderCaption}
+            {this.renderBody}
+            {this.renderButtons}
+        </div>
+	}
+
     public renderCaption(): any
     {
+        let closerValue = this.options?.closerValue;
+        if (closerValue === undefined && this.caption == null)
+            return;
+
         // have to specify touch-action "none" - otherwise, pointer events are canceled by the browser
-        return this.caption &&
-            <div class={this.styles.dialogCaption} pointerdown={this.onCaptionPointerDown} style={{touchAction: "none"}}>
-                {this.caption}
-            </div>
+        return <div class={this.styles.dialogCaption} pointerdown={this.onCaptionPointerDown}
+                    style={{display: "flex", justifyContent: "space-between", justifyItems: "center", touchAction: "none"}}>
+            {this.caption != null && <div>{this.caption}</div>}
+            {closerValue !== undefined &&
+                <button class={this.styles?.dialogCloser} click={() => this.close(closerValue)}
+                    pointerdown={e => {e.preventDefault(); e.stopPropagation()}}>
+                    {"\u2A2F"}
+                </button>
+            }
+        </div>
     }
 
     public renderBody(): any

@@ -1,6 +1,7 @@
 import * as mim from "mimbl"
 import * as css from "mimcss"
-import {IPopupStyles, PopupTheme} from "./PopupStyles"
+import { IStyleset } from "mimcss";
+import { IPopupStyles, PopupTheme } from "./PopupStyles"
 
 
 // Had to augment the HTMLDialogElement interface because TypeScript's 4.4 lib.dom.d.ts not only
@@ -53,16 +54,16 @@ interface HTMLDialogElement extends HTMLElement
 
 
 /**
- * Starts animation or transition by adding the given CSS class to the given element, and waits
- * until it ends. Since there might be that adding the class to the element doesn't actually start
+ * Starts animation or transition by calling the given "start" and "end" functions, and waits
+ * until it ends. Since there might be that calling the "start" function doesn't actually start
  * the animation, this function first waits for the animation to start. If it doesn't start, the
  * function returns; otherwise, it waits until the animation ends.
  * @param elm Element to perform animation or transition on
- * @param cls Class to add to the element to start the animation or transition. The class is
- * removed from the element after the animation or transition ends.
+ * @param startFunc Function that causes the animation to start.
+ * @param endFunc Function that cleans up after the animation ends.
  * @param isTransition Flag indicaing that this is a transition as opposed to animation.
  */
-async function waitAnim( elm: Element, cls: string, isTransition?: boolean): Promise<void>
+const waitAnim = async ( elm: Element, startFunc: ()=>void, endFunc: ()=>void, isTransition?: boolean): Promise<void> =>
 {
     let name = isTransition ? "transition" : "animation";
     let startName = name + "start";
@@ -70,8 +71,26 @@ async function waitAnim( elm: Element, cls: string, isTransition?: boolean): Pro
 
     let started: boolean;
     let ended: boolean;
+    let count: number;
 
-    let startPromise = new Promise<void>( resolveFunc => setTimeout( resolveFunc, 50));
+    // let startPromise = new Promise<void>( resolveFunc => setTimeout( resolveFunc, 50));
+    let startPromise = new Promise<void>( async resolveFunc =>
+    {
+        for( count = 0; count < 5; count++)
+        {
+            await new Promise<void>( resolveFunc1 => requestAnimationFrame( time => resolveFunc1()));
+            if (started)
+            {
+                resolveFunc();
+                console.debug( "Animation started after %d requestAnimationFrame calls", count);
+                return;
+            }
+        }
+
+        console.debug( "Animation didn't start after %d requestAnimationFrame calls", count);
+        resolveFunc();
+    });
+
     let endPromise = mim.createPromiseEx();
     let startHandler = () => started = true;
     let endHandler = () => {
@@ -82,21 +101,60 @@ async function waitAnim( elm: Element, cls: string, isTransition?: boolean): Pro
 
     let cleanup = () =>
     {
-        elm.classList.remove(cls);
+        endFunc();
         elm.removeEventListener( startName, startHandler);
         elm.removeEventListener( endName, endHandler);
     }
 
     elm.addEventListener( startName, startHandler);
     elm.addEventListener( endName, endHandler);
-    elm.classList.add(cls);
+    startFunc();
 
     await startPromise;
-    console.debug( "After await: started = " + started + "; ended = " + ended);
     if (!started)
         cleanup();
     else if (!ended)
         await endPromise;
+}
+
+
+
+/**
+ * Starts animation or transition by adding the given CSS class to the given element, and waits
+ * until it ends. Since there might be that adding the class to the element doesn't actually start
+ * the animation, this function first waits for the animation to start. If it doesn't start, the
+ * function returns; otherwise, it waits until the animation ends.
+ * @param elm Element to perform animation or transition on
+ * @param cls Class to add to the element to start the animation or transition. The class is
+ * removed from the element after the animation or transition ends.
+ * @param isTransition Flag indicaing that this is a transition as opposed to animation.
+ */
+const waitAnimByClass = async (elm: Element, moniker: css.ClassMoniker, isTransition?: boolean): Promise<void> =>
+{
+    let cls = css.className(moniker);
+    return waitAnim( elm, () => elm.classList.add(cls), () => elm.classList.remove(cls), isTransition);
+}
+
+
+
+/**
+ * Starts animation or transition by setting the given CSS inline style to the given element, and waits
+ * until it ends. Since there might be that adding the style to the element doesn't actually start
+ * the animation, this function first waits for the animation to start. If it doesn't start, the
+ * function returns; otherwise, it waits until the animation ends.
+ * @param elm Element to perform animation or transition on
+ * @param styleset Styleset to add to the element as inline stile to start the animation or transition.
+ * @param isTransition Flag indicaing that this is a transition as opposed to animation.
+ */
+const waitAnimByStyle = async (elm: Element, styleset: IStyleset, isTransition?: boolean): Promise<void> =>
+{
+    let tempSD = css.activate( new class extends css.StyleDefinition
+    {
+        cls = this.$class(styleset);
+    });
+
+    await waitAnimByClass( elm, tempSD.cls.name, isTransition);
+    css.deactivate(tempSD);
 }
 
 
@@ -126,31 +184,6 @@ export interface IPopupOptions<TStyles extends IPopupStyles = IPopupStyles>
      * clicking on the backdrop - that is, the area outside of the popup itslef.
      */
     escapeValue?: any;
-
-    /**
-     * Value that is returned when the user closes the popup by clicking the closer button. If this
-     * property is undefined, the popup will not have the closer button. Note that null is valid
-     * value that can be used to close a popup. The default value is undefined.
-     */
-    closerValue?: any;
-
-    // /**
-    //  * Flag indicating that no animation should be used when the popup appears. The default value
-    //  * is `false`; that is, animation is used.
-    //  */
-    // noEntranceAnimation?: boolean;
-
-    // /**
-    //  * Flag indicating that no animation should be used when the popup is closed. The default value
-    //  * is `false`; that is, animation is used.
-    //  */
-    // noExitAnimation?: boolean;
-
-    // /**
-    //  * Flag indicating that no animation should be used when the popup is programmatically moved.
-    //  * The default value is `false`; that is, animation is used.
-    //  */
-    // noMoveAnimation?: boolean;
 
     /**
      * HTML element under which the `<dialog>` element is created. If this property is undefined,
@@ -387,15 +420,17 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
      * some part of the dialog at the top-left corner remains visible in order to the user to be
      * able to continue moving it.
      */
-	public async moveTo( newX: number, newY: number)
+	public async moveTo( newX: number, newY: number): Promise<void>
 	{
-        if (!this.dlg)
+        let dlg = this.dlg;
+        if (!dlg)
             return;
 
         this.move( newX, newY);
-        this.dlg.style.margin = "0";
-        if (this.styles?.popupMoving)
-            await waitAnim( this.dlg, this.styles.popupMoving.name, true);
+        dlg.style.margin = "0";
+        let moving = this.styles?.popupMoving;
+        if (moving)
+            await waitAnimByClass( dlg, moving, true);
 	};
 
 
@@ -405,13 +440,7 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
      */
 	public render(): any
 	{
-        let closerValue = this.options?.closerValue;
-        return <>
-            {this.content}
-            {closerValue !== undefined &&
-                <button class={this.styles?.popupCloser} click={() => this.close(closerValue)}>{"\u2A2F"}</button>
-            }
-        </>
+        return this.content;
 	};
 
 
@@ -422,18 +451,15 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         // obtain the anchor element
         this.anchorElement = this.options?.anchorElement ?? document.body;
 
-        // obtain current theme or activate default if not popup them yet activated
+        // obtain current theme and merge optional styles on top of it
         this.theme = css.getActiveTheme( PopupTheme);
-
-        if (this.options?.styles)
-            this.optionStyles = this.options.styles;
-
-        this.styles = Object.assign( {}, this.theme, this.options?.styles);
+        // this.styles = Object.assign( {}, this.theme, this.options?.styles);
+        this.styles = css.mergeVirtObjects( null, this.theme, this.options?.styles);
 
         // create dialog element and add it to the DOM
         let dlg = this.dlg = document.createElement( "dialog") as HTMLDialogElement;
         this.anchorElement.appendChild( dlg);
-        dlg.className = this.styles.popupElement.name;
+        dlg.className = this.styles.popupElm?.name;
 
         // assign positioning styles directly to the dialog element. If x and/or y are undefined,
         // we center the dialog horizontally and/or vertically
@@ -460,15 +486,18 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         // mount the component
         mim.mount( this, dlg);
 
-        if (this.styles?.popupEntering)
-            await waitAnim( dlg, this.styles.popupEntering.name);
+        let entering = this.styles?.popupEntering;
+        if (entering)
+            await waitAnimByClass( dlg, entering);
     }
 
     /** Destroys the dialog element */
     private async destroy(): Promise<void>
     {
-        if (this.styles?.popupExiting)
-            await waitAnim( this.dlg, this.styles.popupExiting.name);
+        let dlg = this.dlg;
+        let exiting = this.styles?.popupExiting;
+        if (exiting)
+            await waitAnimByClass( dlg, exiting);
 
         this.cleanup();
     }
@@ -604,9 +633,6 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
 
     // Current popup theme
     protected theme: PopupTheme;
-
-    // Activated styles from the options (can be undefined)
-    protected optionStyles?: TStyles;
 
     // Actual styles to use - may come from the default styles or from the styles defined in the
     // options

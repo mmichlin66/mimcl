@@ -1,6 +1,8 @@
 import * as css from "mimcss"
 import {ColorTheme} from "../core/ColorStyles";
 
+
+
 /**
  * The IPopupStyles interface defines styles used by the Popup class to create the `<dialog>`
  * element. The implementations should provide the class rule for the dialog property and can
@@ -12,12 +14,7 @@ export interface IPopupStyles
     /**
      * Defines CSS class to use for the `<dialog>` element.
      */
-    popupElement?: css.IClassRule | css.IClassNameRule;
-
-    /**
-     * Defines CSS class to use for the closer button clicking which closes the popup.
-     */
-    popupCloser?: css.IClassRule | css.IClassNameRule;
+    popupElm?: css.IClassRule | css.IClassNameRule;
 
     /**
      * CSS class assigned to the `<dialog>` element upon creation. This class is used to
@@ -50,6 +47,11 @@ export interface IDialogStyles extends IPopupStyles
      * Defines what CSS class to use for the caption section.
      */
     dialogCaption?: css.IClassRule | css.IClassNameRule;
+
+    /**
+     * Defines CSS class to use for the closer button clicking which closes the dialog.
+     */
+    dialogCloser?: css.IClassRule | css.IClassNameRule;
 
     /**
      * Defines what CSS class to use for the body section.
@@ -123,13 +125,13 @@ export interface IProgressStyles extends IDialogStyles
 export class PopupTheme extends css.ThemeDefinition implements IPopupStyles,
     IDialogStyles, IMsgBoxStyles
 {
-    popupElement = this.$class()
-    popupCloser = this.$class()
+    popupElm = this.$class()
     popupEntering = this.$class()
     popupExiting = this.$class()
     popupMoving = this.$class()
 
     dialogCaption = this.$class()
+    dialogCloser = this.$class()
     dialogBody = this.$class()
     dialogButtonBar = this.$class()
     dialogButton = this.$class()
@@ -152,30 +154,7 @@ export class DefaultPopupTheme extends PopupTheme
 {
     colors = this.$use( ColorTheme)
 
-    popupEntrance = this.$keyframes([
-        ["from", {transform: css.scale(0.001)}],
-        // ["to", {}]
-    ])
-
-    popupExit = this.$keyframes([
-        // ["from", {}],
-        ["to", {transform: css.scale(0.001)}]
-    ])
-
-    popupEntering = this.$class({
-        animation: { name: this.popupEntrance, duration: 150 }
-    })
-
-    popupExiting = this.$class({
-        animation: { name: this.popupExit, duration: 150 }
-    })
-
-    popupMoving = this.$class({
-        transitionProperty: ["left", "top"], transitionDuration: 150
-    })
-
-
-    popupElement = this.$class({
+    popupElm = this.$class({
         border: "none",
         boxShadow: { x: 0, y: 0, blur: 4, color: "lightgrey" },
         padding: 0,
@@ -186,36 +165,37 @@ export class DefaultPopupTheme extends PopupTheme
         "::backdrop": { backgroundColor: this.colors.backdropBgColor, opacity: this.colors.backdropOpacity },
     })
 
-    popupCloser = this.$class({
-        position: "absolute", right: 2, top: 2,
-        width: 1.2, height: 1.2, padding: 0.1,
-        textAlign: "center",
-        fontWeight: "bold",
-        cursor: "pointer",
-        backgroundColor: this.colors.btn.bg,
-        color: this.colors.btn.fr,
-        border: this.colors.btn.border,
-        outline: this.colors.btn.outline,
-        ":hover": {
-            backgroundColor: this.colors.btn.hover.bg,
-            color: this.colors.btn.hover.fr,
-            outline: this.colors.btn.hover.outline,
-        },
-        ":focus": {
-            backgroundColor: this.colors.btn.focus.bg,
-            color: this.colors.btn.focus.fr,
-            outline: this.colors.btn.focus.outline,
-        },
-        ":focus-visible": {
-            backgroundColor: this.colors.btn.focusVisible.bg,
-            color: this.colors.btn.focusVisible.fr,
-            outline: this.colors.btn.focusVisible.outline,
-        },
-        ":active": {
-            backgroundColor: this.colors.btn.active.bg,
-            color: this.colors.btn.active.fr,
-            outline: this.colors.btn.active.outline,
+    enterAnmation = this.$keyframes([
+        ["from", {transform: css.scale(0.001)}],
+        // ["to", {}]
+    ])
+
+    exitAnimation = this.$keyframes([
+        // ["from", {}],
+        ["to", {transform: css.scale(0.001)}]
+    ])
+
+    backdropAnimation = this.$keyframes([
+        ["from", {opacity: 0}],
+        ["to", {opacity: this.colors.backdropOpacity}]
+    ])
+
+    popupEntering = this.$class({
+        animation: { name: this.enterAnmation, duration: 200 },
+        "::backdrop": {
+            animation: { name: this.backdropAnimation, duration: 200 }
         }
+    })
+
+    popupExiting = this.$class({
+        animation: { name: this.exitAnimation, duration: 200 },
+        "::backdrop": {
+            animation: { name: this.backdropAnimation, duration: 200, direction: "reverse" }
+        }
+    })
+
+    popupMoving = this.$class({
+        transitionProperty: ["left", "top"], transitionDuration: 150
     })
 
     dialogCaption = this.$class({
@@ -224,6 +204,16 @@ export class DefaultPopupTheme extends PopupTheme
         boxShadow: { x: 0, y: 2, blur: 2, color: "lightgrey" },
         padding: 0.4,
         cursor: "default",
+    })
+
+    dialogCloser = this.$class({
+        // position: "absolute", right: 2, top: 2,
+        width: 1.2, minWidth: 1.2, height: 1.2, padding: 0.1,
+        textAlign: "center",
+        fontWeight: "bold",
+        cursor: "pointer",
+        backgroundColor: "transparent",
+        ":hover": {color: "red"}
     })
 
     dialogBody = this.$class({
@@ -236,35 +226,6 @@ export class DefaultPopupTheme extends PopupTheme
         gap: css.em(1),
         justifyContent: "flex-end",
         alignItems: "center",
-    })
-
-    dialogButton = this.$class({
-        padding: 0.3,
-        minWidth: 5.5,
-        backgroundColor: this.colors.btn.bg,
-        color: this.colors.btn.fr,
-        border: this.colors.btn.border,
-        outline: this.colors.btn.outline,
-        ":hover": {
-            backgroundColor: this.colors.btn.hover.bg,
-            color: this.colors.btn.hover.fr,
-            outline: this.colors.btn.hover.outline,
-        },
-        ":focus": {
-            backgroundColor: this.colors.btn.focus.bg,
-            color: this.colors.btn.focus.fr,
-            outline: this.colors.btn.focus.outline,
-        },
-        ":focus-visible": {
-            backgroundColor: this.colors.btn.focusVisible.bg,
-            color: this.colors.btn.focusVisible.fr,
-            outline: this.colors.btn.focusVisible.outline,
-        },
-        ":active": {
-            backgroundColor: this.colors.btn.active.bg,
-            color: this.colors.btn.active.fr,
-            outline: this.colors.btn.active.outline,
-        }
     })
 
     msgBoxContainer = this.$class({
@@ -301,21 +262,16 @@ export class DefaultPopupTheme extends PopupTheme
     })
 
     progressElm = this.$class({
+        accentColor: this.colors.accentColor,
         width: css.rem(20),
         height: css.rem(1),
-        margin: css.rem(1)
+        margin: css.rem(1),
     })
 
     progressText = this.$class({
         textAlign: "center",
     })
 }
-
-
-
-// // Activate the popup deafult theme if another theme implmentation is not activated yet.
-// if (!css.getActiveTheme( PopupTheme))
-//     css.activate( DefaultPopupTheme);
 
 
 
