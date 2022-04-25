@@ -13,7 +13,7 @@ export interface IProgressOptions extends IDialogOptions<IProgressStyles>
      * Value to return when the cancel button is clicked. If this property is null or not defined,
      * there will be no cancel button.
      */
-    cancelReturnValue?: any;
+    cancelValue?: any;
 }
 
 
@@ -57,8 +57,8 @@ export class ProgressBox extends Dialog<IProgressStyles, IProgressOptions>
 	{
 		super( content, options);
 
-        if (options?.cancelReturnValue != null)
-            this.addButton({ id: 1, content: "Cancel", returnValue: options.cancelReturnValue });
+        if (options?.cancelValue != null)
+            this.addButton({ id: 1, content: "Cancel", returnValue: options.cancelValue });
 	}
 
 
@@ -109,9 +109,11 @@ export class ProgressBox extends Dialog<IProgressStyles, IProgressOptions>
         // parameter of the Dialog constructor.
 		return <div class={this.styles.progressContainer}>
             <progress class={this.styles.progressElm} />
-            <div class={this.styles.progressText}>
-                {this.body}
-            </div>
+            {this.body &&
+                <div class={this.styles.progressText}>
+                    {this.body}
+                </div>
+            }
         </div>;
 	}
 

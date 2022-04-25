@@ -252,10 +252,14 @@ export class DefaultPopupTheme extends PopupTheme
     })
 
     progressContainer = this.$class({
-        width: css.rem(30),
-        height: css.rem(5),
+        minWidth: css.ch(10),
+        maxWidth: css.ch(150),
+        minHeight: css.em(1),
+        maxHeight: css.em(20),
+        margin: 0.7,
         display: "flex",
         flexDirection: "column",
+        gap: 0.5,
         alignItems: "center",
         justifyContent: "space-around",
         "&+": [[ this.dialogButtonBar, {justifyContent: "center"}]]
@@ -263,9 +267,9 @@ export class DefaultPopupTheme extends PopupTheme
 
     progressElm = this.$class({
         accentColor: this.colors.accentColor,
-        width: css.rem(20),
-        height: css.rem(1),
-        margin: css.rem(1),
+        minWidth: css.ch(20),
+        width: "100%",
+        height: css.em(1),
     })
 
     progressText = this.$class({
