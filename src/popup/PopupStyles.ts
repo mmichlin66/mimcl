@@ -160,9 +160,12 @@ export class DefaultPopupTheme extends PopupTheme
         padding: 0,
         maxWidth: "100%",
         maxHeight: "100%",
-        backgroundColor: this.colors.bgColor,
-        color: this.colors.frColor,
-        "::backdrop": { backgroundColor: this.colors.backdropBgColor, opacity: this.colors.backdropOpacity },
+        backgroundColor: css.usevar(this.colors.bgColor, "Canvas"),
+        color: this.colors.fgColor,
+        "::backdrop": {
+            backgroundColor: this.colors.backdropBgColor,
+            opacity: this.colors.backdropOpacity,
+        },
     })
 
     enterAnmation = this.$keyframes([
@@ -180,27 +183,29 @@ export class DefaultPopupTheme extends PopupTheme
         ["to", {opacity: this.colors.backdropOpacity}]
     ])
 
+    animationDuration = this.$var("<time>", 200)
+
     popupEntering = this.$class({
-        animation: { name: this.enterAnmation, duration: 200 },
+        animation: { name: this.enterAnmation, duration: this.animationDuration },
         "::backdrop": {
-            animation: { name: this.backdropAnimation, duration: 200 }
+            animation: { name: this.backdropAnimation, duration: this.animationDuration }
         }
     })
 
     popupExiting = this.$class({
-        animation: { name: this.exitAnimation, duration: 200 },
+        animation: { name: this.exitAnimation, duration: this.animationDuration },
         "::backdrop": {
-            animation: { name: this.backdropAnimation, duration: 200, direction: "reverse" }
+            animation: { name: this.backdropAnimation, duration: this.animationDuration, direction: "reverse" }
         }
     })
 
     popupMoving = this.$class({
-        transitionProperty: ["left", "top"], transitionDuration: 150
+        transitionProperty: ["left", "top"], transitionDuration: this.animationDuration
     })
 
     dialogCaption = this.$class({
-        backgroundColor: this.colors.captionBgColor,
-        color: this.colors.captionFrColor,
+        backgroundColor: css.usevar(this.colors.captionBgColor, "Highlight"),
+        color: css.usevar(this.colors.captionFgColor, "HighlightText"),
         boxShadow: { x: 0, y: 2, blur: 2, color: "lightgrey" },
         padding: 0.4,
         cursor: "default",
