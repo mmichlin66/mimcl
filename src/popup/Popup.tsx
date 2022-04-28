@@ -454,7 +454,7 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
         // obtain current theme and merge optional styles on top of it
         this.theme = css.getActiveTheme( PopupTheme);
         // this.styles = Object.assign( {}, this.theme, this.options?.styles);
-        this.styles = css.mergeVirtObjects( null, this.theme, this.options?.styles);
+        this.styles = css.mergeStylesheets( null, this.theme, this.options?.styles);
 
         // create dialog element and add it to the DOM
         let dlg = this.dlg = document.createElement( "dialog") as HTMLDialogElement;
