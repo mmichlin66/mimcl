@@ -228,7 +228,7 @@ export class DefaultPopupTheme extends PopupTheme
     dialogButtonBar = this.$class({
         padding: [0.7, 1.01],
         display: "flex",
-        gap: css.em(1),
+        gap: "1em",
         justifyContent: "flex-end",
         alignItems: "center",
     })
@@ -240,27 +240,27 @@ export class DefaultPopupTheme extends PopupTheme
     })
 
     msgBoxIcon = this.$class({
-        padding: css.rem(0.5),
-        fontSize: css.em(3),
+        padding: "0.5rem",
+        fontSize: "3em",
         fontWeight: 900,
         border: "none",
     })
 
     msgBoxText = this.$class({
         padding: 0.5,
-        minWidth: css.em(15),
-        maxWidth: css.em(60),
-        // minHeight: css.em(2),
-        maxHeight: css.em(20),
+        minWidth: "15em",
+        maxWidth: "60em",
+        // minHeight: "2em",
+        maxHeight: "20em",
         overflow: "auto",
         verticalAlign: "middle",
     })
 
     progressContainer = this.$class({
-        minWidth: css.ch(10),
-        maxWidth: css.ch(150),
-        minHeight: css.em(1),
-        maxHeight: css.em(20),
+        minWidth: "10ch",
+        maxWidth: "150ch",
+        minHeight: "1em",
+        maxHeight: "20em",
         margin: 0.7,
         display: "flex",
         flexDirection: "column",
@@ -272,7 +272,7 @@ export class DefaultPopupTheme extends PopupTheme
 
     progressElm = this.$class({
         accentColor: this.colors.accentColor,
-        minWidth: css.ch(20),
+        minWidth: "20ch",
         width: "100%",
         height: css.em(1),
     })
