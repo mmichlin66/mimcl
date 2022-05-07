@@ -372,7 +372,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 
 
 
-	// Informs that the given error was raised by one of the descendant coponents.
+	// Informs that the given error was raised by one of the descendant components.
 	public reportError( err: any): void
 	{
 		this.handleError( err);
