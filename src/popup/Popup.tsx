@@ -71,11 +71,11 @@ const waitAnim = async ( elm: Element, startFunc: ()=>void, endFunc: ()=>void, i
 
     let started: boolean;
     let ended: boolean;
-    let count: number;
 
     // let startPromise = new Promise<void>( resolveFunc => setTimeout( resolveFunc, 50));
     let startPromise = new Promise<void>( async resolveFunc =>
     {
+        let count: number;
         for( count = 0; count < 5; count++)
         {
             await new Promise<void>( resolveFunc1 => requestAnimationFrame( time => resolveFunc1()));

@@ -1,5 +1,6 @@
 import * as mimurl from "mimurl"
 import * as mim from "mimbl"
+import * as css from "mimcss"
 
 
 
@@ -142,7 +143,7 @@ export interface IRouterProps
  * The Router component provides client-side routing. It works with Route objects that define
  * available navigation targets.
  */
-export class Router extends mim.Component<IRouterProps,Route[]> implements IRouterService, mim.IErrorHandlingService
+export class Router extends mim.Component<IRouterProps,Route[]> implements IRouterService, mim.IErrorBoundary
 {
 	constructor( props: IRouterProps)
 	{
@@ -240,14 +241,9 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 	{
 		let [route, fields] = this.findRouteByURL( url);
 		if (!route)
-		{
-			if (this.higherRouterService && this.higherRouterService.r)
-				this.higherRouterService.r.navigateByURL( url, makeHistoryEntry);
-
-			return;
-		}
-
-		this.navigateToRoute( route, url, fields, makeHistoryEntry);
+            this.higherRouterSubscription.value?.navigateByURL( url, makeHistoryEntry);
+		else
+            this.navigateToRoute( route, url, fields, makeHistoryEntry);
 	}
 
 
@@ -264,25 +260,22 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 	{
 		let route: Route = this.routesByID.get( id);
 		if (!route)
-		{
-			if (this.higherRouterService && this.higherRouterService.r)
-				this.higherRouterService.r.navigateByID( id, fields);
+            this.higherRouterSubscription.value?.navigateByID( id, fields);
+		else
+        {
+            // if we are controlling the browser we may need to substitute parameters in the
+            // route's URL pattern
+            let url: string;
+            if (this.controlsBrowser)
+            {
+                url = route.urlPattern;
+                if (url && fields)
+                {
+                }
+            }
 
-			return;
-		}
-
-		// if we are controlling the browser we may need to substitute parameters in the
-		// route's URL pattern
-		let url: string;
-		if (this.controlsBrowser)
-		{
-			url = route.urlPattern;
-			if (url && fields)
-			{
-			}
-		}
-
-		this.navigateToRoute( route, url, fields, makeHistoryEntry);
+            this.navigateToRoute( route, url, fields, makeHistoryEntry);
+        }
 	}
 
 
@@ -372,29 +365,17 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 
 
 
-	// Informs that the given error was raised by one of the descendant components.
-	public reportError( err: any): void
-	{
-		this.handleError( err);
-		this.updateMe();
-	}
-
-
-
 	public willMount()
 	{
-		this.vn.publishService( "StdErrorHandling", this);
+		this.errorHandlerPublication = this.vn.publishService( "ErrorBoundary", this);
 
 		// publish ourselves as a router service
-		this.vn.publishService( "Router", this);
+		this.routerPublication = this.vn.publishService( "Router", this);
 
 		// if instructed so, subscribe to a router service implemented by any of components
 		// up the chain
 		if (this.chainsToHigherRouter)
-		{
-			this.higherRouterService = new mim.Ref<IRouterService>();
-			this.vn.subscribeService( "Router", this.higherRouterService, undefined, false);
-		}
+			this.higherRouterSubscription = this.vn.subscribeService( "Router", undefined, false);
 
 		// find the first route to display
 		let firstRoute: Route = this.routes.length > 0 ? this.routes[0] : null;
@@ -438,14 +419,11 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 		{
 			window.removeEventListener( "popstate", this.onPopstate);
 		}
-		if (this.chainsToHigherRouter)
-		{
-			this.vn.unsubscribeService( "Router");
-			this.higherRouterService = undefined;
-		}
 
-		this.vn.unpublishService( "Router");
-		this.vn.unpublishService( "StdErrorHandling");
+		this.higherRouterSubscription = undefined;
+
+		this.routerPublication.unpublish();
+		this.errorHandlerPublication.unpublish();
 	}
 
 
@@ -457,17 +435,26 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 
 
 
-	public handleError( err: any): any
-	{
-		//this.error = err;
-		//this.errorPath = nodePath;
-		this.currRouteContent =
-			<div id="rootError" style={{backgroundColor:"pink", display:"flex",
-										flexDirection:"column", alignItems: "start"}}>
-				{err}
-            </div>;
+    // This method is called after an exception was thrown during rendering of the node's
+    // sub-nodes.
+    public reportError( err: unknown): void
+    {
+        this.handleError(err);
+        this.updateMe();
+    }
 
-        return this.currRouteContent;
+    /** Sets content to display reflecting the given error */
+	public handleError( err: unknown): void
+	{
+        let style: css.IStyleset = {
+            backgroundColor: "pink",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "start",
+            padding: 6,
+        };
+
+		this.currRouteContent = <div id="rootError" style={style}>{err}</div>;
 	}
 
 
@@ -535,8 +522,14 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 	public set ProgressContentFunc( val: ProgressContentRenderFuncType) { this.progressContentFunc = val; }
 	private progressContentFunc: ProgressContentRenderFuncType;
 
+    /** Publication of the router service */
+    private routerPublication: mim.IPublication<"Router">;
+
+    /** Publication of the error handling service */
+    private errorHandlerPublication: mim.IPublication<"ErrorBoundary">;
+
 	// A router service this router will delegate to when it cannot resolve a path.
-	private higherRouterService: mim.Ref<IRouterService>;
+	private higherRouterSubscription: mim.ISubscription<"Router">;
 
 	// Ordered list of Route objects - used to find routes by matching paths. Note that this
 	// list is actually a hierarchy because routes can contain sub-routes.
@@ -551,10 +544,6 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 
 	// Content povided by the current route.
 	private currRouteContent: any;
-
-	// Error and component path in case an error has been caught.
-	private error: any = null;
-	private errorPath: string[] = null;
 }
 
 

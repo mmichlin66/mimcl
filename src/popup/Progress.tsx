@@ -81,7 +81,10 @@ export class ProgressBox extends Dialog<IProgressStyles, IProgressOptions>
      */
     public showModalWithDelay( delayMilliseconds: number): void
     {
-        this.delayHandle = setTimeout( () => this.showNow(), delayMilliseconds);
+        // wrap a callback to be executed with a delay. Wrapping it means that it will be executed
+        // under the proper context; in particular, the current component will be the same as it is
+        // now.
+        this.delayHandle = setTimeout(mim.wrapCallback(this.showNow, {thisArg: this}), delayMilliseconds);
     }
 
     /**
