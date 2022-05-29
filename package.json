@@ -1,6 +1,6 @@
 {
 	"name": "mimcl",
-	"version": "0.8.2",
+	"version": "0.9.1",
 	"description": "MiM Component Library",
 	"homepage": "https://mmichlin66.github.io/mimbl/mimclAbout.html",
 	"repository": "github:mmichlin66/mimcl",
@@ -32,23 +32,23 @@
 		"lib/mimcl.js",
 		"lib/mimcl.dev.js",
 		"lib/index.d.ts",
-        "lib/containers/Splitter.d.ts",
-        "lib/core/ColorStyles.d.ts",
-        "lib/dnd/DragDropApi.d.ts",
-        "lib/popup/Dialog.d.ts",
-        "lib/popup/MsgBox.d.ts",
-        "lib/popup/Popup.d.ts",
-        "lib/popup/PopupStyles.d.ts",
-        "lib/popup/Progress.d.ts",
-        "lib/router/Router.d.ts",
-        "lib/tree/TreeApi.d.ts",
-        "lib/util/ModuleAug.d.ts",
-        "lib/virt/ScrollAxis.d.ts",
-        "lib/virt/VTable.d.ts"
-    ],
+		"lib/containers/Splitter.d.ts",
+		"lib/core/ColorStyles.d.ts",
+		"lib/dnd/DragDropApi.d.ts",
+		"lib/popup/Dialog.d.ts",
+		"lib/popup/MsgBox.d.ts",
+		"lib/popup/Popup.d.ts",
+		"lib/popup/PopupStyles.d.ts",
+		"lib/popup/Progress.d.ts",
+		"lib/router/Router.d.ts",
+		"lib/tree/TreeApi.d.ts",
+		"lib/util/ModuleAug.d.ts",
+		"lib/virt/ScrollAxis.d.ts",
+		"lib/virt/VTable.d.ts"
+	],
 	"dependencies": {
-		"mimbl": "^0.8.2",
-		"mimcss": "^0.11.14",
+		"mimbl": "^0.9.1",
+		"mimcss": "^0.11.16",
 		"mimurl": "^0.1.6"
 	}
 }
