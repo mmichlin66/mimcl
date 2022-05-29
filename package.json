@@ -1,6 +1,6 @@
 {
 	"name": "mimcl",
-	"version": "0.9.1",
+	"version": "0.9.2",
 	"description": "MiM Component Library",
 	"homepage": "https://mmichlin66.github.io/mimbl/mimclAbout.html",
 	"repository": "github:mmichlin66/mimcl",
@@ -47,7 +47,7 @@
 		"lib/virt/VTable.d.ts"
 	],
 	"dependencies": {
-		"mimbl": "^0.9.1",
+		"mimbl": "^0.9.2",
 		"mimcss": "^0.11.16",
 		"mimurl": "^0.1.6"
 	}
