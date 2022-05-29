@@ -367,10 +367,10 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 
 	public willMount()
 	{
-		this.errorHandlerPublication = this.vn.publishService( "ErrorBoundary", this);
+		this.errorHandlerPublication = this.publishService( "ErrorBoundary", this);
 
 		// publish ourselves as a router service
-		this.routerPublication = this.vn.publishService( "Router", this);
+		this.routerPublication = this.publishService( "Router", this);
 
 		// if instructed so, subscribe to a router service implemented by any of components
 		// up the chain
