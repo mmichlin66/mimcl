@@ -71,7 +71,7 @@ export class Splitter extends mim.Component<SplitterProps, [any,any]>
     }
 
     willUnmount(): void {
-        css.activate(this.ownStyles);
+        css.deactivate(this.ownStyles);
     }
 
     render(): any

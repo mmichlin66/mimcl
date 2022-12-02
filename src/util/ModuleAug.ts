@@ -10,7 +10,7 @@ declare module "mimbl"
         Router: IRouterService;
     }
 
-	interface IElementProps
+	interface IElementAttrs
 	{
 		dragSource?: DragSourcePropType;
 		dragTarget?: DragTargetPropType;

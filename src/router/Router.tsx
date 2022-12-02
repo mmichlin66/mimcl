@@ -555,7 +555,7 @@ export class Router extends mim.Component<IRouterProps,Route[]> implements IRout
 // correspond to the relevant attributes of the <a> DOM element.
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-export interface LinkProps extends mim.IHtmlAElementProps
+export interface LinkProps extends mim.IHtmlAElementAttrs
 {
 	// Path that will be mapped to a route by the Router.
 	routeURL?: string;
