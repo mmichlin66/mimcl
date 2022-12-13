@@ -46,6 +46,8 @@ export type SplitterProps =
      * Background of the divider element. Default value is "ButtonFace".
      */
     barBG?: css.Background_StyleType;
+
+    children: [any,any]
 }
 
 
@@ -53,7 +55,7 @@ export type SplitterProps =
  * The Splitter component divides the area between two children and allows changing their sizes by
  * dragging a divider.
  */
-export class Splitter extends mim.Component<SplitterProps, [any,any]>
+export class Splitter extends mim.Component<SplitterProps>
 {
     constructor(props: SplitterProps)
     {

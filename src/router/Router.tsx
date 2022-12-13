@@ -135,6 +135,8 @@ export interface IRouterProps
 	 * true.
 	 */
 	baseURL?: string;
+
+    children?: Route[];
 }
 
 
@@ -143,7 +145,7 @@ export interface IRouterProps
  * The Router component provides client-side routing. It works with Route objects that define
  * available navigation targets.
  */
-export class Router extends mim.Component<IRouterProps,Route[]> implements IRouterService, mim.IErrorBoundary
+export class Router extends mim.Component<IRouterProps> implements IRouterService, mim.IErrorBoundary
 {
 	constructor( props: IRouterProps)
 	{
@@ -569,6 +571,8 @@ export interface LinkProps extends mim.IHtmlAElementAttrs
 	// Flag indicating whether the target should be made a new entry in the browser's history;
 	// that is to be subject to back and forward browser commands.
 	makeHistoryEntry?: boolean;
+
+    children: any;
 }
 
 
