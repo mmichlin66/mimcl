@@ -377,7 +377,7 @@ export class Router extends mim.Component<IRouterProps> implements IRouterServic
 		// if instructed so, subscribe to a router service implemented by any of components
 		// up the chain
 		if (this.chainsToHigherRouter)
-			this.higherRouterSubscription = this.vn.subscribeService( "Router", undefined, false);
+			this.higherRouterSubscription = this.subscribeService( "Router", undefined, false);
 
 		// find the first route to display
 		let firstRoute: Route = this.routes.length > 0 ? this.routes[0] : null;
@@ -606,7 +606,7 @@ export class Link extends mim.Component<LinkProps>
 	{
 		e.preventDefault();
 
-		let service: IRouterService = this.vn.getService( "Router");
+		let service: IRouterService = this.getService( "Router");
 		if (!service)
 			return;
 
