@@ -594,9 +594,9 @@ export class Link extends mim.Component<LinkProps>
 	public render(): any
 	{
 		// extract our custom parameters and leave only those that are <a> attributes
-		let {routeURL, routeID, fields, makeHistoryEntry, ...rest} = this.props;
+		let {routeURL, routeID, fields, makeHistoryEntry, children, ...rest} = this.props;
 		return <a href="#" click={this.onClick} {...rest}>
-			{this.props.children}
+			{children}
 		</a>;
 	}
 
