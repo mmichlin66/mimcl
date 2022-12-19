@@ -47,7 +47,7 @@ export type SplitterProps =
      */
     barBG?: css.Background_StyleType;
 
-    children: [any,any]
+    children: [mim.RenderableContent, mim.RenderableContent]
 }
 
 
