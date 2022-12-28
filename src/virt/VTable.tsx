@@ -424,8 +424,6 @@ export class VTable extends mim.Component<VTableProps>
 
 		this.firstRow = axisAction.newFirst;
 		this.lastRow = axisAction.newLast;
-
-		this.updateMe( this.renderRows);
 	}
 
 
@@ -526,6 +524,7 @@ export class VTable extends mim.Component<VTableProps>
 	private maxColOverscan: number;
 
 	// Current dataset represented by row components.
+    @mim.trigger
 	private rows: VRow[];
 
 	// Index of the first row in the current dataset or 0 if the dataset is empty

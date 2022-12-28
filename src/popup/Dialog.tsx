@@ -98,7 +98,6 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
     public setCaption( caption: any): void
     {
         this.caption = caption;
-        this.updateMe( this.renderCaption);
     }
 
     /**
@@ -221,6 +220,7 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 
 
     // Content for the dialog's caption
+    @mim.trigger(0)
     protected caption: any;
 
     // Content for the dialog's body
