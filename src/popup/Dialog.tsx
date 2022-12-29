@@ -123,7 +123,7 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
      */
     public willMount(): void
 	{
-        this.callMeAfterUpdate( () =>
+        this.callMe( () =>
         {
             if (this.options?.defaultButton != null)
             {
@@ -132,7 +132,7 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
             }
             else
                 this.containerRef?.focus();
-        })
+        }, false)
 	}
 
     public render(): any

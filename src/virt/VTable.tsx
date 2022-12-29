@@ -191,7 +191,7 @@ export class VTable extends mim.Component<VTableProps>
 		// during each rendering, we schedule the measuring functionality, which will determing
 		// whether we need to add/remove cells. The measuring function will run in the next tick
 		// after the render and will schedule update in the same tick if necessary.
-		this.callMeBeforeUpdate( this.measureAndUpdate);
+		this.callMe(this.measureAndUpdate, true);
 
 		return <div id={this.styles.frame} ref={this.frameRef} scroll={this.onScroll}>
 			<div id={this.styles.wall} ref={this.wallRef}>
@@ -299,10 +299,10 @@ export class VTable extends mim.Component<VTableProps>
 			// schedule updating of wall height and subset vertical offset if needed
 			if (vAxisAction.newWallSize != wallRect.height || vAxisAction.newSubsetOffset != tableRect.top - wallRect.top)
 			{
-				this.callMeAfterUpdate( () => {
+				this.callMe( () => {
 					this.table.style.top = vAxisAction.newSubsetOffset + "px";
 					this.wall.style.height = vAxisAction.newWallSize + "px";
-				});
+				}, false);
 			}
 		}
 
@@ -327,10 +327,10 @@ export class VTable extends mim.Component<VTableProps>
 			// schedule updating of wall width and subset horizontal offset if needed
 			if (hAxisAction.newWallSize != wallRect.width || hAxisAction.newSubsetOffset != tableRect.left - wallRect.left)
 			{
-				this.callMeAfterUpdate( () => {
+				this.callMe( () => {
 					this.table.style.left = hAxisAction.newSubsetOffset + "px";
 					this.wall.style.width = hAxisAction.newWallSize + "px";
-				});
+				}, false);
 			}
 		}
 	}
@@ -510,7 +510,7 @@ export class VTable extends mim.Component<VTableProps>
 
 	private onScroll( e: Event): void
 	{
-		this.callMeBeforeUpdate( this.measureAndUpdate);
+		this.callMe( this.measureAndUpdate, true);
 	}
 
 
