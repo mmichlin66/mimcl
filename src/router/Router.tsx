@@ -145,7 +145,7 @@ export interface IRouterProps
  * The Router component provides client-side routing. It works with Route objects that define
  * available navigation targets.
  */
-export class Router extends mim.Component<IRouterProps> implements IRouterService, mim.IErrorBoundary
+export class Router extends mim.Component<IRouterProps> implements IRouterService//, mim.IErrorBoundary
 {
 	constructor( props: IRouterProps)
 	{
@@ -369,8 +369,6 @@ export class Router extends mim.Component<IRouterProps> implements IRouterServic
 
 	public willMount()
 	{
-		this.errorHandlerPublication = this.publishService( "ErrorBoundary", this);
-
 		// publish ourselves as a router service
 		this.routerPublication = this.publishService( "Router", this);
 
@@ -423,41 +421,41 @@ export class Router extends mim.Component<IRouterProps> implements IRouterServic
 		}
 
 		this.higherRouterSubscription = undefined;
-
 		this.routerPublication.unpublish();
-		this.errorHandlerPublication.unpublish();
 	}
 
 
 
 	public render(): any
 	{
-		return this.virtRender( this.currRouteContent);
+		return <mim.Boundary>
+            {this.virtRender( this.currRouteContent)}
+        </mim.Boundary>
 	}
 
 
 
-    // This method is called after an exception was thrown during rendering of the node's
-    // sub-nodes.
-    public reportError( err: unknown): void
-    {
-        this.handleError(err);
-        this.updateMe();
-    }
+    // // This method is called after an exception was thrown during rendering of the node's
+    // // sub-nodes.
+    // public reportError( err: unknown): void
+    // {
+    //     this.handleError(err);
+    //     // this.updateMe();
+    // }
 
-    /** Sets content to display reflecting the given error */
-	public handleError( err: unknown): void
-	{
-        let style: css.IStyleset = {
-            backgroundColor: "pink",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "start",
-            padding: 6,
-        };
+    // /** Sets content to display reflecting the given error */
+	// public handleError( err: unknown): void
+	// {
+    //     let style: css.IStyleset = {
+    //         backgroundColor: "pink",
+    //         display: "flex",
+    //         flexDirection: "column",
+    //         alignItems: "start",
+    //         padding: 6,
+    //     };
 
-		this.currRouteContent = <div id="rootError" style={style}>{err}</div>;
-	}
+	// 	this.currRouteContent = <div id="rootError" style={style}>{err}</div>;
+	// }
 
 
 	/**
@@ -470,7 +468,6 @@ export class Router extends mim.Component<IRouterProps> implements IRouterServic
 	 */
 	protected virtRender( currRouteContent: any): any
 	{
-		//return this.outerContentFunc ? this.outerContentFunc( currRouteContent) : currRouteContent;
 		return currRouteContent;
 	}
 
