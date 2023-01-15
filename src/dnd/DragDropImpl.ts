@@ -29,11 +29,9 @@ class DragSourceCustomElmPropHandler implements mim.ICustomAttributeHandler<Drag
 
 
 
-	public update( newPropVal: DragSourcePropType): boolean
+	public update( newPropVal: DragSourcePropType): void
 	{
-		if (this.currVal === newPropVal)
-			return false;
-		else
+		if (this.currVal !== newPropVal)
 		{
 			if (this.currVal)
 				this.remove();
@@ -42,7 +40,6 @@ class DragSourceCustomElmPropHandler implements mim.ICustomAttributeHandler<Drag
 				this.add( newPropVal as DragSourcePropType);
 
 			this.currVal = newPropVal;
-			return true;
 		}
 	}
 
@@ -107,11 +104,9 @@ class DragTargetCustomElmPropHandler implements mim.ICustomAttributeHandler<Drag
 
 
 
-	public update( newPropVal: DragTargetPropType): boolean
+	public update( newPropVal: DragTargetPropType): void
 	{
-		if (this.currVal === newPropVal)
-			return false;
-		else
+		if (this.currVal !== newPropVal)
 		{
 			if (this.currVal)
 				this.remove();
@@ -120,7 +115,6 @@ class DragTargetCustomElmPropHandler implements mim.ICustomAttributeHandler<Drag
 				this.add( newPropVal as DragTargetPropType);
 
 			this.currVal = newPropVal;
-			return true;
 		}
 	}
 
