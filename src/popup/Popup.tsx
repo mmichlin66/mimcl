@@ -480,7 +480,8 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
             dlgElmStyle.marginBlock = 0;
         }
 
-        dlg.setStyleset( dlgElmStyle);
+        dlg.styleset = dlgElmStyle;
+        // dlg.setStyleset( dlgElmStyle);
         // css.setElementStyle( this.dlg, dlgElmStyle /*, css.SchedulerType.Sync*/);
 
         // mount the component

@@ -1,14 +1,13 @@
 import * as css from "mimcss"
-import { IVarRule } from "mimcss"
 
 
 
 export interface IColorAspects
 {
-    bg?: IVarRule<"color">;
-    fg?: IVarRule<"color">;
-    border?: IVarRule<"border">;
-    outline?: IVarRule<"outline">;
+    bg?: css.IVarRule<"color">;
+    fg?: css.IVarRule<"color">;
+    border?: css.IVarRule<"border">;
+    outline?: css.IVarRule<"outline">;
 }
 
 export interface IButtonColors extends IColorAspects

@@ -1,4 +1,5 @@
 ﻿import * as mim from "mimbl"
+import * as css from "mimcss"
 import {DragSourcePropType, IDragSource, ISimpleDragSource, IDragSourceEvent, DNDTYPE_ELEMENT} from "./DragDropApi";
 import {DragAndDropData, IEmulDataTransfer, EmulDataTransfer, EmulLegacyDataTransfer} from "./DataTransfer";
 
@@ -483,12 +484,12 @@ export class DragSourceEmulator extends DragSourceHandler
 		// move the drag image element to the current mouse position
 		if (this.imageElm)
 		{
-			this.imageElm.style.left = e.clientX - this.emulDataTransfer.imageElmX + "px";
-			this.imageElm.style.top = e.clientY - this.emulDataTransfer.imageElmY + "px";
-			// this.imageElm.setStyleset( {
-            //     left: px( e.clientX - this.emulDataTransfer.imageElmX),
-			//     top: px( e.clientY - this.emulDataTransfer.imageElmY)
-            // });
+			// this.imageElm.style.left = e.clientX - this.emulDataTransfer.imageElmX + "px";
+			// this.imageElm.style.top = e.clientY - this.emulDataTransfer.imageElmY + "px";
+			this.imageElm.updateStyleset({
+                left: css.px(e.clientX - this.emulDataTransfer.imageElmX),
+			    top: css.px(e.clientY - this.emulDataTransfer.imageElmY)
+            });
 		}
 
 		// update image based on the latest feedback
@@ -496,12 +497,12 @@ export class DragSourceEmulator extends DragSourceHandler
 		{
 			let dropEffect: string = this.isDropPossibleOnLastTarget ? this.emulDataTransfer.dropEffect : "none";
 			this.setDropEffectImageCue( dropEffect);
-			this.dropEffectElm.style.left = this.emulDataTransfer.imageElmX + 12 + "px";
-			this.dropEffectElm.style.top = this.emulDataTransfer.imageElmY + 0 + "px";
-			// this.dropEffectElm.setStyleset( {
-            //     left: px( this.emulDataTransfer.imageElmX + 12),
-			//     top: px( this.emulDataTransfer.imageElmY)
-            // });
+			// this.dropEffectElm.style.left = this.emulDataTransfer.imageElmX + 12 + "px";
+			// this.dropEffectElm.style.top = this.emulDataTransfer.imageElmY + 0 + "px";
+			this.dropEffectElm.updateStyleset({
+                left: css.px(this.emulDataTransfer.imageElmX + 12),
+			    top: css.px(this.emulDataTransfer.imageElmY)
+            });
 		}
 
 		// remember last mouse event - we may use it to create DragEvent objects if we need to
