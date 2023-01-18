@@ -480,7 +480,7 @@ export class Popup<TStyles extends IPopupStyles = IPopupStyles,
             dlgElmStyle.marginBlock = 0;
         }
 
-        dlg.styleset = dlgElmStyle;
+        dlg.style.$ = dlgElmStyle;
         // dlg.setStyleset( dlgElmStyle);
         // css.setElementStyle( this.dlg, dlgElmStyle /*, css.SchedulerType.Sync*/);
 

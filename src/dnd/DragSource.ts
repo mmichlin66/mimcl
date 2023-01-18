@@ -486,10 +486,10 @@ export class DragSourceEmulator extends DragSourceHandler
 		{
 			// this.imageElm.style.left = e.clientX - this.emulDataTransfer.imageElmX + "px";
 			// this.imageElm.style.top = e.clientY - this.emulDataTransfer.imageElmY + "px";
-			this.imageElm.updateStyleset({
+			this.imageElm.style.$ = {
                 left: css.px(e.clientX - this.emulDataTransfer.imageElmX),
 			    top: css.px(e.clientY - this.emulDataTransfer.imageElmY)
-            });
+            };
 		}
 
 		// update image based on the latest feedback
@@ -499,10 +499,10 @@ export class DragSourceEmulator extends DragSourceHandler
 			this.setDropEffectImageCue( dropEffect);
 			// this.dropEffectElm.style.left = this.emulDataTransfer.imageElmX + 12 + "px";
 			// this.dropEffectElm.style.top = this.emulDataTransfer.imageElmY + 0 + "px";
-			this.dropEffectElm.updateStyleset({
+			this.dropEffectElm.style.$ = {
                 left: css.px(this.emulDataTransfer.imageElmX + 12),
 			    top: css.px(this.emulDataTransfer.imageElmY)
-            });
+            };
 		}
 
 		// remember last mouse event - we may use it to create DragEvent objects if we need to

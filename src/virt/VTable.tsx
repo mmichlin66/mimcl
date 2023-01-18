@@ -298,16 +298,16 @@ export class VTable extends mim.Component<VTableProps>
 
 			// schedule updating of wall height and subset vertical offset if needed
 			if (vAxisAction.newWallSize != wallRect.height || vAxisAction.newSubsetOffset != tableRect.top - wallRect.top)
-            {
-                this.table.updateStyleProp( "top", css.px(vAxisAction.newSubsetOffset));
-                this.wall.updateStyleProp( "height", css.px(vAxisAction.newWallSize));
-            }
-			// {
-			// 	this.callMe( () => {
-			// 		this.table.styleset.top = vAxisAction.newSubsetOffset;
-			// 		this.wall.styleset.height = vAxisAction.newWallSize ;
-			// 	}, false);
-			// }
+            // {
+            //     this.table.updateStyleProp( "top", css.px(vAxisAction.newSubsetOffset));
+            //     this.wall.updateStyleProp( "height", css.px(vAxisAction.newWallSize));
+            // }
+			{
+				this.callMe( () => {
+					this.table.style.$.top = css.px(vAxisAction.newSubsetOffset);
+					this.wall.style.$.height = css.px(vAxisAction.newWallSize);
+				}, false);
+			}
 		}
 
 		if (this.latestScrollLeft != this.frame.scrollLeft)
@@ -330,16 +330,16 @@ export class VTable extends mim.Component<VTableProps>
 
 			// schedule updating of wall width and subset horizontal offset if needed
 			if (hAxisAction.newWallSize != wallRect.width || hAxisAction.newSubsetOffset != tableRect.left - wallRect.left)
-            {
-                this.table.updateStyleProp( "left", css.px(hAxisAction.newSubsetOffset));
-                this.wall.updateStyleProp( "width", css.px(hAxisAction.newWallSize));
-            }
-			// {
-			// 	this.callMe( () => {
-			// 		this.table.styleset.left = hAxisAction.newSubsetOffset;
-			// 		this.wall.styleset.width = hAxisAction.newWallSize;
-			// 	}, false);
-			// }
+            // {
+            //     this.table.updateStyleProp( "left", css.px(hAxisAction.newSubsetOffset));
+            //     this.wall.updateStyleProp( "width", css.px(hAxisAction.newWallSize));
+            // }
+			{
+				this.callMe( () => {
+					this.table.style.$.left = css.px(hAxisAction.newSubsetOffset);
+					this.wall.style.$.width = css.px(hAxisAction.newWallSize);
+				}, false);
+			}
 		}
 	}
 
