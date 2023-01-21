@@ -1,8 +1,7 @@
 {
 	"name": "mimcl",
-	"version": "0.10.1",
+	"version": "0.10.2",
 	"description": "MiM Component Library",
-	"homepage": "https://mmichlin66.github.io/mimbl/mimclAbout.html",
 	"repository": "github:mmichlin66/mimcl",
 	"main": "./lib/mimcl.ts",
 	"module": "./lib/mimcl.js",
@@ -13,7 +12,7 @@
 	"author": {
 		"name": "Michael Michlin",
 		"email": "mmulya@outlook.com",
-		"url": "https://mmichlin66.github.io"
+		"url": "https://www.mimjs.com"
 	},
 	"keywords": [
 		"Component",
@@ -47,8 +46,8 @@
 		"lib/virt/VTable.d.ts"
 	],
 	"dependencies": {
-		"mimbl": "^0.10.1",
-		"mimcss": "^0.11.17",
+		"mimbl": "^0.10.2",
+		"mimcss": "^0.12.1",
 		"mimurl": "^0.1.6"
 	}
 }
