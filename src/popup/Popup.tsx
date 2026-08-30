@@ -96,7 +96,7 @@ const waitAnim = async ( elm: Element, startFunc: ()=>void, endFunc: ()=>void, i
     let endHandler = () => {
         cleanup();
         ended = true;
-        endPromise.resolve();
+        endPromise.resolve(undefined);
     };
 
     let cleanup = () =>
