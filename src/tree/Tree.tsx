@@ -97,7 +97,7 @@ export class Tree extends mim.Component implements ITree
 
 	public render(): any
 	{
-		return <div ref={this.elmRef} tabindex={this.tabIndex} class={this.styles.tree} keydown={this.onKeyDown}>
+		return <div ref={this.elmRef} tabIndex={this.tabIndex} class={this.styles.tree} keydown={this.onKeyDown}>
 			{this.container}
 		</div>;
 	}

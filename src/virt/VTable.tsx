@@ -657,8 +657,8 @@ class VCell extends mim.Component
 		else
 		{
 			return <td class={this.data.class} style={this.data.style}
-						rowspan={this.data.rowSpan ? this.data.rowSpan : undefined}
-						colspan={this.data.colSpan ? this.data.colSpan : undefined}>
+						rowSpan={this.data.rowSpan ? this.data.rowSpan : undefined}
+						colSpan={this.data.colSpan ? this.data.colSpan : undefined}>
 				{this.data.content}
 			</td>
 		}

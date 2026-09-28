@@ -137,7 +137,7 @@ export class Dialog<TStyles extends IDialogStyles = IDialogStyles,
 
     public render(): any
 	{
-        return <div keydown={this.onButtonKeyDown} tabindex={0} ref={this.containerRef}>
+        return <div keydown={this.onButtonKeyDown} tabIndex={0} ref={this.containerRef}>
             {this.renderCaption}
             {this.renderBody}
             {this.renderButtons}
